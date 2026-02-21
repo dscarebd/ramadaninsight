@@ -75,10 +75,10 @@ const Schedule = () => {
                 key={i}
                 className={i === todayIndex ? 'bg-primary/10 font-semibold' : ''}
               >
-                <TableCell className="text-xs py-2">{fmt(String(i + 1))}</TableCell>
+                <TableCell className="text-xs py-2 font-bengali-num">{fmt(String(i + 1))}</TableCell>
                 <TableCell className="text-xs py-2">{day.gregorianDate}</TableCell>
-                <TableCell className="text-xs py-2">{fmt(to12Hour(day.sehriEnd))}</TableCell>
-                <TableCell className="text-xs py-2">{fmt(to12Hour(day.iftarStart))}</TableCell>
+                <TableCell className="text-xs py-2 font-bengali-num">{fmt(to12Hour(day.sehriEnd))}</TableCell>
+                <TableCell className="text-xs py-2 font-bengali-num">{fmt(to12Hour(day.iftarStart))}</TableCell>
               </TableRow>
             ))}
           </TableBody>
