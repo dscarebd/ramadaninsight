@@ -51,8 +51,9 @@ const cleanTime = (time: string) => time.replace(/\s*\(.*\)/, '');
 
 const fetchMonthTimes = async (districtId: string, year: number, month: number): Promise<PrayerDay[]> => {
   const district = districts.find(d => d.id === districtId) || districts[0];
+  // Use adjustment=-1 to align Hijri date with Bangladesh local moon sighting
   const res = await fetch(
-    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${district.lat}&longitude=${district.lng}&method=1&school=1`
+    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${district.lat}&longitude=${district.lng}&method=1&school=1&adjustment=-1`
   );
   if (!res.ok) throw new Error('Failed to fetch prayer times');
   const json = await res.json();

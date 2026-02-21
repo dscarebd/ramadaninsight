@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatLocalDate } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -42,7 +43,7 @@ const SalatTracker = () => {
   const [user, setUser] = useState<string | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = formatLocalDate(new Date());
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
