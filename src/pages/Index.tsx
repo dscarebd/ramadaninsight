@@ -72,6 +72,8 @@ const Index = () => {
   const sehriTime = todayData?.sehriEnd || '04:45';
   const iftarTime = todayData?.iftarStart || '18:10';
   const isFasting = currentHM >= sehriTime && currentHM < iftarTime;
+  const isBeforeSehri = currentHM < sehriTime;
+  const isAfterIftar = currentHM >= iftarTime;
 
   return (
     <div className={`min-h-screen pb-20 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
@@ -88,7 +90,9 @@ const Index = () => {
       <div className={`rounded-xl p-3 text-center font-semibold text-sm ${isFasting ? 'bg-primary/10 text-primary' : 'bg-accent/20 text-accent-foreground'}`}>
         {isFasting
           ? t('🌙 রোজা চলছে', '🌙 Fasting in Progress')
-          : t('☀️ রোজা শুরু হয়নি / শেষ হয়েছে', '☀️ Fasting not started / ended')}
+          : isAfterIftar
+            ? t('🕌 আজকের রোজা শেষ হয়েছে', '🕌 Today\'s fast has ended')
+            : t('☀️ রোজা এখনো শুরু হয়নি', '☀️ Fasting has not started yet')}
       </div>
 
       {/* Roza Count & Hijri Date */}
