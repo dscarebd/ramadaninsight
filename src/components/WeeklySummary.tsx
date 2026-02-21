@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { CalendarDays, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getLocalSalatDaysInRange } from '@/lib/localSalatStorage';
 
 const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
@@ -19,7 +20,7 @@ type DayRow = {
 };
 
 interface WeeklySummaryProps {
-  userId: string;
+  userId: string | null;
 }
 
 const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
@@ -38,26 +39,31 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
       return;
     }
 
-    // Get last 7 days
     const end = new Date(today);
-    end.setDate(end.getDate() - 1); // yesterday
+    end.setDate(end.getDate() - 1);
     const start = new Date(end);
-    start.setDate(start.getDate() - 6); // 7 days ending yesterday
+    start.setDate(start.getDate() - 6);
 
     const startStr = formatLocalDate(start);
     const endStr = formatLocalDate(end);
 
-    supabase
-      .from('salat_tracking')
-      .select('date,fajr,dhuhr,asr,maghrib,isha')
-      .eq('user_id', userId)
-      .gte('date', startStr)
-      .lte('date', endStr)
-      .order('date')
-      .then(({ data: rows }) => {
-        setData((rows as DayRow[]) || []);
-        setLoading(false);
-      });
+    if (userId) {
+      supabase
+        .from('salat_tracking')
+        .select('date,fajr,dhuhr,asr,maghrib,isha')
+        .eq('user_id', userId)
+        .gte('date', startStr)
+        .lte('date', endStr)
+        .order('date')
+        .then(({ data: rows }) => {
+          setData((rows as DayRow[]) || []);
+          setLoading(false);
+        });
+    } else {
+      const localDays = getLocalSalatDaysInRange(startStr, endStr);
+      setData(localDays);
+      setLoading(false);
+    }
   }, [userId]);
 
   const handleDismiss = () => {
@@ -68,12 +74,11 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   if (dismissed || loading) return null;
 
   const totalPrayers = data.reduce((sum, d) => sum + fiveWaqt.filter(p => d[p]).length, 0);
-  const maxPrayers = 7 * 5; // 7 days × 5 prayers
+  const maxPrayers = 7 * 5;
   const pct = Math.round((totalPrayers / maxPrayers) * 100);
   const perfectDays = data.filter(d => fiveWaqt.every(p => d[p])).length;
   const missedPrayers = maxPrayers - totalPrayers;
 
-  // Count missed per prayer
   const missedByPrayer = fiveWaqt.map(p => ({
     key: p,
     missed: 7 - data.filter(d => d[p]).length,
@@ -83,7 +88,6 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
     fajr: 'ফজর', dhuhr: 'যোহর', asr: 'আসর', maghrib: 'মাগরিব', isha: 'ইশা',
   };
 
-  // Don't show if perfect week
   if (pct === 100) return null;
 
   return (

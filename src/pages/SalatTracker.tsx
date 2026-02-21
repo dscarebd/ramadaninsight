@@ -25,12 +25,11 @@ const fiveWaqt = [
 
 type PrayerKey = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha' | 'taraweeh' | 'tahajjud';
 
-// Ramadan 2026: approx Feb 18 – Mar 19
 const isRamadan = () => {
   const now = new Date();
   const y = now.getFullYear();
-  const start = new Date(y, 1, 17); // Feb 17 (buffer)
-  const end = new Date(y, 2, 20);   // Mar 20 (buffer)
+  const start = new Date(y, 1, 17);
+  const end = new Date(y, 2, 20);
   return now >= start && now <= end;
 };
 
@@ -95,7 +94,6 @@ const SalatTracker = () => {
     const updated = { ...checked, [key]: val };
     setChecked(updated);
 
-    // Check if all relevant prayers are done
     const allFive = fiveWaqt.every(p => updated[p.key]);
     const extraDone = ramadan ? (updated.taraweeh && updated.tahajjud) : updated.tahajjud;
     if (allFive && extraDone) setShowCelebration(true);
@@ -104,9 +102,9 @@ const SalatTracker = () => {
       await supabase
         .from('salat_tracking')
         .upsert({ user_id: user, date: todayStr, ...updated }, { onConflict: 'user_id,date' });
-    } else {
-      localStorage.setItem(`salat_${todayStr}`, JSON.stringify(updated));
     }
+    // Always save to localStorage
+    localStorage.setItem(`salat_${todayStr}`, JSON.stringify(updated));
   };
 
   const resetAll = async () => {
@@ -119,9 +117,8 @@ const SalatTracker = () => {
       await supabase
         .from('salat_tracking')
         .upsert({ user_id: user, date: todayStr, ...reset }, { onConflict: 'user_id,date' });
-    } else {
-      localStorage.removeItem(`salat_${todayStr}`);
     }
+    localStorage.removeItem(`salat_${todayStr}`);
   };
 
   const fiveCount = fiveWaqt.filter(p => checked[p.key]).length;
@@ -136,8 +133,8 @@ const SalatTracker = () => {
         </TabsList>
 
         <TabsContent value="today" className="space-y-4 mt-4">
-          {user && <StreakBadge userId={user} />}
-          {user && <WeeklySummary userId={user} />}
+          <StreakBadge userId={user} />
+          <WeeklySummary userId={user} />
           <DailyPrayerReminder
             checked={checked}
             notificationsEnabled={notificationsEnabled}
@@ -157,7 +154,6 @@ const SalatTracker = () => {
             {t('⚠️ নামাজ না পড়ে টিক দিবেন না!', "⚠️ Don't check without praying!")}
           </p>
 
-          {/* 5 Waqt Card */}
           <Card>
             <CardContent className="p-4 space-y-3">
               {fiveWaqt.map(p => (
@@ -180,7 +176,6 @@ const SalatTracker = () => {
             {t(`${fiveCount}/৫ ওয়াক্ত সম্পন্ন`, `${fiveCount}/5 prayers completed`)}
           </div>
 
-          {/* Taraweeh / Tahajjud Card */}
           <Card className="border-primary/30">
             <CardContent className="p-4 space-y-3">
               <h3 className="font-bold text-primary text-sm">
@@ -215,7 +210,6 @@ const SalatTracker = () => {
             </CardContent>
           </Card>
 
-          {/* Celebration */}
           {showCelebration && (
             <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30">
               <CardContent className="p-6 text-center">
@@ -242,7 +236,7 @@ const SalatTracker = () => {
         </TabsContent>
 
         <TabsContent value="yearly" className="mt-4">
-          {user ? <YearlyOverview userId={user} /> : <SalatHistory userId={null} />}
+          <YearlyOverview userId={user} />
         </TabsContent>
       </Tabs>
     </div>
