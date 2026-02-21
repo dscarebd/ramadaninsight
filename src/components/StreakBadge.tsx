@@ -42,6 +42,14 @@ const StreakBadge = ({ userId }: StreakBadgeProps) => {
           <p className="text-sm text-foreground/80">
             {t(achieved.bn, achieved.en)}
           </p>
+          {longestStreak > currentStreak && (
+            <p className="text-xs text-muted-foreground pt-1">
+              {t(
+                `🏅 সর্বোচ্চ স্ট্রিক: ${longestStreak} দিন`,
+                `🏅 Longest streak: ${longestStreak} days`
+              )}
+            </p>
+          )}
           {nextMilestone && daysToNext && (
             <p className="text-xs text-muted-foreground pt-1">
               {t(
