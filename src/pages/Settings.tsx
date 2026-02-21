@@ -201,8 +201,8 @@ const Settings = () => {
                 <span className="text-[10px] text-muted-foreground text-center leading-tight">{app.name}</span>
               </a>
             ))}
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="h-14 w-14 rounded-xl shadow-md bg-muted flex items-center justify-center overflow-hidden">
+            <div className="flex flex-col items-center gap-1.5 group cursor-default">
+              <div className="h-14 w-14 rounded-xl shadow-md bg-muted flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
                 <img
                   src={appQuran}
                   alt="Upcoming"
