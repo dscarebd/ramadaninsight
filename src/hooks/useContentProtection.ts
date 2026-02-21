@@ -8,8 +8,10 @@ export const useContentProtection = () => {
       return false;
     };
 
-    // Disable text selection
+    // Disable text selection (except inputs/textareas)
     const handleSelectStart = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
       e.preventDefault();
       return false;
     };
@@ -58,13 +60,17 @@ export const useContentProtection = () => {
         e.preventDefault();
         return false;
       }
-      // Ctrl+C / Cmd+C (Copy)
+      // Ctrl+C / Cmd+C (Copy) — allow in inputs
       if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
         e.preventDefault();
         return false;
       }
-      // Ctrl+A / Cmd+A (Select all)
+      // Ctrl+A / Cmd+A (Select all) — allow in inputs
       if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
         e.preventDefault();
         return false;
       }
