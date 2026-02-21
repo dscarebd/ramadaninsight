@@ -51,9 +51,8 @@ const cleanTime = (time: string) => time.replace(/\s*\(.*\)/, '');
 
 const fetchMonthTimes = async (districtId: string, year: number, month: number): Promise<PrayerDay[]> => {
   const district = districts.find(d => d.id === districtId) || districts[0];
-  // Use adjustment=-1 to align Hijri date with Bangladesh local moon sighting
   const res = await fetch(
-    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${district.lat}&longitude=${district.lng}&method=1&school=1&adjustment=-1`
+    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${district.lat}&longitude=${district.lng}&method=1&school=1`
   );
   if (!res.ok) throw new Error('Failed to fetch prayer times');
   const json = await res.json();
@@ -93,12 +92,14 @@ export const usePrayerTimes = (districtId: string) => {
   const isLoading = febQuery.isLoading || marQuery.isLoading;
   const error = febQuery.error || marQuery.error;
 
-  // Filter to Ramadan days (approx Feb 18 - Mar 19)
+  // Filter to Ramadan days and skip first day to align with Bangladesh moon sighting
   const allDays = [...(febQuery.data || []), ...(marQuery.data || [])];
-  const ramadanDays = allDays.filter(day => {
+  const apiRamadanDays = allDays.filter(day => {
     const hijriMonth = day.hijriMonth.toLowerCase();
     return hijriMonth.includes('ramadan') || hijriMonth.includes('ramaḍān') || hijriMonth.includes('ramad');
   });
+  // Bangladesh starts Ramadan 1 day after the API's calculation
+  const ramadanDays = apiRamadanDays.slice(1);
 
   // Get today's data
   const today = new Date();

@@ -32,7 +32,7 @@ const Index = () => {
   }
 
   const rozaCount = todayIndex + 1;
-  const totalRoza = ramadanDays.length || 30;
+  const totalRoza = 30;
   const now = new Date();
   const currentHM = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   const sehriTime = todayData?.sehriEnd || '04:45';
@@ -59,7 +59,7 @@ const Index = () => {
           </p>
           {todayData && (
             <>
-              <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(todayData.hijriDay) : todayData.hijriDay}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
+              <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(rozaCount) : rozaCount}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
               <p className="text-xs text-muted-foreground">{todayData.gregorianDate}</p>
             </>
           )}
