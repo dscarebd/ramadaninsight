@@ -150,7 +150,7 @@ const SalatHistory = ({ userId }: SalatHistoryProps) => {
               <Flame className="h-5 w-5 text-orange-500" />
               <div>
                 <p className="text-xs text-muted-foreground">{t('বর্তমান স্ট্রিক', 'Current Streak')}</p>
-                <p className="text-lg font-bold text-primary">{currentStreak} {t('দিন', 'days')}</p>
+                <p className="text-lg font-bold text-primary font-bengali-num">{currentStreak} {t('দিন', 'days')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-1">
