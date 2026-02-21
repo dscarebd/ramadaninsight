@@ -139,20 +139,6 @@ const Settings = () => {
         </CardContent>
       </Card>
 
-      {/* Location Preference */}
-      <Card>
-        <CardContent className="p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-foreground">{t('অবস্থান', 'Location')}</h3>
-          <Separator />
-          <LocationPicker value={location} onChange={handleLocationChange} />
-          {user && (
-            <p className="text-xs text-muted-foreground">
-              {t('আপনার অবস্থান সব ডিভাইসে সংরক্ষিত থাকবে।', 'Your location will be saved across devices.')}
-            </p>
-          )}
-        </CardContent>
-      </Card>
-
       {/* Dark Mode */}
       <Card>
         <CardContent className="p-4 space-y-3">
