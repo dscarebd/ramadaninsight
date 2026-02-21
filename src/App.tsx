@@ -11,6 +11,7 @@ import DuaHadith from "./pages/DuaHadith";
 import SalatTracker from "./pages/SalatTracker";
 import Schedule from "./pages/Schedule";
 import Auth from "./pages/Auth";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/salat" element={<SalatTracker />} />
               <Route path="/schedule" element={<Schedule />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <BottomNav />
