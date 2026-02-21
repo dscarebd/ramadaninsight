@@ -1,39 +1,57 @@
 
-## Align Prayer Times with Bangladesh Islamic Foundation
 
-### Problem
-The app currently uses Aladhan API **Method 1** (University of Islamic Sciences, Karachi) which produces times that don't match the Bangladesh Islamic Foundation's official schedule. The differences are typically a few minutes for Sehri (Imsak) and Iftar (Maghrib).
+## Make the App Feel Like a Native App -- Smooth Transitions Everywhere
 
-### Solution
-Two changes in `src/hooks/usePrayerTimes.ts`:
+### What will change
 
-1. **Switch API method to Method 4** (Umm Al-Qura University, Makkah) which is closer to Bangladesh Islamic Foundation's Fajr angle (18.5 degrees). Additionally, use the `tune` parameter to apply minute-level offsets.
+The app currently "blinks" with a white screen when switching locations or navigating between pages. This plan adds smooth, native-app-like behavior across the entire app.
 
-2. **Apply minute offsets** using the Aladhan API's built-in `tune` parameter:
-   - **Imsak (Sehri):** -2 minutes (Bangladesh Islamic Foundation typically ends Sehri ~2 min earlier)
-   - **Fajr:** 0 (generally aligns well)
-   - **Sunrise:** 0
-   - **Dhuhr:** +2 minutes
-   - **Asr:** +1 minute
-   - **Maghrib (Iftar):** +3 minutes (Bangladesh Islamic Foundation typically sets Iftar ~3 min later than raw calculation)
-   - **Isha:** +1 minute
+### Changes
 
-   The `tune` parameter format is: `Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight`
+**1. Fix Schedule page blink (same issue as Index)**
+- `src/pages/Schedule.tsx`: Use `isFetching` instead of `isLoading` for the loading gate, so old data stays visible while new data loads. Add opacity transition during refetch (same pattern already applied to Index).
+
+**2. Add page transition animations**
+- `src/index.css`: Add a CSS animation for page content to fade-in smoothly on mount.
+- All page components (`Index.tsx`, `Schedule.tsx`, `DuaHadith.tsx`, `SalatTracker.tsx`, `Settings.tsx`): Add `animate-fade-in` class to the root container so each page fades in when navigated to.
+
+**3. Smoother bottom navigation**
+- `src/components/BottomNav.tsx`: Add a subtle scale/color transition on the active tab indicator so switching tabs feels fluid rather than instant.
+
+**4. Smooth countdown timer updates**
+- `src/components/CountdownTimer.tsx`: Add `transition-all` on the number boxes so digit changes don't feel jarring.
+
+**5. Global CSS polish for native feel**
+- `src/index.css`: Add `-webkit-tap-highlight-color: transparent` and `scroll-behavior: smooth` to remove the default blue tap highlight on mobile and enable smooth scrolling. Add `overscroll-behavior: none` to prevent pull-to-refresh bounce.
 
 ### Technical Details
 
-**File: `src/hooks/usePrayerTimes.ts`**
+**`tailwind.config.ts`** -- Add fade-in keyframe:
+```
+"fade-in": {
+  "0%": { opacity: "0", transform: "translateY(6px)" },
+  "100%": { opacity: "1", transform: "translateY(0)" }
+}
+```
+Animation: `"fade-in": "fade-in 0.25s ease-out"`
 
-- Change the API URL from:
-  ```
-  method=1&school=1
-  ```
-  to:
-  ```
-  method=1&school=1&tune=-2,0,0,2,1,3,3,1,0
-  ```
-  The `tune` parameter applies minute offsets to each prayer time directly at the API level, so no client-side time math is needed. We keep Method 1 (Karachi) since its Fajr angle (18 degrees) is closest to Bangladesh's standard, and use `tune` to fine-adjust.
+**`src/index.css`** -- Add native-feel base styles:
+```css
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+```
 
-- Add a comment documenting the offsets and why they exist, referencing Bangladesh Islamic Foundation alignment.
+**`src/pages/Schedule.tsx`** -- Key changes:
+- Destructure `isFetching` from `usePrayerTimes`
+- Change loading gate: `if (isLoading && ramadanDays.length === 0)` (only show spinner on first load)
+- Add transition opacity and `animate-fade-in` class to root div
 
-This is a single-line URL change -- clean and maintainable.
+**`src/components/BottomNav.tsx`** -- Add `transition-all duration-200` to the button and icon for smooth active state changes.
+
+**`src/components/CountdownTimer.tsx`** -- Add `transition-all duration-300` to number display spans.
+
+**All pages** -- Add `animate-fade-in` class to root containers.
+
