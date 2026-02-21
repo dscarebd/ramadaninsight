@@ -3,13 +3,16 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Globe, LogIn, LogOut, User } from 'lucide-react';
+import { Globe, LogIn, LogOut, User, Moon, Sun } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { useTheme } from 'next-themes';
 
 const Settings = () => {
   const { lang, toggleLang, t } = useLanguage();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<{ email: string | null; id: string } | null>(null);
 
   useEffect(() => {
@@ -85,6 +88,28 @@ const Settings = () => {
             <Button variant="outline" size="sm" onClick={toggleLang} className="gap-1.5">
               {lang === 'bn' ? '🇧🇩 বাংলা → EN' : '🇬🇧 English → বাং'}
             </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Dark Mode */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <h3 className="text-sm font-semibold text-foreground">{t('থিম', 'Theme')}</h3>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {theme === 'dark' ? (
+                <Moon className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Sun className="h-4 w-4 text-muted-foreground" />
+              )}
+              <span className="text-sm">{t('ডার্ক মোড', 'Dark Mode')}</span>
+            </div>
+            <Switch
+              checked={theme === 'dark'}
+              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+            />
           </div>
         </CardContent>
       </Card>
