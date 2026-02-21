@@ -36,6 +36,48 @@ export const ramadanDuas = [
     meaningBn: 'হে আল্লাহ! তুমি ক্ষমাশীল, তুমি ক্ষমা করতে ভালোবাস, অতএব আমাকে ক্ষমা করো।',
     meaningEn: 'O Allah! You are Forgiving, You love to forgive, so forgive me.',
   },
+  {
+    titleBn: 'তাকওয়ার দোয়া',
+    titleEn: 'Dua for Taqwa',
+    arabic: 'اَللّٰهُمَّ اِنِّىْ اَسْأَلُكَ الْهُدٰى وَالتُّقٰى وَالْعَفَافَ وَالْغِنٰى',
+    meaningBn: 'হে আল্লাহ! আমি তোমার কাছে হেদায়েত, তাকওয়া, পবিত্রতা ও অভাবমুক্তি চাই।',
+    meaningEn: 'O Allah! I ask You for guidance, piety, chastity and self-sufficiency.',
+  },
+  {
+    titleBn: 'রহমতের দোয়া',
+    titleEn: 'Dua for Mercy',
+    arabic: 'رَبِّ اغْفِرْ وَارْحَمْ وَأَنتَ خَيْرُ الرَّاحِمِينَ',
+    meaningBn: 'হে আমার রব! ক্ষমা কর ও রহম কর, তুমিই সর্বশ্রেষ্ঠ দয়ালু।',
+    meaningEn: 'My Lord! Forgive and have mercy, for You are the best of those who show mercy.',
+  },
+  {
+    titleBn: 'জান্নাত লাভের দোয়া',
+    titleEn: 'Dua for Jannah',
+    arabic: 'اَللّٰهُمَّ اِنِّىْ اَسْأَلُكَ الْجَنَّةَ وَاَعُوْذُ بِكَ مِنَ النَّارِ',
+    meaningBn: 'হে আল্লাহ! আমি তোমার কাছে জান্নাত চাই এবং জাহান্নাম থেকে পানাহ চাই।',
+    meaningEn: 'O Allah! I ask You for Paradise and seek refuge in You from the Fire.',
+  },
+  {
+    titleBn: 'ধৈর্যের দোয়া',
+    titleEn: 'Dua for Patience',
+    arabic: 'رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَتَوَفَّنَا مُسْلِمِينَ',
+    meaningBn: 'হে আমাদের রব! আমাদের ওপর ধৈর্য ঢেলে দাও এবং মুসলিম হিসেবে আমাদের মৃত্যু দাও।',
+    meaningEn: 'Our Lord! Pour upon us patience and let us die as Muslims.',
+  },
+  {
+    titleBn: 'রিযিকের দোয়া',
+    titleEn: 'Dua for Sustenance',
+    arabic: 'اَللّٰهُمَّ اكْفِنِيْ بِحَلَالِكَ عَنْ حَرَامِكَ وَأَغْنِنِيْ بِفَضْلِكَ عَمَّنْ سِوَاكَ',
+    meaningBn: 'হে আল্লাহ! তোমার হালাল দিয়ে আমাকে হারাম থেকে বাঁচাও এবং তোমার অনুগ্রহে আমাকে অন্যদের থেকে অমুখাপেক্ষী কর।',
+    meaningEn: 'O Allah! Suffice me with what You have made lawful over what You have made unlawful, and enrich me by Your favor over all others.',
+  },
+  {
+    titleBn: 'দোয়া কবুলের দোয়া',
+    titleEn: 'Dua for Acceptance',
+    arabic: 'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ',
+    meaningBn: 'হে আমাদের রব! আমাদের থেকে কবুল করো, নিশ্চয়ই তুমি সর্বশ্রোতা ও সর্বজ্ঞানী।',
+    meaningEn: 'Our Lord! Accept from us. Indeed, You are the All-Hearing, the All-Knowing.',
+  },
 ];
 
 export const dailyHadiths = [
