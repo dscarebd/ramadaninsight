@@ -1,80 +1,39 @@
 
+## Align Prayer Times with Bangladesh Islamic Foundation
 
-## Hierarchical Location Picker: Division > Zilla > Upazila
+### Problem
+The app currently uses Aladhan API **Method 1** (University of Islamic Sciences, Karachi) which produces times that don't match the Bangladesh Islamic Foundation's official schedule. The differences are typically a few minutes for Sehri (Imsak) and Iftar (Maghrib).
 
-### Overview
-Replace the current flat district dropdown with a 3-step cascading location picker covering all of Bangladesh's administrative divisions:
-- **8 Divisions** (Dhaka, Chittagong, Rajshahi, Khulna, Sylhet, Barisal, Rangpur, Mymensingh)
-- **64 Zillas** (districts under each division)
-- **495 Upazilas** (sub-districts under each zilla)
+### Solution
+Two changes in `src/hooks/usePrayerTimes.ts`:
 
-When a user selects a division, the zilla dropdown appears. After selecting a zilla, the upazila dropdown appears. Prayer times are calculated using the selected upazila's latitude/longitude for maximum accuracy.
+1. **Switch API method to Method 4** (Umm Al-Qura University, Makkah) which is closer to Bangladesh Islamic Foundation's Fajr angle (18.5 degrees). Additionally, use the `tune` parameter to apply minute-level offsets.
 
-### What Changes
+2. **Apply minute offsets** using the Aladhan API's built-in `tune` parameter:
+   - **Imsak (Sehri):** -2 minutes (Bangladesh Islamic Foundation typically ends Sehri ~2 min earlier)
+   - **Fajr:** 0 (generally aligns well)
+   - **Sunrise:** 0
+   - **Dhuhr:** +2 minutes
+   - **Asr:** +1 minute
+   - **Maghrib (Iftar):** +3 minutes (Bangladesh Islamic Foundation typically sets Iftar ~3 min later than raw calculation)
+   - **Isha:** +1 minute
 
-1. **New data file: `src/data/locations.ts`**
-   - A hierarchical data structure containing all 8 divisions, 64 zillas, and 495 upazilas
-   - Each entry includes: id, Bengali name, English name, and lat/lng coordinates
-   - Structure: divisions array, each with a `zillas` array, each zilla with an `upazilas` array
-
-2. **Rewrite `src/components/DistrictSelector.tsx` to `LocationPicker`**
-   - Three cascading Select dropdowns: Division > Zilla > Upazila
-   - Selecting a division filters and shows its zillas
-   - Selecting a zilla filters and shows its upazilas
-   - The component outputs the final lat/lng from the most specific selection
-   - Saved selection persisted in localStorage
-
-3. **Update `src/hooks/usePrayerTimes.ts`**
-   - Instead of looking up a district ID from the flat list, accept lat/lng directly
-   - The API call already uses lat/lng, so this is a minor refactor
-
-4. **Update `src/pages/Index.tsx` and `src/pages/Schedule.tsx`**
-   - Replace the district state with division/zilla/upazila state
-   - Pass lat/lng from the selected location to usePrayerTimes
+   The `tune` parameter format is: `Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight`
 
 ### Technical Details
 
-**Data structure:**
-```typescript
-interface Upazila {
-  id: string;
-  nameBn: string;
-  nameEn: string;
-  lat: number;
-  lng: number;
-}
+**File: `src/hooks/usePrayerTimes.ts`**
 
-interface Zilla {
-  id: string;
-  nameBn: string;
-  nameEn: string;
-  lat: number;
-  lng: number;
-  upazilas: Upazila[];
-}
+- Change the API URL from:
+  ```
+  method=1&school=1
+  ```
+  to:
+  ```
+  method=1&school=1&tune=-2,0,0,2,1,3,3,1,0
+  ```
+  The `tune` parameter applies minute offsets to each prayer time directly at the API level, so no client-side time math is needed. We keep Method 1 (Karachi) since its Fajr angle (18 degrees) is closest to Bangladesh's standard, and use `tune` to fine-adjust.
 
-interface Division {
-  id: string;
-  nameBn: string;
-  nameEn: string;
-  zillas: Zilla[];
-}
-```
+- Add a comment documenting the offsets and why they exist, referencing Bangladesh Islamic Foundation alignment.
 
-**LocationPicker component behavior:**
-- Step 1: Show division dropdown (always visible)
-- Step 2: Show zilla dropdown (appears after division selected)
-- Step 3: Show upazila dropdown (appears after zilla selected)
-- Changing a parent resets child selections
-- Prayer times use upazila coordinates (most accurate), falling back to zilla, then division center
-
-**localStorage persistence:**
-- Saves `{ division, zilla, upazila }` object so users don't re-select each visit
-
-**usePrayerTimes refactor:**
-- Change signature from `usePrayerTimes(districtId)` to `usePrayerTimes(lat, lng)`
-- Remove dependency on the old `districts` array for coordinate lookup
-- The Aladhan API call stays the same, just uses the passed coordinates
-
-**Note:** The locations data file will be large (~495 entries with coordinates). All data will be bundled client-side for instant filtering without API calls.
-
+This is a single-line URL change -- clean and maintainable.
