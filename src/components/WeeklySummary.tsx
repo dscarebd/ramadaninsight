@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatLocalDate } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -28,7 +29,7 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   const [loading, setLoading] = useState(true);
 
   const today = new Date();
-  const dismissKey = `weekly_summary_dismissed_${today.toISOString().split('T')[0]}`;
+  const dismissKey = `weekly_summary_dismissed_${formatLocalDate(today)}`;
 
   useEffect(() => {
     if (localStorage.getItem(dismissKey)) {
@@ -43,8 +44,8 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
     const start = new Date(end);
     start.setDate(start.getDate() - 6); // 7 days ending yesterday
 
-    const startStr = start.toISOString().split('T')[0];
-    const endStr = end.toISOString().split('T')[0];
+    const startStr = formatLocalDate(start);
+    const endStr = formatLocalDate(end);
 
     supabase
       .from('salat_tracking')

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { formatLocalDate } from '@/lib/utils';
 
 const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
@@ -65,7 +66,7 @@ export const usePrayerStreak = (userId: string | null) => {
 
         const d = new Date(startDate);
         while (d <= today) {
-          const dateStr = d.toISOString().split('T')[0];
+          const dateStr = formatLocalDate(d);
           if (perfectDates.has(dateStr)) {
             streak++;
             if (streak > longest) longest = streak;
