@@ -106,7 +106,7 @@ const DailyQuote = () => {
       <CardContent className="p-4 space-y-2">
         <div className="flex items-center gap-2">
           <BookOpen className="h-4 w-4 text-primary" />
-          <h3 className="text-xs font-semibold text-primary">{t('রমজান ইনসাইট', 'Ramadan Insight')}</h3>
+          <h3 className="text-xs font-semibold text-primary">{t('আজকের বাণী', "Today's Wisdom")}</h3>
         </div>
         <p className="text-right text-base leading-loose font-arabic text-foreground" dir="rtl">
           {todayQuote.arabic}
