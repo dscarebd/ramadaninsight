@@ -36,9 +36,10 @@ const Index = () => {
   const lat = coords?.lat || 23.8103;
   const lng = coords?.lng || 90.4125;
 
-  const { ramadanDays, todayData, todayIndex, isLoading } = usePrayerTimes(lat, lng);
+  const { ramadanDays, todayData, todayIndex, isLoading, isFetching } = usePrayerTimes(lat, lng);
 
-  if (isLoading) {
+  // Only show full-page spinner on very first load (no data yet)
+  if (isLoading && !todayData) {
     return (
       <div className="flex min-h-screen items-center justify-center pb-16">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -55,9 +56,15 @@ const Index = () => {
   const isFasting = currentHM >= sehriTime && currentHM < iftarTime;
 
   return (
-    <div className="min-h-screen pb-20 px-4 pt-4 space-y-4">
+    <div className={`min-h-screen pb-20 px-4 pt-4 space-y-4 transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
       {/* Location Picker */}
       <LocationPicker value={location} onChange={setLocation} />
+      {isFetching && (
+        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          <span>{t('আপডেট হচ্ছে...', 'Updating...')}</span>
+        </div>
+      )}
 
       {/* Status Banner */}
       <div className={`rounded-xl p-3 text-center font-semibold text-sm ${isFasting ? 'bg-primary/10 text-primary' : 'bg-accent/20 text-accent-foreground'}`}>
