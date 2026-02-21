@@ -20,29 +20,35 @@ const StreakBadge = ({ userId }: StreakBadgeProps) => {
   const { t } = useLanguage();
   const { currentStreak, longestStreak, loading } = usePrayerStreak(userId);
 
-  if (loading || currentStreak < 3) return null;
+  if (loading) return null;
+  if (currentStreak === 0 && longestStreak === 0) return null;
 
-  // Find the highest milestone achieved
+  // Find the highest milestone achieved (or null if streak < 3)
   const achieved = milestones.find(m => currentStreak >= m.days);
-  if (!achieved) return null;
 
   // Determine next milestone
-  const currentIdx = milestones.indexOf(achieved);
-  const nextMilestone = currentIdx > 0 ? milestones[currentIdx - 1] : null;
+  const currentIdx = achieved ? milestones.indexOf(achieved) : milestones.length - 1;
+  const nextMilestone = achieved && currentIdx > 0 ? milestones[currentIdx - 1] : (!achieved ? milestones[milestones.length - 1] : null);
   const daysToNext = nextMilestone ? nextMilestone.days - currentStreak : null;
 
+  const gradientClass = achieved ? achieved.color : 'from-muted/50 to-muted/30 border-border';
+
   return (
-    <Card className={`bg-gradient-to-br ${achieved.color} border`}>
+    <Card className={`bg-gradient-to-br ${gradientClass} border`}>
       <CardContent className="p-4">
         <div className="text-center space-y-1.5">
-          <p className="text-3xl">{achieved.emoji}</p>
+          <p className="text-3xl">{achieved ? achieved.emoji : '🕌'}</p>
           <p className="text-base font-bold text-primary">
-            {currentStreak} {t('দিনের স্ট্রিক!', 'Day Streak!')}
+            {currentStreak > 0
+              ? `${currentStreak} ${t('দিনের স্ট্রিক!', 'Day Streak!')}`
+              : t('আজকে শুরু করুন!', 'Start today!')}
           </p>
-          <p className="text-sm text-foreground/80">
-            {t(achieved.bn, achieved.en)}
-          </p>
-          {longestStreak > currentStreak && (
+          {achieved && (
+            <p className="text-sm text-foreground/80">
+              {t(achieved.bn, achieved.en)}
+            </p>
+          )}
+          {longestStreak > currentStreak && longestStreak > 0 && (
             <p className="text-xs text-muted-foreground pt-1">
               {t(
                 `🏅 সর্বোচ্চ স্ট্রিক: ${longestStreak} দিন`,
@@ -50,7 +56,7 @@ const StreakBadge = ({ userId }: StreakBadgeProps) => {
               )}
             </p>
           )}
-          {nextMilestone && daysToNext && (
+          {nextMilestone && daysToNext && daysToNext > 0 && (
             <p className="text-xs text-muted-foreground pt-1">
               {t(
                 `পরবর্তী ব্যাজ: ${nextMilestone.emoji} ${nextMilestone.days} দিন (আর ${daysToNext} দিন)`,
