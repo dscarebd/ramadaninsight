@@ -13,7 +13,7 @@ export default {
       },
     },
     fontFamily: {
-      bengali: ['"Noto Sans Bengali"', 'sans-serif'],
+      bengali: ['"Anek Bangla"', 'sans-serif'],
     },
     extend: {
       colors: {
