@@ -133,12 +133,6 @@ const SalatTracker = () => {
             </Button>
           </div>
 
-          {!user && (
-            <p className="text-xs text-muted-foreground bg-muted rounded-lg p-2">
-              {t('⚠️ লগইন করলে আপনার ডেটা সব ডিভাইসে সংরক্ষিত থাকবে।', '⚠️ Log in to save your progress across devices.')}
-            </p>
-          )}
-
           <p className="text-xs text-destructive font-medium">
             {t('⚠️ নামাজ না পড়ে টিক দিবেন না!', "⚠️ Don't check without praying!")}
           </p>
@@ -214,6 +208,12 @@ const SalatTracker = () => {
                 </p>
               </CardContent>
             </Card>
+          )}
+
+          {!user && (
+            <p className="text-xs text-muted-foreground bg-muted rounded-lg p-2">
+              {t('⚠️ লগইন করলে আপনার ডেটা সব ডিভাইসে সংরক্ষিত থাকবে।', '⚠️ Log in to save your progress across devices.')}
+            </p>
           )}
         </TabsContent>
 
