@@ -15,6 +15,7 @@ export default {
     fontFamily: {
       bengali: ['"Anek Bangla"', 'sans-serif'],
       arabic: ['"Amiri"', 'serif'],
+      'bengali-num': ['"Hind Siliguri"', 'sans-serif'],
     },
     extend: {
       colors: {
