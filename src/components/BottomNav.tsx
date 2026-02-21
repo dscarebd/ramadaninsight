@@ -1,6 +1,6 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, CheckSquare, Calendar } from 'lucide-react';
+import { Home, BookOpen, CheckSquare, Calendar, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const BottomNav = () => {
@@ -13,6 +13,7 @@ const BottomNav = () => {
     { path: '/dua', icon: BookOpen, labelBn: 'দোয়া', labelEn: 'Dua' },
     { path: '/salat', icon: CheckSquare, labelBn: 'নামাজ', labelEn: 'Salat' },
     { path: '/schedule', icon: Calendar, labelBn: 'সময়সূচী', labelEn: 'Schedule' },
+    { path: '/settings', icon: Settings, labelBn: 'সেটিংস', labelEn: 'Settings' },
   ];
 
   return (
