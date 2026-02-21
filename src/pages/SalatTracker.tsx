@@ -14,6 +14,7 @@ import WeeklySummary from '@/components/WeeklySummary';
 import StreakBadge from '@/components/StreakBadge';
 import DailyPrayerReminder from '@/components/DailyPrayerReminder';
 import { usePrayerReminder } from '@/hooks/usePrayerReminder';
+import { useSalatSync } from '@/hooks/useSalatSync';
 
 const fiveWaqt = [
   { key: 'fajr', bn: 'ফজর', en: 'Fajr' },
@@ -46,6 +47,9 @@ const SalatTracker = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     () => localStorage.getItem('prayer_notifications') === 'true'
   );
+
+  // Auto-sync localStorage ↔ cloud when logged in
+  useSalatSync(user);
 
   const { permissionState, requestPermission } = usePrayerReminder(checked, notificationsEnabled);
 
