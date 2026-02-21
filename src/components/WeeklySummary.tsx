@@ -6,6 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { CalendarDays, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
 import { getLocalSalatDaysInRange } from '@/lib/localSalatStorage';
 import { useToast } from '@/hooks/use-toast';
 
@@ -26,19 +28,31 @@ interface WeeklySummaryProps {
 
 const QAZA_KEY_PREFIX = 'qaza_weekly_';
 
+const prayerNamesBn: Record<string, string> = {
+  fajr: 'ফজর', dhuhr: 'যোহর', asr: 'আসর', maghrib: 'মাগরিব', isha: 'ইশা',
+};
+
+const formatDateShort = (dateStr: string, lang: string) => {
+  const d = new Date(dateStr + 'T00:00:00');
+  const day = d.getDate();
+  const monthEn = d.toLocaleString('en', { month: 'short' });
+  const monthBn = d.toLocaleString('bn', { month: 'short' });
+  return lang === 'bn' ? `${day} ${monthBn}` : `${day} ${monthEn}`;
+};
+
 const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const { toast } = useToast();
   const [data, setData] = useState<DayRow[]>([]);
   const [dismissed, setDismissed] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Keys are "prayer_date" e.g. "fajr_2026-02-17"
   const [qazaDone, setQazaDone] = useState<Record<string, boolean>>({});
 
   const today = new Date();
   const dismissKey = `weekly_summary_dismissed_${formatLocalDate(today)}`;
   const qazaStorageKey = `${QAZA_KEY_PREFIX}${formatLocalDate(today)}`;
 
-  // Load qaza state from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(qazaStorageKey);
     if (saved) {
@@ -85,20 +99,28 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
     setDismissed(true);
   };
 
-  const toggleQaza = (prayerKey: string) => {
-    const updated = { ...qazaDone, [prayerKey]: !qazaDone[prayerKey] };
+  const toggleQazaDate = (prayer: string, date: string) => {
+    const key = `${prayer}_${date}`;
+    const wasDone = qazaDone[key];
+    const updated = { ...qazaDone, [key]: !wasDone };
     setQazaDone(updated);
     localStorage.setItem(qazaStorageKey, JSON.stringify(updated));
-    
-    if (!qazaDone[prayerKey]) {
+
+    if (!wasDone) {
       toast({
         title: t('কাযা আদায় করেছেন!', 'Qaza completed!'),
-        description: t('মাশাআল্লাহ! আল্লাহ কবুল করুন।', 'MashaAllah! May Allah accept it.'),
+        description: t(
+          `${prayerNamesBn[prayer]} - ${formatDateShort(date, 'bn')}`,
+          `${prayer.charAt(0).toUpperCase() + prayer.slice(1)} - ${formatDateShort(date, 'en')}`
+        ),
       });
     } else {
       toast({
         title: t('কাযা বাতিল করা হয়েছে', 'Qaza undone'),
-        description: t('কাযা নামাজ এখনো বাকি আছে।', 'Qaza prayer is still pending.'),
+        description: t(
+          `${prayerNamesBn[prayer]} - ${formatDateShort(date, 'bn')}`,
+          `${prayer.charAt(0).toUpperCase() + prayer.slice(1)} - ${formatDateShort(date, 'en')}`
+        ),
         variant: 'destructive',
       });
     }
@@ -112,19 +134,19 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   const perfectDays = data.filter(d => fiveWaqt.every(p => d[p])).length;
   const missedPrayers = maxPrayers - totalPrayers;
 
-  const missedByPrayer = fiveWaqt.map(p => ({
-    key: p,
-    missed: 7 - data.filter(d => d[p]).length,
-  })).filter(p => p.missed > 0);
-
-  const prayerNamesBn: Record<string, string> = {
-    fajr: 'ফজর', dhuhr: 'যোহর', asr: 'আসর', maghrib: 'মাগরিব', isha: 'ইশা',
-  };
+  // Compute missed dates per prayer
+  const missedByPrayer = fiveWaqt.map(p => {
+    const missedDates = data.filter(d => !d[p]).map(d => d.date);
+    // Also count days with no data row (7 days minus data rows)
+    return { key: p, missedDates, total: missedDates.length };
+  }).filter(p => p.total > 0);
 
   if (pct === 100) return null;
 
-  const qazaCompleted = missedByPrayer.filter(p => qazaDone[p.key]).length;
-  const totalMissedTypes = missedByPrayer.length;
+  // Count total individual qaza completions
+  const totalMissedDates = missedByPrayer.reduce((s, p) => s + p.total, 0);
+  const totalQazaCompleted = missedByPrayer.reduce((s, p) =>
+    s + p.missedDates.filter(d => qazaDone[`${p.key}_${d}`]).length, 0);
 
   return (
     <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
@@ -161,29 +183,67 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
         {missedByPrayer.length > 0 && (
           <div className="pt-1 border-t border-border">
             <p className="text-xs text-muted-foreground mb-1">
-              {t('সবচেয়ে বেশি মিস (ট্যাপ করে কাযা আপডেট করুন):', 'Most missed (tap to mark qaza):')}
+              {t('মিসড নামাজ (ট্যাপ করে কাযা আপডেট করুন):', 'Missed prayers (tap to mark qaza):')}
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {missedByPrayer.sort((a, b) => b.missed - a.missed).map(p => (
-                <button
-                  key={p.key}
-                  onClick={() => toggleQaza(p.key)}
-                  className={`text-xs px-2.5 py-1 rounded-full transition-all duration-300 flex items-center gap-1 active:scale-95 ${
-                    qazaDone[p.key]
-                      ? 'bg-primary/15 text-primary border border-primary/30'
-                      : 'bg-destructive/10 text-destructive border border-destructive/20'
-                  }`}
-                >
-                  {qazaDone[p.key] && <Check className="h-3 w-3" />}
-                  {t(prayerNamesBn[p.key], p.key.charAt(0).toUpperCase() + p.key.slice(1))} ({p.missed})
-                </button>
-              ))}
+              {missedByPrayer.sort((a, b) => b.total - a.total).map(p => {
+                const doneCount = p.missedDates.filter(d => qazaDone[`${p.key}_${d}`]).length;
+                const allDone = doneCount === p.total;
+                const partial = doneCount > 0 && !allDone;
+
+                return (
+                  <Popover key={p.key}>
+                    <PopoverTrigger asChild>
+                      <button
+                        className={`text-xs px-2.5 py-1 rounded-full transition-all duration-300 flex items-center gap-1 active:scale-95 ${
+                          allDone
+                            ? 'bg-primary/15 text-primary border border-primary/30'
+                            : partial
+                              ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30'
+                              : 'bg-destructive/10 text-destructive border border-destructive/20'
+                        }`}
+                      >
+                        {allDone && <Check className="h-3 w-3" />}
+                        {t(prayerNamesBn[p.key], p.key.charAt(0).toUpperCase() + p.key.slice(1))}
+                        {' '}({doneCount}/{p.total})
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-56 p-3 z-50 bg-popover" align="start">
+                      <p className="text-xs font-semibold mb-2">
+                        {t(
+                          `${prayerNamesBn[p.key]} কাযা`,
+                          `${p.key.charAt(0).toUpperCase() + p.key.slice(1)} Qaza`
+                        )}
+                      </p>
+                      <div className="space-y-2">
+                        {p.missedDates.map(date => {
+                          const qKey = `${p.key}_${date}`;
+                          const done = !!qazaDone[qKey];
+                          return (
+                            <label key={date} className="flex items-center gap-2 cursor-pointer">
+                              <Checkbox
+                                checked={done}
+                                onCheckedChange={() => toggleQazaDate(p.key, date)}
+                                className="h-4 w-4"
+                              />
+                              <span className={`text-xs ${done ? 'text-primary line-through' : 'text-foreground'}`}>
+                                {formatDateShort(date, lang)}
+                              </span>
+                              {done && <Check className="h-3 w-3 text-primary" />}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                );
+              })}
             </div>
-            {qazaCompleted > 0 && (
+            {totalQazaCompleted > 0 && (
               <p className="text-xs text-primary mt-2 font-medium">
                 {t(
-                  `✅ ${qazaCompleted}/${totalMissedTypes} কাযা আদায় সম্পন্ন`,
-                  `✅ ${qazaCompleted}/${totalMissedTypes} qaza completed`
+                  `✅ ${totalQazaCompleted}/${totalMissedDates} কাযা আদায় সম্পন্ন`,
+                  `✅ ${totalQazaCompleted}/${totalMissedDates} qaza completed`
                 )}
               </p>
             )}
