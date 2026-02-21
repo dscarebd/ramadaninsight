@@ -3,9 +3,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import SalatHistory from '@/components/SalatHistory';
 
 const fiveWaqt = [
   { key: 'fajr', bn: 'ফজর', en: 'Fajr' },
@@ -109,96 +111,109 @@ const SalatTracker = () => {
 
   return (
     <div className="min-h-screen pb-20 px-4 pt-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-primary">{t('৫ ওয়াক্ত নামাজ', '5 Waqt Salat')}</h2>
-        <Button variant="ghost" size="sm" onClick={resetAll} className="text-muted-foreground">
-          <RotateCcw className="h-4 w-4 mr-1" />
-          {t('রিসেট', 'Reset')}
-        </Button>
-      </div>
+      <Tabs defaultValue="today" className="w-full">
+        <TabsList className="w-full">
+          <TabsTrigger value="today" className="flex-1">{t('আজকে', 'Today')}</TabsTrigger>
+          <TabsTrigger value="history" className="flex-1">{t('ইতিহাস', 'History')}</TabsTrigger>
+        </TabsList>
 
-      {!user && (
-        <p className="text-xs text-muted-foreground bg-muted rounded-lg p-2">
-          {t('⚠️ লগইন করলে আপনার ডেটা সব ডিভাইসে সংরক্ষিত থাকবে।', '⚠️ Log in to save your progress across devices.')}
-        </p>
-      )}
+        <TabsContent value="today" className="space-y-4 mt-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-primary">{t('৫ ওয়াক্ত নামাজ', '5 Waqt Salat')}</h2>
+            <Button variant="ghost" size="sm" onClick={resetAll} className="text-muted-foreground">
+              <RotateCcw className="h-4 w-4 mr-1" />
+              {t('রিসেট', 'Reset')}
+            </Button>
+          </div>
 
-      <p className="text-xs text-destructive font-medium">
-        {t('⚠️ নামাজ না পড়ে টিক দিবেন না!', "⚠️ Don't check without praying!")}
-      </p>
-
-      {/* 5 Waqt Card */}
-      <Card>
-        <CardContent className="p-4 space-y-3">
-          {fiveWaqt.map(p => (
-            <label key={p.key} className="flex items-center gap-3 cursor-pointer">
-              <Checkbox
-                checked={checked[p.key]}
-                onCheckedChange={(val) => updatePrayer(p.key, !!val)}
-                className="h-5 w-5"
-              />
-              <span className={`text-sm font-medium ${checked[p.key] ? 'text-primary line-through' : ''}`}>
-                {lang === 'bn' ? p.bn : p.en}
-              </span>
-              {checked[p.key] && <span className="text-primary text-xs">✓</span>}
-            </label>
-          ))}
-        </CardContent>
-      </Card>
-
-      <div className="text-center text-sm text-muted-foreground">
-        {t(`${fiveCount}/৫ ওয়াক্ত সম্পন্ন`, `${fiveCount}/5 prayers completed`)}
-      </div>
-
-      {/* Taraweeh / Tahajjud Card */}
-      <Card className="border-primary/30">
-        <CardContent className="p-4 space-y-3">
-          <h3 className="font-bold text-primary text-sm">
-            {ramadan
-              ? t('🌙 তারাবীহ ও তাহাজ্জুদ', '🌙 Taraweeh & Tahajjud')
-              : t('🌙 তাহাজ্জুদ', '🌙 Tahajjud')}
-          </h3>
-          {ramadan && (
-            <label className="flex items-center gap-3 cursor-pointer">
-              <Checkbox
-                checked={checked.taraweeh}
-                onCheckedChange={(val) => updatePrayer('taraweeh', !!val)}
-                className="h-5 w-5"
-              />
-              <span className={`text-sm font-medium ${checked.taraweeh ? 'text-primary line-through' : ''}`}>
-                {t('তারাবীহ', 'Taraweeh')}
-              </span>
-              {checked.taraweeh && <span className="text-primary text-xs">✓</span>}
-            </label>
+          {!user && (
+            <p className="text-xs text-muted-foreground bg-muted rounded-lg p-2">
+              {t('⚠️ লগইন করলে আপনার ডেটা সব ডিভাইসে সংরক্ষিত থাকবে।', '⚠️ Log in to save your progress across devices.')}
+            </p>
           )}
-          <label className="flex items-center gap-3 cursor-pointer">
-            <Checkbox
-              checked={checked.tahajjud}
-              onCheckedChange={(val) => updatePrayer('tahajjud', !!val)}
-              className="h-5 w-5"
-            />
-            <span className={`text-sm font-medium ${checked.tahajjud ? 'text-primary line-through' : ''}`}>
-              {t('তাহাজ্জুদ', 'Tahajjud')}
-            </span>
-            {checked.tahajjud && <span className="text-primary text-xs">✓</span>}
-          </label>
-        </CardContent>
-      </Card>
 
-      {/* Celebration */}
-      {showCelebration && (
-        <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30">
-          <CardContent className="p-6 text-center">
-            <p className="text-4xl mb-2">🎉</p>
-            <p className="text-xl font-bold text-primary">
-              {t('মাশাআল্লাহ!', 'MashaAllah!')}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {t('আজকের সব নামাজ আদায় করেছেন!', "You've completed all prayers today!")}
-            </p>
-          </CardContent>
-        </Card>
-      )}
+          <p className="text-xs text-destructive font-medium">
+            {t('⚠️ নামাজ না পড়ে টিক দিবেন না!', "⚠️ Don't check without praying!")}
+          </p>
+
+          {/* 5 Waqt Card */}
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              {fiveWaqt.map(p => (
+                <label key={p.key} className="flex items-center gap-3 cursor-pointer">
+                  <Checkbox
+                    checked={checked[p.key]}
+                    onCheckedChange={(val) => updatePrayer(p.key, !!val)}
+                    className="h-5 w-5"
+                  />
+                  <span className={`text-sm font-medium ${checked[p.key] ? 'text-primary line-through' : ''}`}>
+                    {lang === 'bn' ? p.bn : p.en}
+                  </span>
+                  {checked[p.key] && <span className="text-primary text-xs">✓</span>}
+                </label>
+              ))}
+            </CardContent>
+          </Card>
+
+          <div className="text-center text-sm text-muted-foreground">
+            {t(`${fiveCount}/৫ ওয়াক্ত সম্পন্ন`, `${fiveCount}/5 prayers completed`)}
+          </div>
+
+          {/* Taraweeh / Tahajjud Card */}
+          <Card className="border-primary/30">
+            <CardContent className="p-4 space-y-3">
+              <h3 className="font-bold text-primary text-sm">
+                {ramadan
+                  ? t('🌙 তারাবীহ ও তাহাজ্জুদ', '🌙 Taraweeh & Tahajjud')
+                  : t('🌙 তাহাজ্জুদ', '🌙 Tahajjud')}
+              </h3>
+              {ramadan && (
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <Checkbox
+                    checked={checked.taraweeh}
+                    onCheckedChange={(val) => updatePrayer('taraweeh', !!val)}
+                    className="h-5 w-5"
+                  />
+                  <span className={`text-sm font-medium ${checked.taraweeh ? 'text-primary line-through' : ''}`}>
+                    {t('তারাবীহ', 'Taraweeh')}
+                  </span>
+                  {checked.taraweeh && <span className="text-primary text-xs">✓</span>}
+                </label>
+              )}
+              <label className="flex items-center gap-3 cursor-pointer">
+                <Checkbox
+                  checked={checked.tahajjud}
+                  onCheckedChange={(val) => updatePrayer('tahajjud', !!val)}
+                  className="h-5 w-5"
+                />
+                <span className={`text-sm font-medium ${checked.tahajjud ? 'text-primary line-through' : ''}`}>
+                  {t('তাহাজ্জুদ', 'Tahajjud')}
+                </span>
+                {checked.tahajjud && <span className="text-primary text-xs">✓</span>}
+              </label>
+            </CardContent>
+          </Card>
+
+          {/* Celebration */}
+          {showCelebration && (
+            <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl mb-2">🎉</p>
+                <p className="text-xl font-bold text-primary">
+                  {t('মাশাআল্লাহ!', 'MashaAllah!')}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {t('আজকের সব নামাজ আদায় করেছেন!', "You've completed all prayers today!")}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-4">
+          <SalatHistory userId={user} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
