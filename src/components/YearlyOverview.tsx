@@ -4,8 +4,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { usePrayerStreak } from '@/hooks/usePrayerStreak';
 
 const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
@@ -33,6 +34,7 @@ const YearlyOverview = ({ userId }: YearlyOverviewProps) => {
   const [year, setYear] = useState(now.getFullYear());
   const [data, setData] = useState<DayData[]>([]);
   const [loading, setLoading] = useState(false);
+  const { currentStreak, longestStreak } = usePrayerStreak(userId);
 
   const isCurrentYear = year === now.getFullYear();
 
@@ -106,6 +108,28 @@ const YearlyOverview = ({ userId }: YearlyOverviewProps) => {
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
+
+      {/* Streak Card */}
+      <Card className="border-primary/30">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 flex-1">
+              <Flame className="h-5 w-5 text-orange-500" />
+              <div>
+                <p className="text-xs text-muted-foreground">{t('বর্তমান স্ট্রিক', 'Current Streak')}</p>
+                <p className="text-lg font-bold text-primary">{currentStreak} {t('দিন', 'days')}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-1">
+              <Flame className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-xs text-muted-foreground">{t('সর্বোচ্চ স্ট্রিক', 'Best Streak')}</p>
+                <p className="text-lg font-bold">{longestStreak} {t('দিন', 'days')}</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Yearly Stats */}
       <Card>
