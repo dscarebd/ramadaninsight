@@ -3,19 +3,29 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Globe, LogIn, LogOut, User, Moon, Sun, MapPin } from 'lucide-react';
+import { Globe, LogIn, LogOut, User, Moon, Sun } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from 'next-themes';
-import DistrictSelector from '@/components/DistrictSelector';
+import LocationPicker from '@/components/DistrictSelector';
+
+const defaultLocation = { division: 'dhaka', zilla: 'dhaka', upazila: 'savar' };
+
+const loadLocation = () => {
+  try {
+    const stored = localStorage.getItem('location');
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return defaultLocation;
+};
 
 const Settings = () => {
   const { lang, toggleLang, t } = useLanguage();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<{ email: string | null; id: string } | null>(null);
-  const [district, setDistrict] = useState(() => localStorage.getItem('district') || 'dhaka');
+  const [location, setLocation] = useState(loadLocation);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -33,7 +43,7 @@ const Settings = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Load district from DB for logged-in users
+  // Load location from DB for logged-in users
   useEffect(() => {
     if (!user) return;
     supabase
@@ -43,19 +53,24 @@ const Settings = () => {
       .maybeSingle()
       .then(({ data }) => {
         if (data?.district_preference) {
-          setDistrict(data.district_preference);
-          localStorage.setItem('district', data.district_preference);
+          try {
+            const parsed = JSON.parse(data.district_preference);
+            setLocation(parsed);
+            localStorage.setItem('location', JSON.stringify(parsed));
+          } catch {
+            // Legacy string format, ignore
+          }
         }
       });
   }, [user]);
 
-  const handleDistrictChange = async (val: string) => {
-    setDistrict(val);
-    localStorage.setItem('district', val);
+  const handleLocationChange = async (val: { division: string; zilla: string; upazila: string }) => {
+    setLocation(val);
+    localStorage.setItem('location', JSON.stringify(val));
     if (user) {
       await supabase
         .from('profiles')
-        .update({ district_preference: val })
+        .update({ district_preference: JSON.stringify(val) })
         .eq('user_id', user.id);
     }
   };
@@ -121,15 +136,15 @@ const Settings = () => {
         </CardContent>
       </Card>
 
-      {/* District Preference */}
+      {/* Location Preference */}
       <Card>
         <CardContent className="p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-foreground">{t('জেলা', 'District')}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('অবস্থান', 'Location')}</h3>
           <Separator />
-          <DistrictSelector value={district} onChange={handleDistrictChange} />
+          <LocationPicker value={location} onChange={handleLocationChange} />
           {user && (
             <p className="text-xs text-muted-foreground">
-              {t('আপনার জেলা সব ডিভাইসে সংরক্ষিত থাকবে।', 'Your district will be saved across devices.')}
+              {t('আপনার অবস্থান সব ডিভাইসে সংরক্ষিত থাকবে।', 'Your location will be saved across devices.')}
             </p>
           )}
         </CardContent>
