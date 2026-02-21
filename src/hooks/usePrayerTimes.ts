@@ -48,30 +48,43 @@ export interface PrayerDay {
 
 const cleanTime = (time: string) => time.replace(/\s*\(.*\)/, '');
 
+// Subtract minutes from a HH:MM time string
+const subtractMinutes = (time: string, mins: number): string => {
+  const [h, m] = time.split(':').map(Number);
+  const total = h * 60 + m - mins;
+  const adjTotal = ((total % 1440) + 1440) % 1440;
+  return `${String(Math.floor(adjTotal / 60)).padStart(2, '0')}:${String(adjTotal % 60).padStart(2, '0')}`;
+};
+
 const fetchMonthTimes = async (lat: number, lng: number, year: number, month: number): Promise<PrayerDay[]> => {
   const res = await fetch(
     // tune offsets (Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight) to align with Bangladesh Islamic Foundation
-    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=1&school=1&tune=-2,0,0,2,1,3,3,1,0`
+    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=1&school=1&tune=0,0,0,2,1,3,3,1,0`
   );
   if (!res.ok) throw new Error('Failed to fetch prayer times');
   const json = await res.json();
 
-  return json.data.map((day: DayData) => ({
+  return json.data.map((day: DayData) => {
+    const fajr = cleanTime(day.timings.Fajr);
+    // BIF convention: Sehri ends 3 minutes before Fajr
+    const sehriEnd = subtractMinutes(fajr, 3);
+    return {
     date: day.date.gregorian.date,
     hijriDate: day.date.hijri.date,
     hijriDay: day.date.hijri.day,
     hijriMonth: `${day.date.hijri.month.en} (${day.date.hijri.month.ar})`,
     hijriYear: day.date.hijri.year,
     gregorianDate: day.date.readable,
-    sehriEnd: cleanTime(day.timings.Imsak),
+    sehriEnd,
     iftarStart: cleanTime(day.timings.Maghrib),
-    fajr: cleanTime(day.timings.Fajr),
+    fajr,
     sunrise: cleanTime(day.timings.Sunrise),
     dhuhr: cleanTime(day.timings.Dhuhr),
     asr: cleanTime(day.timings.Asr),
     maghrib: cleanTime(day.timings.Maghrib),
     isha: cleanTime(day.timings.Isha),
-  }));
+    };
+  });
 };
 
 export const usePrayerTimes = (lat: number, lng: number) => {
