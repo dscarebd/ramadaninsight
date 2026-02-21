@@ -50,7 +50,8 @@ const cleanTime = (time: string) => time.replace(/\s*\(.*\)/, '');
 
 const fetchMonthTimes = async (lat: number, lng: number, year: number, month: number): Promise<PrayerDay[]> => {
   const res = await fetch(
-    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=1&school=1`
+    // tune offsets (Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight) to align with Bangladesh Islamic Foundation
+    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=1&school=1&tune=-2,0,0,2,1,3,3,1,0`
   );
   if (!res.ok) throw new Error('Failed to fetch prayer times');
   const json = await res.json();
