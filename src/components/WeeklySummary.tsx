@@ -95,6 +95,12 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
         title: t('কাযা আদায় করেছেন!', 'Qaza completed!'),
         description: t('মাশাআল্লাহ! আল্লাহ কবুল করুন।', 'MashaAllah! May Allah accept it.'),
       });
+    } else {
+      toast({
+        title: t('কাযা বাতিল করা হয়েছে', 'Qaza undone'),
+        description: t('কাযা নামাজ এখনো বাকি আছে।', 'Qaza prayer is still pending.'),
+        variant: 'destructive',
+      });
     }
   };
 
