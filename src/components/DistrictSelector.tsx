@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { divisions, findDivision, findZilla, findUpazila } from '@/data/locations';
-import { MapPin, ChevronDown, ChevronUp, Check, Search } from 'lucide-react';
+import { MapPin, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
@@ -43,10 +43,7 @@ const SearchableSelect = ({ value, onSelect, placeholder, searchPlaceholder, ite
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-popover" align="start">
         <Command>
-          <div className="flex items-center border-b px-3">
-            <Search className="h-4 w-4 shrink-0 opacity-50 mr-2" />
-            <CommandInput placeholder={searchPlaceholder} className="h-9 border-0 focus:ring-0" />
-          </div>
+          <CommandInput placeholder={searchPlaceholder} className="h-9" />
           <CommandList className="max-h-52">
             <CommandEmpty className="py-4 text-center text-sm text-muted-foreground">
               Not found
