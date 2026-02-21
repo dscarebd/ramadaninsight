@@ -87,6 +87,12 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   * {
     @apply border-border;
   }

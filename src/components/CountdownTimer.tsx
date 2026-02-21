@@ -57,7 +57,7 @@ const CountdownTimer = ({ targetTime, label }: Props) => {
           { val: timeLeft.seconds, labelBn: 'সেকেন্ড', labelEn: 'sec' },
         ].map((unit, i) => (
           <div key={i} className="flex flex-col items-center">
-            <span className="bg-primary text-primary-foreground rounded-lg px-2 py-1 text-xl font-bold tabular-nums min-w-[3rem]">
+            <span className="bg-primary text-primary-foreground rounded-lg px-2 py-1 text-xl font-bold tabular-nums min-w-[3rem] transition-all duration-300">
               {lang === 'bn' ? toBengaliNum(Number(pad(unit.val))) : pad(unit.val)}
             </span>
             <span className="text-[9px] text-muted-foreground mt-0.5">
