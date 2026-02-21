@@ -235,7 +235,8 @@ const SalatTracker = () => {
           )}
         </TabsContent>
 
-        <TabsContent value="history" className="mt-4">
+        <TabsContent value="history" className="mt-4 space-y-4">
+          <WeeklySummary userId={user} />
           <SalatHistory userId={user} />
         </TabsContent>
 
