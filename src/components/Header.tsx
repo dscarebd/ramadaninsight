@@ -18,20 +18,12 @@ const Header = () => {
     <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg">
       <div className="flex items-center justify-between px-4 py-3">
         <div>
-          {isHome ? (
-            <>
-              <h1 className="text-lg font-bold leading-tight">
-                {t('রমজান ইনসাইট', 'Ramadan Insight')}
-              </h1>
-              <p className="text-xs opacity-80">
-                {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩
-              </p>
-            </>
-          ) : (
-            <h1 className="text-lg font-bold leading-tight">
-              {pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight')}
-            </h1>
-          )}
+          <h1 className="text-lg font-bold leading-tight">
+            {isHome ? t('রমজান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight'))}
+          </h1>
+          <p className="text-xs opacity-80">
+            {isHome ? <>{t('বাংলাদেশ', 'Bangladesh')} 🇧🇩</> : '\u00A0'}
+          </p>
         </div>
       </div>
     </header>
