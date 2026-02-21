@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { divisions, findDivision, findZilla, findUpazila } from '@/data/locations';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, ChevronDown, ChevronUp, Check, Search } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 
 interface LocationState {
   division: string;
@@ -15,6 +17,61 @@ interface Props {
   onChange: (val: LocationState) => void;
 }
 
+interface SearchableSelectProps {
+  value: string;
+  onSelect: (val: string) => void;
+  placeholder: string;
+  searchPlaceholder: string;
+  items: { id: string; label: string }[];
+}
+
+const SearchableSelect = ({ value, onSelect, placeholder, searchPlaceholder, items }: SearchableSelectProps) => {
+  const [open, setOpen] = useState(false);
+  const selectedLabel = items.find(i => i.id === value)?.label;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          className="flex h-10 w-full items-center justify-between rounded-md border border-primary/30 bg-card px-3 py-2 text-sm"
+        >
+          <span className={cn("truncate", !selectedLabel && "text-muted-foreground")}>
+            {selectedLabel || placeholder}
+          </span>
+          <ChevronDown className="h-4 w-4 opacity-50 shrink-0 ml-2" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-popover" align="start">
+        <Command>
+          <div className="flex items-center border-b px-3">
+            <Search className="h-4 w-4 shrink-0 opacity-50 mr-2" />
+            <CommandInput placeholder={searchPlaceholder} className="h-9 border-0 focus:ring-0" />
+          </div>
+          <CommandList className="max-h-52">
+            <CommandEmpty className="py-4 text-center text-sm text-muted-foreground">
+              Not found
+            </CommandEmpty>
+            {items.map(item => (
+              <CommandItem
+                key={item.id}
+                value={item.label}
+                onSelect={() => {
+                  onSelect(item.id);
+                  setOpen(false);
+                }}
+                className="cursor-pointer"
+              >
+                <Check className={cn("mr-2 h-4 w-4 shrink-0", value === item.id ? "opacity-100" : "opacity-0")} />
+                <span className="truncate">{item.label}</span>
+              </CommandItem>
+            ))}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
 const LocationPicker = ({ value, onChange }: Props) => {
   const { lang, t } = useLanguage();
   const [expanded, setExpanded] = useState(!value.upazila);
@@ -25,7 +82,6 @@ const LocationPicker = ({ value, onChange }: Props) => {
     ? findUpazila(value.division, value.zilla, value.upazila)
     : null;
 
-  // Build display name from most specific selection
   const getDisplayName = () => {
     const parts: string[] = [];
     if (selectedUpazila) parts.push(lang === 'bn' ? selectedUpazila.nameBn : selectedUpazila.nameEn);
@@ -34,7 +90,6 @@ const LocationPicker = ({ value, onChange }: Props) => {
     return parts.join(', ');
   };
 
-  // If fully selected and collapsed, show summary
   if (!expanded && value.upazila) {
     return (
       <button
@@ -50,11 +105,12 @@ const LocationPicker = ({ value, onChange }: Props) => {
 
   const handleChange = (newVal: LocationState) => {
     onChange(newVal);
-    // Auto-collapse when upazila is selected
-    if (newVal.upazila) {
-      setExpanded(false);
-    }
+    if (newVal.upazila) setExpanded(false);
   };
+
+  const divisionItems = divisions.map(d => ({ id: d.id, label: lang === 'bn' ? d.nameBn : d.nameEn }));
+  const zillaItems = selectedDivision?.zillas.map(z => ({ id: z.id, label: lang === 'bn' ? z.nameBn : z.nameEn })) || [];
+  const upazilaItems = selectedZilla?.upazilas.map(u => ({ id: u.id, label: lang === 'bn' ? u.nameBn : u.nameEn })) || [];
 
   return (
     <div className="space-y-2">
@@ -70,59 +126,32 @@ const LocationPicker = ({ value, onChange }: Props) => {
         )}
       </div>
 
-      {/* Division */}
-      <Select
+      <SearchableSelect
         value={value.division}
-        onValueChange={(val) => handleChange({ division: val, zilla: '', upazila: '' })}
-      >
-        <SelectTrigger className="w-full bg-card border-primary/30">
-          <SelectValue placeholder={t('বিভাগ নির্বাচন করুন', 'Select Division')} />
-        </SelectTrigger>
-        <SelectContent className="max-h-60 bg-popover">
-          {divisions.map(d => (
-            <SelectItem key={d.id} value={d.id}>
-              {lang === 'bn' ? d.nameBn : d.nameEn}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        onSelect={(val) => handleChange({ division: val, zilla: '', upazila: '' })}
+        placeholder={t('বিভাগ নির্বাচন করুন', 'Select Division')}
+        searchPlaceholder={t('বিভাগ খুঁজুন...', 'Search division...')}
+        items={divisionItems}
+      />
 
-      {/* Zilla */}
       {selectedDivision && (
-        <Select
+        <SearchableSelect
           value={value.zilla}
-          onValueChange={(val) => handleChange({ ...value, zilla: val, upazila: '' })}
-        >
-          <SelectTrigger className="w-full bg-card border-primary/30">
-            <SelectValue placeholder={t('জেলা নির্বাচন করুন', 'Select Zilla')} />
-          </SelectTrigger>
-          <SelectContent className="max-h-60 bg-popover">
-            {selectedDivision.zillas.map(z => (
-              <SelectItem key={z.id} value={z.id}>
-                {lang === 'bn' ? z.nameBn : z.nameEn}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          onSelect={(val) => handleChange({ ...value, zilla: val, upazila: '' })}
+          placeholder={t('জেলা নির্বাচন করুন', 'Select Zilla')}
+          searchPlaceholder={t('জেলা খুঁজুন...', 'Search zilla...')}
+          items={zillaItems}
+        />
       )}
 
-      {/* Upazila */}
       {selectedZilla && (
-        <Select
+        <SearchableSelect
           value={value.upazila}
-          onValueChange={(val) => handleChange({ ...value, upazila: val })}
-        >
-          <SelectTrigger className="w-full bg-card border-primary/30">
-            <SelectValue placeholder={t('উপজেলা নির্বাচন করুন', 'Select Upazila')} />
-          </SelectTrigger>
-          <SelectContent className="max-h-60 bg-popover">
-            {selectedZilla.upazilas.map(u => (
-              <SelectItem key={u.id} value={u.id}>
-                {lang === 'bn' ? u.nameBn : u.nameEn}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          onSelect={(val) => handleChange({ ...value, upazila: val })}
+          placeholder={t('উপজেলা নির্বাচন করুন', 'Select Upazila')}
+          searchPlaceholder={t('উপজেলা খুঁজুন...', 'Search upazila...')}
+          items={upazilaItems}
+        />
       )}
     </div>
   );
