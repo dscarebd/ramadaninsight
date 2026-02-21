@@ -87,7 +87,7 @@ const StreakBadge = ({ userId }: StreakBadgeProps) => {
       <CardContent className="p-4">
         <div className="text-center space-y-1.5">
           <p className="text-3xl">{achieved ? achieved.emoji : '🕌'}</p>
-          <p className="text-base font-bold text-primary">
+          <p className="text-base font-bold text-primary font-bengali-num">
             {currentStreak > 0
               ? `${currentStreak} ${t('দিনের স্ট্রিক!', 'Day Streak!')}`
               : t('আজকে শুরু করুন!', 'Start today!')}
