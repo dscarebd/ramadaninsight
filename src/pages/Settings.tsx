@@ -3,7 +3,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Globe, LogIn, LogOut, User, Moon, Sun } from 'lucide-react';
+import { Globe, LogIn, LogOut, User, Moon, Sun, ExternalLink } from 'lucide-react';
+import appQuran from '@/assets/app-quran.png';
+import appQuiz from '@/assets/app-quiz.png';
+import appExpense from '@/assets/app-expense.png';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -172,14 +175,32 @@ const Settings = () => {
         </CardContent>
       </Card>
 
-      {/* App Info */}
+      {/* Our Other Apps */}
       <Card>
         <CardContent className="p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-foreground">{t('অ্যাপ সম্পর্কে', 'About')}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('আমাদের অন্যান্য অ্যাপ', 'Our Other Apps')}</h3>
           <Separator />
-          <div className="space-y-1 text-sm text-muted-foreground">
-            <p>{t('রমজান ক্যালেন্ডার ২০২৬', 'Ramadan Calendar 2026')}</p>
-            <p>{t('বাংলাদেশ 🇧🇩', 'Bangladesh 🇧🇩')}</p>
+          <div className="flex items-center justify-center gap-6">
+            {[
+              { icon: appQuran, name: 'Quran Insight', url: 'https://play.google.com/store/apps/details?id=com.annur.quraninsight' },
+              { icon: appQuiz, name: 'Quiz Insight', url: 'https://play.google.com/store/apps/details?id=com.annur.quizinsight' },
+              { icon: appExpense, name: 'Expense Tracker', url: 'https://play.google.com/store/apps/details?id=com.annur.expensetracker' },
+            ].map((app) => (
+              <a
+                key={app.name}
+                href={app.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center gap-1.5 group"
+              >
+                <img
+                  src={app.icon}
+                  alt={app.name}
+                  className="h-14 w-14 rounded-xl shadow-md group-hover:scale-105 transition-transform"
+                />
+                <span className="text-[10px] text-muted-foreground text-center leading-tight">{app.name}</span>
+              </a>
+            ))}
           </div>
         </CardContent>
       </Card>
