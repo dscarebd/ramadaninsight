@@ -172,7 +172,7 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   const pct = Math.round((totalCompleted / maxPrayers) * 100);
   const missedPrayers = maxPrayers - totalCompleted;
 
-  if (pct === 100) return null;
+  const allQazaDone = pct === 100 && totalPrayedOnTime < maxPrayers;
 
   const totalMissedDates = missedByPrayer.reduce((s, p) => s + p.total, 0);
   const totalQazaCompleted = totalQazaCount;
