@@ -48,6 +48,7 @@ export type Database = {
           id: string
           isha: boolean
           maghrib: boolean
+          tahajjud: boolean
           taraweeh: boolean
           updated_at: string
           user_id: string
@@ -61,6 +62,7 @@ export type Database = {
           id?: string
           isha?: boolean
           maghrib?: boolean
+          tahajjud?: boolean
           taraweeh?: boolean
           updated_at?: string
           user_id: string
@@ -74,6 +76,7 @@ export type Database = {
           id?: string
           isha?: boolean
           maghrib?: boolean
+          tahajjud?: boolean
           taraweeh?: boolean
           updated_at?: string
           user_id?: string

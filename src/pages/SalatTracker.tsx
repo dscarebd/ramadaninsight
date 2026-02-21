@@ -7,22 +7,32 @@ import { supabase } from '@/integrations/supabase/client';
 import { RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const prayers = [
+const fiveWaqt = [
   { key: 'fajr', bn: 'ফজর', en: 'Fajr' },
   { key: 'dhuhr', bn: 'যোহর', en: 'Dhuhr' },
   { key: 'asr', bn: 'আসর', en: 'Asr' },
   { key: 'maghrib', bn: 'মাগরিব', en: 'Maghrib' },
   { key: 'isha', bn: 'ইশা', en: 'Isha' },
-  { key: 'taraweeh', bn: 'তারাবীহ', en: 'Taraweeh' },
 ] as const;
 
-type PrayerKey = typeof prayers[number]['key'];
+type PrayerKey = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha' | 'taraweeh' | 'tahajjud';
+
+// Ramadan 2026: approx Feb 18 – Mar 19
+const isRamadan = () => {
+  const now = new Date();
+  const y = now.getFullYear();
+  const start = new Date(y, 1, 17); // Feb 17 (buffer)
+  const end = new Date(y, 2, 20);   // Mar 20 (buffer)
+  return now >= start && now <= end;
+};
 
 const SalatTracker = () => {
   const { lang, t } = useLanguage();
   const { toast } = useToast();
+  const ramadan = isRamadan();
+
   const [checked, setChecked] = useState<Record<PrayerKey, boolean>>({
-    fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false, taraweeh: false,
+    fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false, taraweeh: false, tahajjud: false,
   });
   const [user, setUser] = useState<string | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -39,7 +49,6 @@ const SalatTracker = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Load from DB or localStorage
   useEffect(() => {
     if (user) {
       supabase
@@ -53,6 +62,7 @@ const SalatTracker = () => {
             setChecked({
               fajr: data.fajr, dhuhr: data.dhuhr, asr: data.asr,
               maghrib: data.maghrib, isha: data.isha, taraweeh: data.taraweeh,
+              tahajjud: data.tahajjud,
             });
           }
         });
@@ -66,9 +76,10 @@ const SalatTracker = () => {
     const updated = { ...checked, [key]: val };
     setChecked(updated);
 
-    // Check celebration
-    const allDone = Object.values(updated).every(Boolean);
-    if (allDone) setShowCelebration(true);
+    // Check if all relevant prayers are done
+    const allFive = fiveWaqt.every(p => updated[p.key]);
+    const extraDone = ramadan ? (updated.taraweeh && updated.tahajjud) : updated.tahajjud;
+    if (allFive && extraDone) setShowCelebration(true);
 
     if (user) {
       await supabase
@@ -80,7 +91,9 @@ const SalatTracker = () => {
   };
 
   const resetAll = async () => {
-    const reset = { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false, taraweeh: false };
+    const reset: Record<PrayerKey, boolean> = {
+      fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false, taraweeh: false, tahajjud: false,
+    };
     setChecked(reset);
     setShowCelebration(false);
     if (user) {
@@ -92,7 +105,7 @@ const SalatTracker = () => {
     }
   };
 
-  const checkedCount = Object.values(checked).filter(Boolean).length;
+  const fiveCount = fiveWaqt.filter(p => checked[p.key]).length;
 
   return (
     <div className="min-h-screen pb-20 px-4 pt-4 space-y-4">
@@ -114,9 +127,10 @@ const SalatTracker = () => {
         {t('⚠️ নামাজ না পড়ে টিক দিবেন না!', "⚠️ Don't check without praying!")}
       </p>
 
+      {/* 5 Waqt Card */}
       <Card>
         <CardContent className="p-4 space-y-3">
-          {prayers.map(p => (
+          {fiveWaqt.map(p => (
             <label key={p.key} className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={checked[p.key]}
@@ -132,10 +146,44 @@ const SalatTracker = () => {
         </CardContent>
       </Card>
 
-      {/* Progress */}
       <div className="text-center text-sm text-muted-foreground">
-        {t(`${checkedCount}/৬ ওয়াক্ত সম্পন্ন`, `${checkedCount}/6 prayers completed`)}
+        {t(`${fiveCount}/৫ ওয়াক্ত সম্পন্ন`, `${fiveCount}/5 prayers completed`)}
       </div>
+
+      {/* Taraweeh / Tahajjud Card */}
+      <Card className="border-primary/30">
+        <CardContent className="p-4 space-y-3">
+          <h3 className="font-bold text-primary text-sm">
+            {ramadan
+              ? t('🌙 তারাবীহ ও তাহাজ্জুদ', '🌙 Taraweeh & Tahajjud')
+              : t('🌙 তাহাজ্জুদ', '🌙 Tahajjud')}
+          </h3>
+          {ramadan && (
+            <label className="flex items-center gap-3 cursor-pointer">
+              <Checkbox
+                checked={checked.taraweeh}
+                onCheckedChange={(val) => updatePrayer('taraweeh', !!val)}
+                className="h-5 w-5"
+              />
+              <span className={`text-sm font-medium ${checked.taraweeh ? 'text-primary line-through' : ''}`}>
+                {t('তারাবীহ', 'Taraweeh')}
+              </span>
+              {checked.taraweeh && <span className="text-primary text-xs">✓</span>}
+            </label>
+          )}
+          <label className="flex items-center gap-3 cursor-pointer">
+            <Checkbox
+              checked={checked.tahajjud}
+              onCheckedChange={(val) => updatePrayer('tahajjud', !!val)}
+              className="h-5 w-5"
+            />
+            <span className={`text-sm font-medium ${checked.tahajjud ? 'text-primary line-through' : ''}`}>
+              {t('তাহাজ্জুদ', 'Tahajjud')}
+            </span>
+            {checked.tahajjud && <span className="text-primary text-xs">✓</span>}
+          </label>
+        </CardContent>
+      </Card>
 
       {/* Celebration */}
       {showCelebration && (
