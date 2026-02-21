@@ -136,14 +136,11 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
       });
     }
   };
-
-  if (dismissed || loading) return null;
-
+  // Compute stats (must be before hooks that depend on them)
   const totalPrayedOnTime = data.reduce((sum, d) => sum + fiveWaqt.filter(p => d[p]).length, 0);
   const maxPrayers = 7 * 5;
   const perfectDays = data.filter(d => fiveWaqt.every(p => d[p])).length;
 
-  // Build all 7 dates in the range
   const allDates: string[] = [];
   {
     const end = new Date(today);
@@ -156,7 +153,6 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   }
   const dataByDate = Object.fromEntries(data.map(d => [d.date, d]));
 
-  // Compute missed dates per prayer (including days with no data row)
   const missedByPrayer = fiveWaqt.map(p => {
     const missedDates = allDates.filter(date => {
       const row = dataByDate[date];
@@ -165,17 +161,26 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
     return { key: p, missedDates, total: missedDates.length };
   }).filter(p => p.total > 0);
 
-  // Include qaza completions in progress
   const totalQazaCount = missedByPrayer.reduce((s, p) =>
     s + p.missedDates.filter(d => qazaDone[`${p.key}_${d}`]).length, 0);
   const totalCompleted = totalPrayedOnTime + totalQazaCount;
   const pct = Math.round((totalCompleted / maxPrayers) * 100);
   const missedPrayers = maxPrayers - totalCompleted;
-
   const allQazaDone = pct === 100 && totalPrayedOnTime < maxPrayers;
-
   const totalMissedDates = missedByPrayer.reduce((s, p) => s + p.total, 0);
   const totalQazaCompleted = totalQazaCount;
+
+  // Auto-dismiss 3s after all qaza completed
+  useEffect(() => {
+    if (allQazaDone && !dismissed) {
+      const timer = setTimeout(() => {
+        handleDismiss();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [allQazaDone, dismissed]);
+
+  if (dismissed || loading) return null;
 
   return (
     <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
