@@ -33,9 +33,9 @@ const Schedule = () => {
   const lat = coords?.lat || 23.8103;
   const lng = coords?.lng || 90.4125;
 
-  const { ramadanDays, todayIndex, isLoading } = usePrayerTimes(lat, lng);
+  const { ramadanDays, todayIndex, isLoading, isFetching } = usePrayerTimes(lat, lng);
 
-  if (isLoading) {
+  if (isLoading && ramadanDays.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center pb-16">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -46,7 +46,7 @@ const Schedule = () => {
   const fmt = (s: string) => lang === 'bn' ? toBengaliNum(s) : s;
 
   return (
-    <div className="min-h-screen pb-20 px-2 pt-4 space-y-3">
+    <div className={`min-h-screen pb-20 px-2 pt-4 space-y-3 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
       <h2 className="text-xl font-bold text-primary px-2">{t('সম্পূর্ণ সময়সূচী', 'Full Schedule')}</h2>
       <div className="px-2">
         <LocationPicker value={location} onChange={setLocation} />

@@ -127,7 +127,7 @@ const SalatTracker = () => {
   const fiveCount = fiveWaqt.filter(p => checked[p.key]).length;
 
   return (
-    <div className="min-h-screen pb-20 px-4 pt-4 space-y-4">
+    <div className="min-h-screen pb-20 px-4 pt-4 space-y-4 animate-fade-in">
       <Tabs defaultValue="today" className="w-full">
         <TabsList className="w-full">
           <TabsTrigger value="today" className="flex-1">{t('আজকে', 'Today')}</TabsTrigger>
