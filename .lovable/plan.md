@@ -1,57 +1,27 @@
 
 
-## Make the App Feel Like a Native App -- Smooth Transitions Everywhere
+## Plan: Use Hind Siliguri Font for Bold Bengali Numbers
 
-### What will change
+### What changes
+Apply the "Hind Siliguri" Google Font exclusively to bold Bengali numerals (large/prominent numbers like Sehri/Iftar times, Roza count, countdown timer digits) -- not to regular Bengali text or small-sized numbers.
 
-The app currently "blinks" with a white screen when switching locations or navigating between pages. This plan adds smooth, native-app-like behavior across the entire app.
+### Steps
 
-### Changes
+1. **Add Hind Siliguri font import** in `src/index.css` -- append `Hind+Siliguri:wght@700` to the existing Google Fonts URL.
 
-**1. Fix Schedule page blink (same issue as Index)**
-- `src/pages/Schedule.tsx`: Use `isFetching` instead of `isLoading` for the loading gate, so old data stays visible while new data loads. Add opacity transition during refetch (same pattern already applied to Index).
+2. **Add a new Tailwind font family** in `tailwind.config.ts` -- add `'bengali-num': ['"Hind Siliguri"', 'sans-serif']` alongside the existing `bengali` and `arabic` font families.
 
-**2. Add page transition animations**
-- `src/index.css`: Add a CSS animation for page content to fade-in smoothly on mount.
-- All page components (`Index.tsx`, `Schedule.tsx`, `DuaHadith.tsx`, `SalatTracker.tsx`, `Settings.tsx`): Add `animate-fade-in` class to the root container so each page fades in when navigated to.
-
-**3. Smoother bottom navigation**
-- `src/components/BottomNav.tsx`: Add a subtle scale/color transition on the active tab indicator so switching tabs feels fluid rather than instant.
-
-**4. Smooth countdown timer updates**
-- `src/components/CountdownTimer.tsx`: Add `transition-all` on the number boxes so digit changes don't feel jarring.
-
-**5. Global CSS polish for native feel**
-- `src/index.css`: Add `-webkit-tap-highlight-color: transparent` and `scroll-behavior: smooth` to remove the default blue tap highlight on mobile and enable smooth scrolling. Add `overscroll-behavior: none` to prevent pull-to-refresh bounce.
+3. **Apply the font to bold Bengali number elements** by adding `font-bengali-num` class to:
+   - **`src/pages/Index.tsx`**: Roza count heading (`text-3xl font-bold`), Sehri time (`text-2xl font-bold`), Iftar time (`text-2xl font-bold`)
+   - **`src/components/CountdownTimer.tsx`**: Countdown digit spans (`text-xl font-bold`)
+   - **`src/pages/Schedule.tsx`**: No change needed here since schedule table uses small text (`text-xs`), not bold display numbers
 
 ### Technical Details
 
-**`tailwind.config.ts`** -- Add fade-in keyframe:
-```
-"fade-in": {
-  "0%": { opacity: "0", transform: "translateY(6px)" },
-  "100%": { opacity: "1", transform: "translateY(0)" }
-}
-```
-Animation: `"fade-in": "fade-in 0.25s ease-out"`
-
-**`src/index.css`** -- Add native-feel base styles:
-```css
-html {
-  scroll-behavior: smooth;
-  overscroll-behavior: none;
-  -webkit-tap-highlight-color: transparent;
-}
-```
-
-**`src/pages/Schedule.tsx`** -- Key changes:
-- Destructure `isFetching` from `usePrayerTimes`
-- Change loading gate: `if (isLoading && ramadanDays.length === 0)` (only show spinner on first load)
-- Add transition opacity and `animate-fade-in` class to root div
-
-**`src/components/BottomNav.tsx`** -- Add `transition-all duration-200` to the button and icon for smooth active state changes.
-
-**`src/components/CountdownTimer.tsx`** -- Add `transition-all duration-300` to number display spans.
-
-**All pages** -- Add `animate-fade-in` class to root containers.
+- Google Fonts URL update: `...&family=Hind+Siliguri:wght@700&display=swap`
+- Tailwind config addition under `fontFamily`:
+  ```
+  'bengali-num': ['"Hind Siliguri"', 'sans-serif']
+  ```
+- Only bold, large-display number elements get `font-bengali-num` -- regular Bengali text continues using Anek Bangla
 
