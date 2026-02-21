@@ -121,6 +121,11 @@ const Index = () => {
           <p className="text-sm">{lang === 'bn' ? iftarDua.meaningBn : iftarDua.meaningEn}</p>
         </CardContent>
       </Card>
+
+      {/* Translation Disclaimer */}
+      <p className="text-xs text-muted-foreground bg-muted rounded-lg p-2">
+        {t('⚠️ আরবি থেকে বাংলা অনুবাদ সম্পূর্ণ নির্ভুল নাও হতে পারে। এটি শুধুমাত্র সহায়তার জন্য।', '⚠️ Bengali translation of Arabic may not be fully accurate. It is provided for reference only.')}
+      </p>
     </div>
   );
 };
