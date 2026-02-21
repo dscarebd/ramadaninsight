@@ -14,8 +14,14 @@ import Schedule from "./pages/Schedule";
 import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import { useContentProtection } from "@/hooks/useContentProtection";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  useContentProtection();
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -24,6 +30,7 @@ const App = () => (
       <LanguageProvider>
         <Toaster />
         <Sonner />
+        <AppContent />
         <BrowserRouter>
           <div className="max-w-md mx-auto min-h-screen bg-background relative">
             <Header />
