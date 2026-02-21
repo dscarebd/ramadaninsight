@@ -83,7 +83,7 @@ const Index = () => {
       {/* Roza Count & Hijri Date */}
       <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
         <CardContent className="p-4 text-center space-y-1">
-          <p className="text-3xl font-bold text-primary">
+          <p className="text-3xl font-bold text-primary font-bengali-num">
             {t(`রোজা ${toBengaliNum(rozaCount)}/${toBengaliNum(totalRoza)}`, `Roza ${rozaCount}/${totalRoza}`)}
           </p>
           {todayData && (
@@ -101,14 +101,14 @@ const Index = () => {
           <CardContent className="p-4 text-center">
             <Moon className="h-6 w-6 text-primary mx-auto mb-1" />
             <p className="text-xs text-muted-foreground">{t('সেহরি শেষ', 'Sehri End')}</p>
-            <p className="text-2xl font-bold text-primary">{lang === 'bn' ? toBengaliNum(to12Hour(sehriTime)) : to12Hour(sehriTime)}</p>
+            <p className="text-2xl font-bold text-primary font-bengali-num">{lang === 'bn' ? toBengaliNum(to12Hour(sehriTime)) : to12Hour(sehriTime)}</p>
           </CardContent>
         </Card>
         <Card className="border-accent/30">
           <CardContent className="p-4 text-center">
             <Sun className="h-6 w-6 text-accent mx-auto mb-1" />
             <p className="text-xs text-muted-foreground">{t('ইফতার', 'Iftar')}</p>
-            <p className="text-2xl font-bold text-accent-foreground">{lang === 'bn' ? toBengaliNum(to12Hour(iftarTime)) : to12Hour(iftarTime)}</p>
+            <p className="text-2xl font-bold text-accent-foreground font-bengali-num">{lang === 'bn' ? toBengaliNum(to12Hour(iftarTime)) : to12Hour(iftarTime)}</p>
           </CardContent>
         </Card>
       </div>
