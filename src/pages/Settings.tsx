@@ -180,7 +180,7 @@ const Settings = () => {
         <CardContent className="p-4 space-y-3">
           <h3 className="text-sm font-semibold text-foreground">{t('আমাদের অন্যান্য অ্যাপ', 'Our Other Apps')}</h3>
           <Separator />
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-4 max-w-[280px] mx-auto">
             {[
               { icon: appQuran, name: 'Quran Insight', url: 'https://play.google.com/store/apps/details?id=com.annur.quraninsight' },
               { icon: appQuiz, name: 'Quiz Insight', url: 'https://play.google.com/store/apps/details?id=com.annur.quizinsight' },
