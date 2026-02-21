@@ -211,6 +211,16 @@ const Settings = () => {
               </div>
               <span className="text-[10px] text-muted-foreground text-center leading-tight">{t('শীঘ্রই আসছে', 'Upcoming')}</span>
             </div>
+            <div className="flex flex-col items-center gap-1.5 group cursor-default">
+              <div className="h-14 w-14 rounded-xl shadow-md bg-muted flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
+                <img
+                  src={appExpense}
+                  alt="Upcoming"
+                  className="h-full w-full object-cover blur-md opacity-50"
+                />
+              </div>
+              <span className="text-[10px] text-muted-foreground text-center leading-tight">{t('শীঘ্রই আসছে', 'Upcoming')}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
