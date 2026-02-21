@@ -4,6 +4,7 @@ import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import DistrictSelector from '@/components/DistrictSelector';
 import CountdownTimer from '@/components/CountdownTimer';
 import { sehriNiyat, iftarDua } from '@/data/duas';
+import DailyQuote from '@/components/DailyQuote';
 import { Card, CardContent } from '@/components/ui/card';
 import { Moon, Sun, Loader2 } from 'lucide-react';
 
@@ -93,6 +94,9 @@ const Index = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Daily Quote */}
+      <DailyQuote />
 
       {/* Sehri Niyat */}
       <Card>
