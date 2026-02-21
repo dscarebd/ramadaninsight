@@ -82,7 +82,7 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen pb-20 px-4 pt-4 space-y-4 animate-fade-in">
-      <h2 className="text-xl font-bold text-primary">{t('সেটিংস', 'Settings')}</h2>
+      
 
       {/* Account Section */}
       <Card>

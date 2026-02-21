@@ -54,7 +54,7 @@ const Schedule = () => {
 
   return (
     <div className={`min-h-screen pb-20 px-2 pt-4 space-y-3 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
-      <h2 className="text-xl font-bold text-primary px-2">{t('সম্পূর্ণ সময়সূচী', 'Full Schedule')}</h2>
+      
       <div className="px-2">
         <LocationPicker value={location} onChange={setLocation} />
       </div>
