@@ -39,6 +39,13 @@ const Index = () => {
     localStorage.setItem('location', JSON.stringify(location));
   }, [location]);
 
+  // Listen for GPS location updates
+  useEffect(() => {
+    const handler = () => setLocation(loadLocation());
+    window.addEventListener('gps-location-updated', handler);
+    return () => window.removeEventListener('gps-location-updated', handler);
+  }, []);
+
   const coords = getCoordinates(location.division, location.zilla, location.upazila);
   const lat = coords?.lat || 23.8103;
   const lng = coords?.lng || 90.4125;
