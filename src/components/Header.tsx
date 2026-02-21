@@ -1,5 +1,6 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useLocation } from 'react-router-dom';
+import logo from '@/assets/logo.png';
 
 const pageTitles: Record<string, { bn: string; en: string }> = {
   '/dua': { bn: 'দোয়া ও হাদিস', en: 'Dua & Hadith' },
@@ -16,7 +17,8 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg">
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="flex items-center gap-3 px-4 py-3">
+        <img src={logo} alt="Ramadan Insight" className="h-10 w-10 rounded-full object-cover bg-white/20" />
         <div>
           <h1 className="text-lg font-bold leading-tight">
             {isHome ? t('রমজান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight'))}
