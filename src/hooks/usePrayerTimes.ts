@@ -94,6 +94,7 @@ export const usePrayerTimes = (lat: number, lng: number) => {
     queryFn: () => fetchMonthTimes(lat, lng, 2026, 2),
     staleTime: 1000 * 60 * 60,
     enabled: lat !== 0 && lng !== 0,
+    placeholderData: (prev) => prev,
   });
 
   const marQuery = useQuery({
@@ -101,9 +102,11 @@ export const usePrayerTimes = (lat: number, lng: number) => {
     queryFn: () => fetchMonthTimes(lat, lng, 2026, 3),
     staleTime: 1000 * 60 * 60,
     enabled: lat !== 0 && lng !== 0,
+    placeholderData: (prev) => prev,
   });
 
   const isLoading = febQuery.isLoading || marQuery.isLoading;
+  const isFetching = febQuery.isFetching || marQuery.isFetching;
   const error = febQuery.error || marQuery.error;
 
   // Filter to Ramadan days and skip first day to align with Bangladesh moon sighting
@@ -126,6 +129,7 @@ export const usePrayerTimes = (lat: number, lng: number) => {
     todayData,
     todayIndex: todayIndex >= 0 ? todayIndex : 0,
     isLoading,
+    isFetching,
     error,
   };
 };
