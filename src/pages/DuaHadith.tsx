@@ -38,7 +38,7 @@ const DuaHadith = () => {
 
   return (
     <div className="min-h-screen pb-20 px-4 pt-4 space-y-4 animate-fade-in">
-      <h2 className="text-xl font-bold text-primary">{t('দোয়া ও হাদিস', 'Dua & Hadith')}</h2>
+      
 
       {/* Daily Hadith */}
       <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
