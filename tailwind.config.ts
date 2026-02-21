@@ -14,6 +14,7 @@ export default {
     },
     fontFamily: {
       bengali: ['"Anek Bangla"', 'sans-serif'],
+      arabic: ['"Noto Naskh Arabic"', 'serif'],
     },
     extend: {
       colors: {

@@ -32,7 +32,7 @@ const DuaHadith = () => {
         <Card key={i}>
           <CardContent className="p-4 space-y-2">
             <h4 className="font-semibold text-sm">{lang === 'bn' ? dua.titleBn : dua.titleEn}</h4>
-            <p className="text-right text-lg leading-loose" dir="rtl">{dua.arabic}</p>
+            <p className="text-right text-lg leading-loose font-arabic" dir="rtl">{dua.arabic}</p>
             <p className="text-sm">{lang === 'bn' ? dua.meaningBn : dua.meaningEn}</p>
           </CardContent>
         </Card>
