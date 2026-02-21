@@ -3,17 +3,19 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Globe, LogIn, LogOut, User, Moon, Sun } from 'lucide-react';
+import { Globe, LogIn, LogOut, User, Moon, Sun, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from 'next-themes';
+import DistrictSelector from '@/components/DistrictSelector';
 
 const Settings = () => {
   const { lang, toggleLang, t } = useLanguage();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<{ email: string | null; id: string } | null>(null);
+  const [district, setDistrict] = useState(() => localStorage.getItem('district') || 'dhaka');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -30,6 +32,33 @@ const Settings = () => {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  // Load district from DB for logged-in users
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('district_preference')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.district_preference) {
+          setDistrict(data.district_preference);
+          localStorage.setItem('district', data.district_preference);
+        }
+      });
+  }, [user]);
+
+  const handleDistrictChange = async (val: string) => {
+    setDistrict(val);
+    localStorage.setItem('district', val);
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({ district_preference: val })
+        .eq('user_id', user.id);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -89,6 +118,20 @@ const Settings = () => {
               {lang === 'bn' ? '🇧🇩 বাংলা → EN' : '🇬🇧 English → বাং'}
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* District Preference */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <h3 className="text-sm font-semibold text-foreground">{t('জেলা', 'District')}</h3>
+          <Separator />
+          <DistrictSelector value={district} onChange={handleDistrictChange} />
+          {user && (
+            <p className="text-xs text-muted-foreground">
+              {t('আপনার জেলা সব ডিভাইসে সংরক্ষিত থাকবে।', 'Your district will be saved across devices.')}
+            </p>
+          )}
         </CardContent>
       </Card>
 
