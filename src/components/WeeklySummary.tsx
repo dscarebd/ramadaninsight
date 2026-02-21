@@ -145,10 +145,25 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   const perfectDays = data.filter(d => fiveWaqt.every(p => d[p])).length;
   const missedPrayers = maxPrayers - totalPrayers;
 
-  // Compute missed dates per prayer
+  // Build all 7 dates in the range
+  const allDates: string[] = [];
+  {
+    const end = new Date(today);
+    end.setDate(end.getDate() - 1);
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(end);
+      d.setDate(d.getDate() - i);
+      allDates.push(formatLocalDate(d));
+    }
+  }
+  const dataByDate = Object.fromEntries(data.map(d => [d.date, d]));
+
+  // Compute missed dates per prayer (including days with no data row)
   const missedByPrayer = fiveWaqt.map(p => {
-    const missedDates = data.filter(d => !d[p]).map(d => d.date);
-    // Also count days with no data row (7 days minus data rows)
+    const missedDates = allDates.filter(date => {
+      const row = dataByDate[date];
+      return !row || !row[p];
+    });
     return { key: p, missedDates, total: missedDates.length };
   }).filter(p => p.total > 0);
 
