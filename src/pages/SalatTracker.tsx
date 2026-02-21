@@ -12,6 +12,8 @@ import SalatHistory from '@/components/SalatHistory';
 import YearlyOverview from '@/components/YearlyOverview';
 import WeeklySummary from '@/components/WeeklySummary';
 import StreakBadge from '@/components/StreakBadge';
+import DailyPrayerReminder from '@/components/DailyPrayerReminder';
+import { usePrayerReminder } from '@/hooks/usePrayerReminder';
 
 const fiveWaqt = [
   { key: 'fajr', bn: 'ফজর', en: 'Fajr' },
@@ -42,6 +44,17 @@ const SalatTracker = () => {
   });
   const [user, setUser] = useState<string | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    () => localStorage.getItem('prayer_notifications') === 'true'
+  );
+
+  const { permissionState, requestPermission } = usePrayerReminder(checked, notificationsEnabled);
+
+  const toggleNotifications = () => {
+    const next = !notificationsEnabled;
+    setNotificationsEnabled(next);
+    localStorage.setItem('prayer_notifications', String(next));
+  };
 
   const todayStr = formatLocalDate(new Date());
 
@@ -125,6 +138,13 @@ const SalatTracker = () => {
         <TabsContent value="today" className="space-y-4 mt-4">
           {user && <StreakBadge userId={user} />}
           {user && <WeeklySummary userId={user} />}
+          <DailyPrayerReminder
+            checked={checked}
+            notificationsEnabled={notificationsEnabled}
+            onToggleNotifications={toggleNotifications}
+            permissionState={permissionState}
+            onRequestPermission={requestPermission}
+          />
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-primary">{t('৫ ওয়াক্ত নামাজ', '5 Waqt Salat')}</h2>
             <Button variant="ghost" size="sm" onClick={resetAll} className="text-muted-foreground">
