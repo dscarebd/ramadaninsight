@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import SalatHistory from '@/components/SalatHistory';
 import YearlyOverview from '@/components/YearlyOverview';
 import WeeklySummary from '@/components/WeeklySummary';
+import StreakBadge from '@/components/StreakBadge';
 
 const fiveWaqt = [
   { key: 'fajr', bn: 'ফজর', en: 'Fajr' },
@@ -121,6 +122,7 @@ const SalatTracker = () => {
         </TabsList>
 
         <TabsContent value="today" className="space-y-4 mt-4">
+          {user && <StreakBadge userId={user} />}
           {user && <WeeklySummary userId={user} />}
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-primary">{t('৫ ওয়াক্ত নামাজ', '5 Waqt Salat')}</h2>
