@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
+import { useLocalNotifications } from '@/hooks/useLocalNotifications';
 import LocationPicker from '@/components/DistrictSelector';
 import { getCoordinates } from '@/data/locations';
 import CountdownTimer from '@/components/CountdownTimer';
@@ -51,6 +52,9 @@ const Index = () => {
   const lng = coords?.lng || 90.4125;
 
   const { ramadanDays, todayData, todayIndex, isLoading, isFetching } = usePrayerTimes(lat, lng);
+
+  // Schedule Capacitor local notifications for Sehri & Iftar
+  useLocalNotifications(ramadanDays, true, lang);
 
   // Only show full-page spinner on very first load (no data yet)
   if (isLoading && !todayData) {
