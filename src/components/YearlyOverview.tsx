@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { usePrayerStreak } from '@/hooks/usePrayerStreak';
+import { getLocalSalatDaysInRange } from '@/lib/localSalatStorage';
 
 const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
@@ -25,7 +26,7 @@ const shortMonthNames = {
 };
 
 interface YearlyOverviewProps {
-  userId: string;
+  userId: string | null;
 }
 
 const YearlyOverview = ({ userId }: YearlyOverviewProps) => {
@@ -40,17 +41,26 @@ const YearlyOverview = ({ userId }: YearlyOverviewProps) => {
 
   useEffect(() => {
     setLoading(true);
-    supabase
-      .from('salat_tracking')
-      .select('date,fajr,dhuhr,asr,maghrib,isha')
-      .eq('user_id', userId)
-      .gte('date', `${year}-01-01`)
-      .lte('date', `${year}-12-31`)
-      .order('date')
-      .then(({ data: rows }) => {
-        setData((rows as DayData[]) || []);
-        setLoading(false);
-      });
+    const startDate = `${year}-01-01`;
+    const endDate = `${year}-12-31`;
+
+    if (userId) {
+      supabase
+        .from('salat_tracking')
+        .select('date,fajr,dhuhr,asr,maghrib,isha')
+        .eq('user_id', userId)
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .order('date')
+        .then(({ data: rows }) => {
+          setData((rows as DayData[]) || []);
+          setLoading(false);
+        });
+    } else {
+      const localDays = getLocalSalatDaysInRange(startDate, endDate);
+      setData(localDays);
+      setLoading(false);
+    }
   }, [userId, year]);
 
   const getCount = (d: DayData) => fiveWaqt.filter(p => d[p]).length;

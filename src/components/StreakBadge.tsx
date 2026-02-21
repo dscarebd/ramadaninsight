@@ -12,39 +12,32 @@ const milestones = [
   { days: 3, emoji: '🌱', bn: 'ভালো শুরু! থামবেন না!', en: 'Great Start! Keep It Up!', color: 'from-green-500/10 to-emerald-500/10 border-green-500/30' },
 ];
 
-// Motivational messages based on streak ranges
 const motivationalMessages = [
-  // Streak = 0 (lost or not started)
   { min: 0, max: 0, messages: [
     { bn: '"নিশ্চয়ই আল্লাহ তওবা কবুলকারী।" আবার শুরু করুন!', en: '"Indeed, Allah is Accepting of repentance." Start again!' },
     { bn: 'প্রতিটি নতুন দিন নতুন সুযোগ। আজকে শুরু করুন!', en: 'Every new day is a fresh chance. Start today!' },
     { bn: 'হাল ছাড়বেন না। আল্লাহ আপনার চেষ্টা দেখছেন।', en: "Don't give up. Allah sees your effort." },
   ]},
-  // Streak 1-2
   { min: 1, max: 2, messages: [
     { bn: 'শুরুটা হয়েছে! ধারাবাহিকতা বজায় রাখুন।', en: "You've started! Keep the momentum going." },
     { bn: '"যে ব্যক্তি ফজর পড়ে সে আল্লাহর জিম্মায়।" চালিয়ে যান!', en: '"Whoever prays Fajr is under Allah\'s protection." Keep going!' },
     { bn: 'ছোট পদক্ষেপেই বড় পরিবর্তন আসে।', en: 'Small steps lead to great change.' },
   ]},
-  // Streak 3-6
   { min: 3, max: 6, messages: [
     { bn: 'অভ্যাস গড়ে উঠছে! আরেকটু ধৈর্য ধরুন।', en: "A habit is forming! Stay patient a bit more." },
     { bn: '"আল্লাহর কাছে সবচেয়ে প্রিয় আমল যা নিয়মিত করা হয়।"', en: '"The most beloved deed to Allah is the most consistent one."' },
     { bn: 'মাশাআল্লাহ! আপনি সঠিক পথে আছেন।', en: 'MashaAllah! You are on the right path.' },
   ]},
-  // Streak 7-13
   { min: 7, max: 13, messages: [
     { bn: 'এক সপ্তাহ পূর্ণ! আপনার ঈমান শক্তিশালী হচ্ছে।', en: 'One week done! Your faith is growing stronger.' },
     { bn: '"নামাজ মুমিনের মেরাজ।" আপনি উপরে উঠছেন!', en: '"Prayer is the believer\'s ascension." You are rising!' },
     { bn: 'আলহামদুলিল্লাহ! চালিয়ে যান, জান্নাত কাছে।', en: 'Alhamdulillah! Keep going, Jannah is near.' },
   ]},
-  // Streak 14-29
   { min: 14, max: 29, messages: [
     { bn: 'দুই সপ্তাহ! আপনি একজন প্রকৃত মুসল্লি।', en: 'Two weeks! You are a true worshipper.' },
     { bn: '"যে পাঁচ ওয়াক্ত নামাজ রক্ষা করে, তার জন্য নূর আছে।"', en: '"Whoever guards the five prayers, will have light on the Day of Judgment."' },
     { bn: 'সুবহানাল্লাহ! আপনার ধারাবাহিকতা অনুপ্রেরণাদায়ক।', en: 'SubhanAllah! Your consistency is inspirational.' },
   ]},
-  // Streak 30+
   { min: 30, max: Infinity, messages: [
     { bn: '"ধৈর্যশীলদের অগণিত পুরস্কার দেওয়া হবে।" আপনি তাদের একজন!', en: '"The patient will be given their reward without account." You are one of them!' },
     { bn: 'আল্লাহ আপনাকে কবুল করুন। আপনি একটি উদাহরণ।', en: 'May Allah accept you. You are an example for others.' },
@@ -54,14 +47,13 @@ const motivationalMessages = [
 
 const getMotivationalMessage = (streak: number): { bn: string; en: string } => {
   const range = motivationalMessages.find(r => streak >= r.min && streak <= r.max) || motivationalMessages[0];
-  // Pick a daily-rotating message
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
   const idx = dayOfYear % range.messages.length;
   return range.messages[idx];
 };
 
 interface StreakBadgeProps {
-  userId: string;
+  userId: string | null;
 }
 
 const StreakBadge = ({ userId }: StreakBadgeProps) => {
@@ -71,10 +63,7 @@ const StreakBadge = ({ userId }: StreakBadgeProps) => {
   if (loading) return null;
   if (currentStreak === 0 && longestStreak === 0) return null;
 
-  // Find the highest milestone achieved (or null if streak < 3)
   const achieved = milestones.find(m => currentStreak >= m.days);
-
-  // Determine next milestone
   const currentIdx = achieved ? milestones.indexOf(achieved) : milestones.length - 1;
   const nextMilestone = achieved && currentIdx > 0 ? milestones[currentIdx - 1] : (!achieved ? milestones[milestones.length - 1] : null);
   const daysToNext = nextMilestone ? nextMilestone.days - currentStreak : null;

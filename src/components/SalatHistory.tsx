@@ -4,9 +4,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, LogIn, Flame } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { usePrayerStreak } from '@/hooks/usePrayerStreak';
+import { getLocalSalatDaysInRange } from '@/lib/localSalatStorage';
 
 const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 const prayerLabels: Record<string, { bn: string; en: string }> = {
@@ -46,7 +46,6 @@ interface SalatHistoryProps {
 
 const SalatHistory = ({ userId }: SalatHistoryProps) => {
   const { lang, t } = useLanguage();
-  const navigate = useNavigate();
   const { currentStreak, longestStreak } = usePrayerStreak(userId);
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
@@ -70,40 +69,29 @@ const SalatHistory = ({ userId }: SalatHistoryProps) => {
   };
 
   useEffect(() => {
-    if (!userId) return;
     setLoading(true);
     const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
     const lastDay = new Date(year, month + 1, 0).getDate();
     const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
 
-    supabase
-      .from('salat_tracking')
-      .select('*')
-      .eq('user_id', userId)
-      .gte('date', startDate)
-      .lte('date', endDate)
-      .order('date')
-      .then(({ data: rows }) => {
-        setData((rows as DayData[]) || []);
-        setLoading(false);
-      });
+    if (userId) {
+      supabase
+        .from('salat_tracking')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .order('date')
+        .then(({ data: rows }) => {
+          setData((rows as DayData[]) || []);
+          setLoading(false);
+        });
+    } else {
+      const localDays = getLocalSalatDaysInRange(startDate, endDate);
+      setData(localDays);
+      setLoading(false);
+    }
   }, [userId, year, month]);
-
-  if (!userId) {
-    return (
-      <Card>
-        <CardContent className="p-6 text-center space-y-3">
-          <LogIn className="h-10 w-10 mx-auto text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
-            {t('ইতিহাস দেখতে লগইন করুন।', 'Log in to view your prayer history.')}
-          </p>
-          <Button size="sm" onClick={() => navigate('/auth')}>
-            {t('লগইন', 'Log In')}
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
 
   // Build calendar grid
   const daysInMonth = new Date(year, month + 1, 0).getDate();
