@@ -1,0 +1,42 @@
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Home, BookOpen, CheckSquare, Calendar } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const BottomNav = () => {
+  const { t } = useLanguage();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const tabs = [
+    { path: '/', icon: Home, labelBn: 'হোম', labelEn: 'Home' },
+    { path: '/dua', icon: BookOpen, labelBn: 'দোয়া', labelEn: 'Dua' },
+    { path: '/salat', icon: CheckSquare, labelBn: 'নামাজ', labelEn: 'Salat' },
+    { path: '/schedule', icon: Calendar, labelBn: 'সময়সূচী', labelEn: 'Schedule' },
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
+      <div className="flex items-center justify-around">
+        {tabs.map(tab => {
+          const isActive = location.pathname === tab.path;
+          return (
+            <button
+              key={tab.path}
+              onClick={() => navigate(tab.path)}
+              className={cn(
+                'flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors',
+                isActive ? 'text-primary' : 'text-muted-foreground'
+              )}
+            >
+              <tab.icon className={cn('h-5 w-5', isActive && 'fill-primary/20')} />
+              <span className="text-[10px] font-medium">{t(tab.labelBn, tab.labelEn)}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+};
+
+export default BottomNav;
