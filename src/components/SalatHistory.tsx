@@ -4,8 +4,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, LogIn } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LogIn, Flame } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { usePrayerStreak } from '@/hooks/usePrayerStreak';
 
 const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 const prayerLabels: Record<string, { bn: string; en: string }> = {
@@ -46,6 +47,7 @@ interface SalatHistoryProps {
 const SalatHistory = ({ userId }: SalatHistoryProps) => {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
+  const { currentStreak, longestStreak } = usePrayerStreak(userId);
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
@@ -139,6 +141,28 @@ const SalatHistory = ({ userId }: SalatHistoryProps) => {
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
+
+      {/* Streak Card */}
+      <Card className="border-primary/30">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 flex-1">
+              <Flame className="h-5 w-5 text-orange-500" />
+              <div>
+                <p className="text-xs text-muted-foreground">{t('বর্তমান স্ট্রিক', 'Current Streak')}</p>
+                <p className="text-lg font-bold text-primary">{currentStreak} {t('দিন', 'days')}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-1">
+              <Flame className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-xs text-muted-foreground">{t('সর্বোচ্চ স্ট্রিক', 'Best Streak')}</p>
+                <p className="text-lg font-bold">{longestStreak} {t('দিন', 'days')}</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats Card */}
       <Card>
