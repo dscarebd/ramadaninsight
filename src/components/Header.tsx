@@ -22,7 +22,7 @@ const Header = () => {
             {isHome ? t('রমজান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight'))}
           </h1>
           <p className="text-xs opacity-80">
-            {isHome ? <>{t('বাংলাদেশ', 'Bangladesh')} 🇧🇩</> : '\u00A0'}
+            {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩
           </p>
         </div>
       </div>
