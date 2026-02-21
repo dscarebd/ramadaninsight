@@ -18,7 +18,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg">
       <div className="flex items-center gap-3 px-4 py-3">
-        <img src={logo} alt="Ramadan Insight" className="h-10 w-10 rounded-full object-cover bg-white/20" />
+        <img src={logo} alt="Ramadan Insight" className="h-10 w-14 rounded-lg object-cover shadow-md" />
         <div>
           <h1 className="text-lg font-bold leading-tight">
             {isHome ? t('রমজান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight'))}
