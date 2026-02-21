@@ -8,7 +8,7 @@ const Header = () => {
       <div className="flex items-center justify-between px-4 py-3">
         <div>
           <h1 className="text-lg font-bold leading-tight">
-            {t('রমজান ক্যালেন্ডার ২০২৬', 'Ramadan Calendar 2026')}
+            {t('রমজান ইনসাইট', 'Ramadan Insight')}
           </h1>
           <p className="text-xs opacity-80">
             {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩
