@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
-import DistrictSelector from '@/components/DistrictSelector';
+import LocationPicker from '@/components/DistrictSelector';
+import { getCoordinates } from '@/data/locations';
 import CountdownTimer from '@/components/CountdownTimer';
 import { sehriNiyat, iftarDua } from '@/data/duas';
 import DailyQuote from '@/components/DailyQuote';
@@ -13,15 +14,29 @@ const toBengaliNum = (n: number | string): string => {
   return String(n).split('').map(d => bengaliDigits[parseInt(d)] || d).join('');
 };
 
+const defaultLocation = { division: 'dhaka', zilla: 'dhaka', upazila: 'savar' };
+
+const loadLocation = () => {
+  try {
+    const stored = localStorage.getItem('location');
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return defaultLocation;
+};
+
 const Index = () => {
   const { lang, t } = useLanguage();
-  const [district, setDistrict] = useState(() => localStorage.getItem('district') || 'dhaka');
+  const [location, setLocation] = useState(loadLocation);
 
   useEffect(() => {
-    localStorage.setItem('district', district);
-  }, [district]);
+    localStorage.setItem('location', JSON.stringify(location));
+  }, [location]);
 
-  const { ramadanDays, todayData, todayIndex, isLoading } = usePrayerTimes(district);
+  const coords = getCoordinates(location.division, location.zilla, location.upazila);
+  const lat = coords?.lat || 23.8103;
+  const lng = coords?.lng || 90.4125;
+
+  const { ramadanDays, todayData, todayIndex, isLoading } = usePrayerTimes(lat, lng);
 
   if (isLoading) {
     return (
@@ -41,8 +56,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen pb-20 px-4 pt-4 space-y-4">
-      {/* District Selector */}
-      <DistrictSelector value={district} onChange={setDistrict} />
+      {/* Location Picker */}
+      <LocationPicker value={location} onChange={setLocation} />
 
       {/* Status Banner */}
       <div className={`rounded-xl p-3 text-center font-semibold text-sm ${isFasting ? 'bg-primary/10 text-primary' : 'bg-accent/20 text-accent-foreground'}`}>

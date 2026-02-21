@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { districts } from '@/data/districts';
 
 interface PrayerTimings {
   Fajr: string;
@@ -49,10 +48,9 @@ export interface PrayerDay {
 
 const cleanTime = (time: string) => time.replace(/\s*\(.*\)/, '');
 
-const fetchMonthTimes = async (districtId: string, year: number, month: number): Promise<PrayerDay[]> => {
-  const district = districts.find(d => d.id === districtId) || districts[0];
+const fetchMonthTimes = async (lat: number, lng: number, year: number, month: number): Promise<PrayerDay[]> => {
   const res = await fetch(
-    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${district.lat}&longitude=${district.lng}&method=1&school=1`
+    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=1&school=1`
   );
   if (!res.ok) throw new Error('Failed to fetch prayer times');
   const json = await res.json();
@@ -75,18 +73,20 @@ const fetchMonthTimes = async (districtId: string, year: number, month: number):
   }));
 };
 
-export const usePrayerTimes = (districtId: string) => {
+export const usePrayerTimes = (lat: number, lng: number) => {
   // Ramadan 2026 spans roughly Feb 18 - Mar 19, 2026
   const febQuery = useQuery({
-    queryKey: ['prayer-times', districtId, 2026, 2],
-    queryFn: () => fetchMonthTimes(districtId, 2026, 2),
+    queryKey: ['prayer-times', lat, lng, 2026, 2],
+    queryFn: () => fetchMonthTimes(lat, lng, 2026, 2),
     staleTime: 1000 * 60 * 60,
+    enabled: lat !== 0 && lng !== 0,
   });
 
   const marQuery = useQuery({
-    queryKey: ['prayer-times', districtId, 2026, 3],
-    queryFn: () => fetchMonthTimes(districtId, 2026, 3),
+    queryKey: ['prayer-times', lat, lng, 2026, 3],
+    queryFn: () => fetchMonthTimes(lat, lng, 2026, 3),
     staleTime: 1000 * 60 * 60,
+    enabled: lat !== 0 && lng !== 0,
   });
 
   const isLoading = febQuery.isLoading || marQuery.isLoading;
