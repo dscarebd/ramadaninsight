@@ -1179,3 +1179,23 @@ export const getCoordinates = (divisionId: string, zillaId?: string, upazilaId?:
   }
   return null;
 };
+
+// Find nearest upazila from GPS coordinates
+export const findNearestLocation = (lat: number, lng: number): { division: string; zilla: string; upazila: string } => {
+  let best = { division: 'dhaka', zilla: 'dhaka', upazila: 'savar' };
+  let bestDist = Infinity;
+  for (const div of divisions) {
+    for (const zilla of div.zillas) {
+      for (const upazila of zilla.upazilas) {
+        const dLat = lat - upazila.lat;
+        const dLng = lng - upazila.lng;
+        const dist = dLat * dLat + dLng * dLng;
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = { division: div.id, zilla: zilla.id, upazila: upazila.id };
+        }
+      }
+    }
+  }
+  return best;
+};

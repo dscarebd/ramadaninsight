@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useLocation } from 'react-router-dom';
 import { LocateFixed, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { findNearestLocation, findUpazila, findZilla, findDivision } from '@/data/locations';
 import logo from '@/assets/logo.png';
 
 const pageTitles: Record<string, { bn: string; en: string }> = {
@@ -13,7 +14,7 @@ const pageTitles: Record<string, { bn: string; en: string }> = {
 };
 
 const Header = () => {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const { pathname } = useLocation();
   const isHome = pathname === '/';
   const pageTitle = pageTitles[pathname];
@@ -28,8 +29,16 @@ const Header = () => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
+        const nearest = findNearestLocation(latitude, longitude);
+        localStorage.setItem('location', JSON.stringify(nearest));
         localStorage.setItem('gps_location', JSON.stringify({ latitude, longitude }));
-        toast.success(t('GPS অবস্থান পাওয়া গেছে', 'GPS location found'));
+
+        const upazila = findUpazila(nearest.division, nearest.zilla, nearest.upazila);
+        const zilla = findZilla(nearest.division, nearest.zilla);
+        const upazilaName = upazila ? (lang === 'bn' ? upazila.nameBn : upazila.nameEn) : '';
+        const zillaName = zilla ? (lang === 'bn' ? zilla.nameBn : zilla.nameEn) : '';
+        toast.success(`${t('অবস্থান পাওয়া গেছে', 'Location found')}: ${upazilaName}, ${zillaName}`);
+
         setLocating(false);
         window.dispatchEvent(new Event('gps-location-updated'));
       },
