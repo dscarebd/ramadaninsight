@@ -180,7 +180,7 @@ const Settings = () => {
         <CardContent className="p-4 space-y-3">
           <h3 className="text-sm font-semibold text-foreground">{t('আমাদের অন্যান্য অ্যাপ', 'Our Other Apps')}</h3>
           <Separator />
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-4 gap-4">
             {[
               { icon: appQuran, name: 'Quran Insight', url: 'https://play.google.com/store/apps/details?id=com.annur.quraninsight' },
               { icon: appQuiz, name: 'Quiz Insight', url: 'https://play.google.com/store/apps/details?id=com.annur.quizinsight' },
@@ -199,14 +199,12 @@ const Settings = () => {
                 <span className="text-[10px] text-muted-foreground text-center leading-tight">{app.name}</span>
               </a>
             ))}
-            {[appQuran, appExpense].map((icon, i) => (
-              <div key={`upcoming-${i}`} className="flex flex-col items-center gap-1.5 group cursor-default">
-                <div className="w-full aspect-square rounded-xl shadow-md bg-muted overflow-hidden group-hover:scale-105 transition-transform">
-                  <img src={icon} alt="Upcoming" className="h-full w-full object-cover blur-md opacity-50" />
-                </div>
-                <span className="text-[10px] text-muted-foreground text-center leading-tight">{t('শীঘ্রই আসছে', 'Upcoming')}</span>
+            <div className="flex flex-col items-center gap-1.5 group cursor-default">
+              <div className="w-full aspect-square rounded-xl shadow-md bg-muted overflow-hidden group-hover:scale-105 transition-transform">
+                <img src={appQuran} alt="Upcoming" className="h-full w-full object-cover blur-md opacity-50" />
               </div>
-            ))}
+              <span className="text-[10px] text-muted-foreground text-center leading-tight">{t('শীঘ্রই আসছে', 'Upcoming')}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
