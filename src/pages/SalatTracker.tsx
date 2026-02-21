@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import SalatHistory from '@/components/SalatHistory';
+import YearlyOverview from '@/components/YearlyOverview';
 
 const fiveWaqt = [
   { key: 'fajr', bn: 'ফজর', en: 'Fajr' },
@@ -114,7 +115,8 @@ const SalatTracker = () => {
       <Tabs defaultValue="today" className="w-full">
         <TabsList className="w-full">
           <TabsTrigger value="today" className="flex-1">{t('আজকে', 'Today')}</TabsTrigger>
-          <TabsTrigger value="history" className="flex-1">{t('ইতিহাস', 'History')}</TabsTrigger>
+          <TabsTrigger value="history" className="flex-1">{t('মাসিক', 'Monthly')}</TabsTrigger>
+          <TabsTrigger value="yearly" className="flex-1">{t('বার্ষিক', 'Yearly')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="today" className="space-y-4 mt-4">
@@ -212,6 +214,10 @@ const SalatTracker = () => {
 
         <TabsContent value="history" className="mt-4">
           <SalatHistory userId={user} />
+        </TabsContent>
+
+        <TabsContent value="yearly" className="mt-4">
+          {user ? <YearlyOverview userId={user} /> : <SalatHistory userId={null} />}
         </TabsContent>
       </Tabs>
     </div>
