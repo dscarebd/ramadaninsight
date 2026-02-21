@@ -99,6 +99,17 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
     setDismissed(true);
   };
 
+  const markAllDone = (prayer: string, dates: string[]) => {
+    const updated = { ...qazaDone };
+    dates.forEach(d => { updated[`${prayer}_${d}`] = true; });
+    setQazaDone(updated);
+    localStorage.setItem(qazaStorageKey, JSON.stringify(updated));
+    toast({
+      title: t('সব কাযা আদায় করেছেন!', 'All qaza completed!'),
+      description: t(prayerNamesBn[prayer], prayer.charAt(0).toUpperCase() + prayer.slice(1)),
+    });
+  };
+
   const toggleQazaDate = (prayer: string, date: string) => {
     const key = `${prayer}_${date}`;
     const wasDone = qazaDone[key];
@@ -234,6 +245,16 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
                           );
                         })}
                       </div>
+                      {doneCount < p.total && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full mt-2 text-xs h-7"
+                          onClick={() => markAllDone(p.key, p.missedDates)}
+                        >
+                          {t('সব কাযা আদায়', 'Mark all as done')}
+                        </Button>
+                      )}
                     </PopoverContent>
                   </Popover>
                 );
