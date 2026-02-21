@@ -11,6 +11,13 @@ const toBengaliNum = (n: number | string): string => {
   return String(n).split('').map(d => bengaliDigits[parseInt(d)] || d).join('');
 };
 
+const to12Hour = (time24: string): string => {
+  const [h, m] = time24.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+};
+
 const defaultLocation = { division: 'dhaka', zilla: 'dhaka', upazila: 'savar' };
 
 const loadLocation = () => {
@@ -70,8 +77,8 @@ const Schedule = () => {
               >
                 <TableCell className="text-xs py-2">{fmt(String(i + 1))}</TableCell>
                 <TableCell className="text-xs py-2">{day.gregorianDate}</TableCell>
-                <TableCell className="text-xs py-2">{fmt(day.sehriEnd)}</TableCell>
-                <TableCell className="text-xs py-2">{fmt(day.iftarStart)}</TableCell>
+                <TableCell className="text-xs py-2">{fmt(to12Hour(day.sehriEnd))}</TableCell>
+                <TableCell className="text-xs py-2">{fmt(to12Hour(day.iftarStart))}</TableCell>
               </TableRow>
             ))}
           </TableBody>

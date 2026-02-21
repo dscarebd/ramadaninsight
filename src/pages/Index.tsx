@@ -14,6 +14,13 @@ const toBengaliNum = (n: number | string): string => {
   return String(n).split('').map(d => bengaliDigits[parseInt(d)] || d).join('');
 };
 
+const to12Hour = (time24: string): string => {
+  const [h, m] = time24.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+};
+
 const defaultLocation = { division: 'dhaka', zilla: 'dhaka', upazila: 'savar' };
 
 const loadLocation = () => {
@@ -94,14 +101,14 @@ const Index = () => {
           <CardContent className="p-4 text-center">
             <Moon className="h-6 w-6 text-primary mx-auto mb-1" />
             <p className="text-xs text-muted-foreground">{t('সেহরি শেষ', 'Sehri End')}</p>
-            <p className="text-2xl font-bold text-primary">{lang === 'bn' ? toBengaliNum(sehriTime) : sehriTime}</p>
+            <p className="text-2xl font-bold text-primary">{lang === 'bn' ? toBengaliNum(to12Hour(sehriTime)) : to12Hour(sehriTime)}</p>
           </CardContent>
         </Card>
         <Card className="border-accent/30">
           <CardContent className="p-4 text-center">
             <Sun className="h-6 w-6 text-accent mx-auto mb-1" />
             <p className="text-xs text-muted-foreground">{t('ইফতার', 'Iftar')}</p>
-            <p className="text-2xl font-bold text-accent-foreground">{lang === 'bn' ? toBengaliNum(iftarTime) : iftarTime}</p>
+            <p className="text-2xl font-bold text-accent-foreground">{lang === 'bn' ? toBengaliNum(to12Hour(iftarTime)) : to12Hour(iftarTime)}</p>
           </CardContent>
         </Card>
       </div>
