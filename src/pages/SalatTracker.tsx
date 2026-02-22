@@ -128,7 +128,7 @@ const SalatTracker = () => {
   const fiveCount = fiveWaqt.filter(p => checked[p.key]).length;
 
   return (
-    <div className="min-h-screen pb-20 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
       <Tabs defaultValue="today" className="w-full">
         <TabsList className="w-full">
           <TabsTrigger value="today" className="flex-1">{t('আজকে', 'Today')}</TabsTrigger>
@@ -137,8 +137,10 @@ const SalatTracker = () => {
         </TabsList>
 
         <TabsContent value="today" className="space-y-4 mt-4">
-          <StreakBadge userId={user} />
-          <WeeklySummary userId={user} />
+          <div className="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
+            <StreakBadge userId={user} />
+            <WeeklySummary userId={user} />
+          </div>
           <DailyPrayerReminder
             checked={checked}
             notificationsEnabled={notificationsEnabled}

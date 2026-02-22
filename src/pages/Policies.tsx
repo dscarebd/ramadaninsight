@@ -8,7 +8,7 @@ const Policies = () => {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen pb-20 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
       <Card>
         <CardContent className="p-4 space-y-3">
           <h2 className="text-lg font-bold text-foreground">{t('গোপনীয়তা নীতি', 'Privacy Policy')}</h2>

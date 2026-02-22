@@ -59,7 +59,7 @@ const Schedule = () => {
   const fmt = (s: string) => lang === 'bn' ? toBengaliNum(s) : s;
 
   return (
-    <div className={`min-h-screen pb-20 px-2 pt-4 space-y-3 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
+    <div className={`min-h-screen pb-20 md:pb-8 px-2 pt-4 space-y-3 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
       
       <div className="px-2">
         <LocationPicker value={location} onChange={setLocation} />
