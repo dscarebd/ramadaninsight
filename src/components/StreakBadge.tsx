@@ -1,6 +1,5 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
-import { usePrayerStreak } from '@/hooks/usePrayerStreak';
 
 const milestones = [
   { days: 365, emoji: '👑', bn: 'আল্লাহর প্রিয় বান্দা!', en: "Allah's Beloved Servant!", color: 'from-yellow-500/20 to-amber-500/20 border-yellow-500/40' },
@@ -53,12 +52,12 @@ const getMotivationalMessage = (streak: number): { bn: string; en: string } => {
 };
 
 interface StreakBadgeProps {
-  userId: string | null;
+  streakData: { currentStreak: number; longestStreak: number; loading: boolean };
 }
 
-const StreakBadge = ({ userId }: StreakBadgeProps) => {
+const StreakBadge = ({ streakData }: StreakBadgeProps) => {
   const { t } = useLanguage();
-  const { currentStreak, longestStreak, loading } = usePrayerStreak(userId);
+  const { currentStreak, longestStreak, loading } = streakData;
 
   if (loading) return null;
   if (currentStreak === 0 && longestStreak === 0) return null;
