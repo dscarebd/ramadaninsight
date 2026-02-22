@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { formatLocalDate } from '@/lib/utils';
 import { getAllLocalSalatDays } from '@/lib/localSalatStorage';
@@ -47,6 +47,9 @@ export const usePrayerStreak = (userId: string | null) => {
   const [currentStreak, setCurrentStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
 
   useEffect(() => {
     setLoading(true);
@@ -64,14 +67,13 @@ export const usePrayerStreak = (userId: string | null) => {
           setLoading(false);
         });
     } else {
-      // Use localStorage
       const localDays = getAllLocalSalatDays();
       const { current, longest } = calculateStreaks(localDays);
       setCurrentStreak(current);
       setLongestStreak(longest);
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, refreshKey]);
 
-  return { currentStreak, longestStreak, loading };
+  return { currentStreak, longestStreak, loading, refresh };
 };
