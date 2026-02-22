@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="hidden md:block border-t border-border bg-card mt-8">
       <div className="flex items-center justify-between px-6 py-4">
         <p className="text-sm text-muted-foreground">
-          {t('© ২০২৫ - ২০২৬ রমজান ইনসাইট। সর্বস্বত্ব সংরক্ষিত।', '© 2025 - 2026 Ramadan Insight. All rights reserved.')}
+          {t('© ২০২৫ - ২০২৬ রামাদান ইনসাইট। সর্বস্বত্ব সংরক্ষিত।', '© 2025 - 2026 Ramadan Insight. All rights reserved.')}
         </p>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">{t('ডাউনলোড করুন:', 'Download:')}</span>
