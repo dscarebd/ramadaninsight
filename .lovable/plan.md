@@ -1,29 +1,24 @@
 
 
-## Back Button Navigation Fix
+## Fix: Use Original App Logo for Splash Screens
 
 ### Problem
-Currently, pressing the hardware/system back button once exits the app. Users want:
-1. On non-home pages: back button navigates to the previous page
-2. On the home page: require two back button presses to exit (first press shows a toast warning, second press within 2 seconds exits)
+The generated splash screen images replaced the app's original logo design with a different, AI-generated image. The original logo has a dark black-green gradient background with a white mosque dome, crescent moon, and stars -- but the splash screens got a completely different design.
 
-### Implementation
+### Solution
+Regenerate all splash screen images using the actual app logo (`src/assets/logo.png`) centered on the splash background color (`#f5faf8`). The splash images should simply display the original logo centered on the light mint background, not a new design.
 
-**New hook: `src/hooks/useBackButtonHandler.ts`**
-- Uses Capacitor's `App` plugin to listen for the `backButton` event on native platforms
-- Also handles browser `popstate` for PWA/web usage
-- Logic:
-  - If current route is NOT `/` (home): use `navigate(-1)` to go back
-  - If current route IS `/`: on first press, show a toast "Press back again to exit" and start a 2-second timer. On second press within that window, call `App.exitApp()` (Capacitor) or do nothing on web
-- Hook is used inside `AppContent` component in `App.tsx`
+### Steps
 
-**Modified: `src/App.tsx`**
-- Import and call `useBackButtonHandler()` inside the `AppContent` component (which is already inside BrowserRouter, so it has access to router context)
-- Move `AppContent` inside `BrowserRouter` so it can use `useNavigate` and `useLocation`
+1. **Create splash screen images** in all 5 Android density sizes, each featuring the original `src/assets/logo.png` centered on the `#f5faf8` background:
+   - `public/splash/splash-mdpi.png` (320x480, logo ~96px)
+   - `public/splash/splash-hdpi.png` (480x800, logo ~144px)
+   - `public/splash/splash-xhdpi.png` (720x1280, logo ~192px)
+   - `public/splash/splash-xxhdpi.png` (960x1600, logo ~288px)
+   - `public/splash/splash-xxxhdpi.png` (1280x1920, logo ~384px)
 
-### Technical Details
+2. **No config changes needed** - the `capacitor.config.ts` splash screen settings remain the same.
 
-- Uses `@capacitor/app` plugin's `App.addListener('backButton', ...)` for native back button
-- Falls back gracefully on web (no-op for exit)
-- The "double-tap to exit" pattern is standard on Android apps
-- Toast message will be bilingual (Bengali/English) using the language context
+### Result
+The splash screen will show the original app logo (dark gradient dome with moon and stars) centered on the light mint green background, matching the app's actual branding.
+
