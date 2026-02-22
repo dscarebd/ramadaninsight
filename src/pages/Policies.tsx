@@ -65,8 +65,8 @@ const Policies = () => {
           <Separator />
           <p className="text-sm text-muted-foreground leading-relaxed">
             {t(
-              'কোনো প্রশ্ন বা পরামর্শ থাকলে আমাদের সাথে যোগাযোগ করুন: support@annur.com',
-              'For questions or suggestions, contact us at: support@annur.com'
+              'কোনো প্রশ্ন বা পরামর্শ থাকলে আমাদের সাথে যোগাযোগ করুন: support@annurdigital.com',
+              'For questions or suggestions, contact us at: support@annurdigital.com'
             )}
           </p>
         </CardContent>
