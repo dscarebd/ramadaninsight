@@ -13,6 +13,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -22,12 +23,15 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
+        if (signUpData.user && name.trim()) {
+          await supabase.from('profiles').update({ display_name: name.trim() }).eq('user_id', signUpData.user.id);
+        }
         toast({ title: t('সফল!', 'Success!'), description: t('ইমেইল চেক করুন', 'Check your email') });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -49,6 +53,14 @@ const Auth = () => {
             {isSignUp ? t('অ্যাকাউন্ট তৈরি করুন', 'Create Account') : t('লগইন', 'Login')}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-3">
+            {isSignUp && (
+              <Input
+                type="text"
+                placeholder={t('আপনার নাম', 'Your Name')}
+                value={name}
+                onChange={e => setName(e.target.value)}
+              />
+            )}
             <Input
               type="email"
               placeholder={t('ইমেইল', 'Email')}
