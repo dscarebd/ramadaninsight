@@ -15,6 +15,7 @@ import StreakBadge from '@/components/StreakBadge';
 import DailyPrayerReminder from '@/components/DailyPrayerReminder';
 import { usePrayerReminder } from '@/hooks/usePrayerReminder';
 import { useSalatSync } from '@/hooks/useSalatSync';
+import { usePrayerStreak } from '@/hooks/usePrayerStreak';
 
 const fiveWaqt = [
   { key: 'fajr', bn: 'ফজর', en: 'Fajr' },
@@ -47,6 +48,8 @@ const SalatTracker = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     () => localStorage.getItem('prayer_notifications') === 'true'
   );
+
+  const streakData = usePrayerStreak(user);
 
   // Auto-sync localStorage ↔ cloud when logged in
   useSalatSync(user);
@@ -109,6 +112,7 @@ const SalatTracker = () => {
     }
     // Always save to localStorage
     localStorage.setItem(`salat_${todayStr}`, JSON.stringify(updated));
+    streakData.refresh();
   };
 
   const resetAll = async () => {
@@ -123,6 +127,7 @@ const SalatTracker = () => {
         .upsert({ user_id: user, date: todayStr, ...reset }, { onConflict: 'user_id,date' });
     }
     localStorage.removeItem(`salat_${todayStr}`);
+    streakData.refresh();
   };
 
   const fiveCount = fiveWaqt.filter(p => checked[p.key]).length;
@@ -138,7 +143,7 @@ const SalatTracker = () => {
 
         <TabsContent value="today" className="space-y-4 mt-4">
           <WeeklySummary userId={user} />
-          <StreakBadge userId={user} />
+          <StreakBadge streakData={streakData} />
           <DailyPrayerReminder
             checked={checked}
             notificationsEnabled={notificationsEnabled}
@@ -237,7 +242,7 @@ const SalatTracker = () => {
 
         <TabsContent value="history" className="mt-4 space-y-4">
           <WeeklySummary userId={user} />
-          <SalatHistory userId={user} />
+          <SalatHistory userId={user} streakData={streakData} />
         </TabsContent>
 
         <TabsContent value="yearly" className="mt-4">

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
-import { usePrayerStreak } from '@/hooks/usePrayerStreak';
 import { getLocalSalatDaysInRange } from '@/lib/localSalatStorage';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -43,11 +42,12 @@ const monthNames = {
 
 interface SalatHistoryProps {
   userId: string | null;
+  streakData: { currentStreak: number; longestStreak: number; loading: boolean; refresh: () => void };
 }
 
-const SalatHistory = ({ userId }: SalatHistoryProps) => {
+const SalatHistory = ({ userId, streakData }: SalatHistoryProps) => {
   const { lang, t } = useLanguage();
-  const { currentStreak, longestStreak, refresh: refreshStreak } = usePrayerStreak(userId);
+  const { currentStreak, longestStreak, refresh: refreshStreak } = streakData;
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
