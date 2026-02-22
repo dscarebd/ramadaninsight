@@ -104,10 +104,7 @@ const DailyQuote = () => {
   return (
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
       <CardContent className="p-4 space-y-2">
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-4 w-4 text-primary" />
-          <h3 className="text-xs font-semibold text-primary">{t('আজকের বাণী', "Today's Wisdom")}</h3>
-        </div>
+        <h3 className="font-bold text-primary text-sm">{t('আজকের বাণী', "Today's Wisdom")}</h3>
         <p className="text-right text-2xl leading-loose font-arabic text-foreground" dir="rtl">
           {todayQuote.arabic}
         </p>
