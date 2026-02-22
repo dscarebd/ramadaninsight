@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Camera, Loader2, User } from 'lucide-react';
+import { ArrowLeft, Camera, Loader2, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -168,6 +168,12 @@ const Profile = () => {
           <Button className="w-full" onClick={handleSave} disabled={saving}>
             {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {t('সেভ করুন', 'Save')}
+          </Button>
+
+          {/* Logout */}
+          <Button variant="outline" className="w-full gap-2" onClick={async () => { await supabase.auth.signOut(); navigate('/settings'); }}>
+            <LogOut className="h-4 w-4" />
+            {t('লগআউট', 'Log Out')}
           </Button>
         </CardContent>
       </Card>
