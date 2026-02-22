@@ -1,24 +1,69 @@
 
 
-## Fix: Use Original App Logo for Splash Screens
+## Make the App iOS-Ready
 
-### Problem
-The generated splash screen images replaced the app's original logo design with a different, AI-generated image. The original logo has a dark black-green gradient background with a white mosque dome, crescent moon, and stars -- but the splash screens got a completely different design.
+### What's Already Done
+- `@capacitor/ios` is already installed
+- Capacitor config exists with splash screen settings
+- Apple meta tags are in `index.html`
+- Back button handler and notifications are set up
 
-### Solution
-Regenerate all splash screen images using the actual app logo (`src/assets/logo.png`) centered on the splash background color (`#f5faf8`). The splash images should simply display the original logo centered on the light mint background, not a new design.
+### What Needs to Change
 
-### Steps
+#### 1. Update Capacitor Config for iOS Splash Screen
+The current config only has `androidSplashResourceName`. Add iOS-specific splash screen settings so the splash works on both platforms.
 
-1. **Create splash screen images** in all 5 Android density sizes, each featuring the original `src/assets/logo.png` centered on the `#f5faf8` background:
-   - `public/splash/splash-mdpi.png` (320x480, logo ~96px)
-   - `public/splash/splash-hdpi.png` (480x800, logo ~144px)
-   - `public/splash/splash-xhdpi.png` (720x1280, logo ~192px)
-   - `public/splash/splash-xxhdpi.png` (960x1600, logo ~288px)
-   - `public/splash/splash-xxxhdpi.png` (1280x1920, logo ~384px)
+#### 2. Add iOS Safe Area Support
+iOS devices (especially those with notch/Dynamic Island) need safe area padding. Update the CSS to respect `env(safe-area-inset-*)` values so content isn't hidden behind the notch, home indicator, or status bar.
 
-2. **No config changes needed** - the `capacitor.config.ts` splash screen settings remain the same.
+#### 3. Add iOS Status Bar Plugin
+Install `@capacitor/status-bar` to control the status bar appearance (color, style) on iOS, ensuring a polished native feel.
 
-### Result
-The splash screen will show the original app logo (dark gradient dome with moon and stars) centered on the light mint green background, matching the app's actual branding.
+#### 4. Add iOS Keyboard Plugin
+Install `@capacitor/keyboard` to handle keyboard behavior on iOS (auto-scroll, resize mode) which prevents common issues where the keyboard covers input fields.
+
+#### 5. Platform-Aware Notification Channels
+The notification code already handles Android-only channels. No changes needed there -- it works correctly on iOS already.
+
+#### 6. Update Back Button Handler for iOS
+The hardware back button handler uses `App.exitApp()` which is Android-only. Add a platform check so it only runs on Android (iOS has no hardware back button and uses swipe gestures natively).
+
+---
+
+### Technical Details
+
+**capacitor.config.ts** -- Add iOS splash screen config:
+- Add `iosScheme: 'capacitor'` for proper URL handling
+- Add splash screen settings that work for both platforms
+
+**src/index.css** -- Add safe area insets:
+- Add `padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)` to the body or root container
+- Ensure bottom navigation respects the home indicator area
+
+**src/hooks/useBackButtonHandler.ts** -- Platform guard:
+- Wrap the back button listener with `Capacitor.getPlatform() === 'android'` check since iOS doesn't have a hardware back button
+
+**src/components/BottomNav.tsx** -- Safe area bottom padding:
+- Add extra bottom padding on iOS to account for the home indicator bar
+
+**Install new dependencies:**
+- `@capacitor/status-bar` -- control iOS status bar
+- `@capacitor/keyboard` -- handle iOS keyboard behavior
+
+**New: src/hooks/useStatusBar.ts** -- Configure status bar:
+- Set status bar style and color on app launch
+- Handle dark/light theme changes
+
+**New: src/hooks/useKeyboard.ts** -- Handle iOS keyboard:
+- Configure keyboard accessory bar and scroll behavior
+
+### Build Steps (for the user)
+After these changes, to build the iOS app:
+1. Export to GitHub and `git pull`
+2. Run `npm install`
+3. Run `npx cap add ios`
+4. Run `npm run build && npx cap sync`
+5. Run `npx cap open ios` (requires Mac with Xcode)
+6. In Xcode, add your app icon to `Assets.xcassets` and configure signing
+7. Build and run on simulator or device
 
