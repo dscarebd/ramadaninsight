@@ -21,6 +21,7 @@ import { useBackButtonHandler } from "@/hooks/useBackButtonHandler";
 import { useStatusBar } from "@/hooks/useStatusBar";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 import appQuran from '@/assets/app-quran.png';
 import appQuiz from '@/assets/app-quiz.png';
 import appExpense from '@/assets/app-expense.png';
@@ -50,6 +51,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <AppContent />
           <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto min-h-screen bg-background relative">
             <Header />
