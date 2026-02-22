@@ -62,12 +62,12 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg">
+    <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg md:bg-background md:text-foreground md:shadow-sm md:border-b md:border-border">
       <div className="flex items-center gap-3 px-4 py-3">
         <img src={logo} alt="Ramadan Insight" className="h-10 w-10 rounded-lg object-cover shadow-md" />
         <div className="flex-1">
-          <h1 className="text-lg font-bold leading-tight">
-            {isHome ? t('রমজান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight'))}
+        <h1 className="text-lg font-bold leading-tight md:text-primary">
+          {isHome ? t('রমজান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight'))}
           </h1>
           <p className="text-xs opacity-80 md:hidden">
             {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩
@@ -85,8 +85,8 @@ const Header = () => {
                 className={cn(
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-primary-foreground/20 text-primary-foreground'
-                    : 'text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}
               >
                 <tab.icon className="h-4 w-4" />
@@ -99,7 +99,7 @@ const Header = () => {
         <button
           onClick={handleGPS}
           disabled={locating}
-          className="p-2 rounded-full hover:bg-primary-foreground/10 transition-colors"
+          className="p-2 rounded-full hover:bg-primary-foreground/10 md:hover:bg-muted transition-colors md:text-foreground"
           title={t('GPS অবস্থান', 'GPS Location')}
         >
           {locating ? (
