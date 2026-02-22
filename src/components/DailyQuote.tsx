@@ -108,7 +108,7 @@ const DailyQuote = () => {
           <BookOpen className="h-4 w-4 text-primary" />
           <h3 className="text-xs font-semibold text-primary">{t('আজকের বাণী', "Today's Wisdom")}</h3>
         </div>
-        <p className="text-right text-lg leading-loose font-arabic text-foreground" dir="rtl">
+        <p className="text-right text-2xl leading-loose font-arabic text-foreground" dir="rtl">
           {todayQuote.arabic}
         </p>
         <p className="text-sm text-foreground/90">

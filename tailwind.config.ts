@@ -14,7 +14,7 @@ export default {
     },
     fontFamily: {
       bengali: ['"Anek Bangla"', 'sans-serif'],
-      arabic: ['"Noto Sans Arabic"', 'sans-serif'],
+      arabic: ['"KFGQPC Uthmanic Script HAFS"', '"Noto Sans Arabic"', 'sans-serif'],
       'bengali-num': ['"Anek Bangla"', 'sans-serif'],
     },
     extend: {
