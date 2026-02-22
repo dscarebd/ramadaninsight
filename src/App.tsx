@@ -33,7 +33,7 @@ const App = () => (
         <Sonner />
         <AppContent />
         <BrowserRouter>
-          <div className="max-w-md mx-auto min-h-screen bg-background relative">
+          <div className="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto min-h-screen bg-background relative">
             <Header />
             <Routes>
               <Route path="/" element={<Index />} />

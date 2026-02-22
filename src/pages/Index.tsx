@@ -76,7 +76,7 @@ const Index = () => {
   const isAfterIftar = currentHM >= iftarTime;
 
   return (
-    <div className={`min-h-screen pb-20 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
+    <div className={`min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
       {/* Location Picker */}
       <LocationPicker value={location} onChange={setLocation} />
       {isFetching && (
@@ -95,76 +95,60 @@ const Index = () => {
             : t('☀️ রোজা এখনো শুরু হয়নি', '☀️ Fasting has not started yet')}
       </div>
 
-      {/* Roza Count & Hijri Date */}
-      <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-        <CardContent className="p-4 text-center space-y-1">
-          <p className="text-3xl font-bold text-primary font-bengali-num">
-            {t(`রোজা ${toBengaliNum(rozaCount)}/${toBengaliNum(totalRoza)}`, `Roza ${rozaCount}/${totalRoza}`)}
-          </p>
-          {todayData && (
-            <>
-              <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(rozaCount) : rozaCount}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
-              <p className="text-xs text-muted-foreground">{todayData.gregorianDate}</p>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Today's Times */}
-      <div className="grid grid-cols-2 gap-3">
-        <Card className="border-primary/30">
-          <CardContent className="p-4 text-center">
-            <Moon className="h-6 w-6 text-primary mx-auto mb-1" />
-            <p className="text-xs text-muted-foreground">{t('সেহরি শেষ', 'Sehri End')}</p>
-            <p className="text-2xl font-bold text-primary font-bengali-num">{lang === 'bn' ? toBengaliNum(to12Hour(sehriTime)) : to12Hour(sehriTime)}</p>
+      {/* Roza Count & Countdown - side by side on desktop */}
+      <div className="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <CardContent className="p-4 text-center space-y-1">
+            <p className="text-3xl font-bold text-primary font-bengali-num">
+              {t(`রোজা ${toBengaliNum(rozaCount)}/${toBengaliNum(totalRoza)}`, `Roza ${rozaCount}/${totalRoza}`)}
+            </p>
+            {todayData && (
+              <>
+                <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(rozaCount) : rozaCount}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
+                <p className="text-xs text-muted-foreground">{todayData.gregorianDate}</p>
+              </>
+            )}
           </CardContent>
         </Card>
-        <Card className="border-accent/30">
-          <CardContent className="p-4 text-center">
-            <Sun className="h-6 w-6 text-accent mx-auto mb-1" />
-            <p className="text-xs text-muted-foreground">{t('ইফতার', 'Iftar')}</p>
-            <p className="text-2xl font-bold text-accent-foreground font-bengali-num">{lang === 'bn' ? toBengaliNum(to12Hour(iftarTime)) : to12Hour(iftarTime)}</p>
+
+        <Card>
+          <CardContent className="p-4">
+            {isFasting ? (
+              <CountdownTimer targetTime={iftarTime} label={t('ইফতার পর্যন্ত বাকি', 'Time until Iftar')} />
+            ) : (
+              <CountdownTimer targetTime={sehriTime} label={t('সেহরি পর্যন্ত বাকি', 'Time until Sehri')} />
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Countdown */}
-      <Card>
-        <CardContent className="p-4">
-          {isFasting ? (
-            <CountdownTimer targetTime={iftarTime} label={t('ইফতার পর্যন্ত বাকি', 'Time until Iftar')} />
-          ) : (
-            <CountdownTimer targetTime={sehriTime} label={t('সেহরি পর্যন্ত বাকি', 'Time until Sehri')} />
-          )}
-        </CardContent>
-      </Card>
-
       {/* Daily Quote */}
       <DailyQuote />
 
-      {/* Sehri Niyat */}
-      <Card>
-        <CardContent className="p-4 space-y-2">
-          <h3 className="font-bold text-primary text-sm">{t('সেহরির নিয়ত', 'Sehri Intention (Niyat)')}</h3>
-          <p className="text-right text-lg leading-loose font-arabic" dir="rtl">{sehriNiyat.arabic}</p>
-          <p className="text-sm text-muted-foreground italic">
-            {lang === 'bn' ? sehriNiyat.transliterationBn : sehriNiyat.transliterationEn}
-          </p>
-          <p className="text-sm">{lang === 'bn' ? sehriNiyat.meaningBn : sehriNiyat.meaningEn}</p>
-        </CardContent>
-      </Card>
+      {/* Sehri Niyat + Iftar Dua - side by side on desktop */}
+      <div className="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
+        <Card>
+          <CardContent className="p-4 space-y-2">
+            <h3 className="font-bold text-primary text-sm">{t('সেহরির নিয়ত', 'Sehri Intention (Niyat)')}</h3>
+            <p className="text-right text-lg leading-loose font-arabic" dir="rtl">{sehriNiyat.arabic}</p>
+            <p className="text-sm text-muted-foreground italic">
+              {lang === 'bn' ? sehriNiyat.transliterationBn : sehriNiyat.transliterationEn}
+            </p>
+            <p className="text-sm">{lang === 'bn' ? sehriNiyat.meaningBn : sehriNiyat.meaningEn}</p>
+          </CardContent>
+        </Card>
 
-      {/* Iftar Dua */}
-      <Card>
-        <CardContent className="p-4 space-y-2">
-          <h3 className="font-bold text-primary text-sm">{t('ইফতারের দোয়া', 'Iftar Dua')}</h3>
-          <p className="text-right text-lg leading-loose font-arabic" dir="rtl">{iftarDua.arabic}</p>
-          <p className="text-sm text-muted-foreground italic">
-            {lang === 'bn' ? iftarDua.transliterationBn : iftarDua.transliterationEn}
-          </p>
-          <p className="text-sm">{lang === 'bn' ? iftarDua.meaningBn : iftarDua.meaningEn}</p>
-        </CardContent>
-      </Card>
+        <Card>
+          <CardContent className="p-4 space-y-2">
+            <h3 className="font-bold text-primary text-sm">{t('ইফতারের দোয়া', 'Iftar Dua')}</h3>
+            <p className="text-right text-lg leading-loose font-arabic" dir="rtl">{iftarDua.arabic}</p>
+            <p className="text-sm text-muted-foreground italic">
+              {lang === 'bn' ? iftarDua.transliterationBn : iftarDua.transliterationEn}
+            </p>
+            <p className="text-sm">{lang === 'bn' ? iftarDua.meaningBn : iftarDua.meaningEn}</p>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Translation Disclaimer */}
       <p className="text-xs text-muted-foreground bg-muted rounded-lg p-2">

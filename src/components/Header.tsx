@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useLocation } from 'react-router-dom';
-import { LocateFixed, Loader2 } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { LocateFixed, Loader2, Home, HandHeart, CheckSquare, Calendar, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { findNearestLocation, findUpazila, findZilla, findDivision } from '@/data/locations';
+import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
 
 const pageTitles: Record<string, { bn: string; en: string }> = {
@@ -14,9 +15,18 @@ const pageTitles: Record<string, { bn: string; en: string }> = {
   '/policies': { bn: 'নীতিমালা', en: 'Policies' },
 };
 
+const navTabs = [
+  { path: '/', icon: Home, labelBn: 'হোম', labelEn: 'Home' },
+  { path: '/dua', icon: HandHeart, labelBn: 'দোয়া', labelEn: 'Dua' },
+  { path: '/salat', icon: CheckSquare, labelBn: 'নামাজ', labelEn: 'Salat' },
+  { path: '/schedule', icon: Calendar, labelBn: 'সময়সূচী', labelEn: 'Schedule' },
+  { path: '/settings', icon: Settings, labelBn: 'সেটিংস', labelEn: 'Settings' },
+];
+
 const Header = () => {
   const { lang, t } = useLanguage();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const isHome = pathname === '/';
   const pageTitle = pageTitles[pathname];
   const [locating, setLocating] = useState(false);
@@ -59,10 +69,33 @@ const Header = () => {
           <h1 className="text-lg font-bold leading-tight">
             {isHome ? t('রমজান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight'))}
           </h1>
-          <p className="text-xs opacity-80">
+          <p className="text-xs opacity-80 md:hidden">
             {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩
           </p>
         </div>
+
+        {/* Desktop Nav Links */}
+        <nav className="hidden md:flex items-center gap-1">
+          {navTabs.map(tab => {
+            const isActive = pathname === tab.path;
+            return (
+              <button
+                key={tab.path}
+                onClick={() => navigate(tab.path)}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-primary-foreground/20 text-primary-foreground'
+                    : 'text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground'
+                )}
+              >
+                <tab.icon className="h-4 w-4" />
+                <span>{t(tab.labelBn, tab.labelEn)}</span>
+              </button>
+            );
+          })}
+        </nav>
+
         <button
           onClick={handleGPS}
           disabled={locating}

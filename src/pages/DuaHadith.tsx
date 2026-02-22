@@ -37,7 +37,7 @@ const DuaHadith = () => {
     `${lang === 'bn' ? dua.titleBn : dua.titleEn}\n\n${dua.arabic}\n\n${lang === 'bn' ? dua.meaningBn : dua.meaningEn}`;
 
   return (
-    <div className="min-h-screen pb-20 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
       
 
       {/* Daily Hadith */}
@@ -65,6 +65,7 @@ const DuaHadith = () => {
 
       {/* Ramadan Duas */}
       <h3 className="font-bold text-sm text-primary">{t('🤲 রমজানের দোয়াসমূহ', '🤲 Ramadan Duas')}</h3>
+      <div className="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
       {ramadanDuas.map((dua, i) => (
         <Card key={i}>
           <CardContent className="p-4 space-y-2">
@@ -84,6 +85,7 @@ const DuaHadith = () => {
           </CardContent>
         </Card>
       ))}
+      </div>
     </div>
   );
 };
