@@ -14,7 +14,7 @@ export default {
     },
     fontFamily: {
       bengali: ['"Anek Bangla"', 'sans-serif'],
-      arabic: ['"Amiri"', 'serif'],
+      arabic: ['"Noto Sans Arabic"', 'sans-serif'],
       'bengali-num': ['"Anek Bangla"', 'sans-serif'],
     },
     extend: {
