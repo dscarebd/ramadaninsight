@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { usePrayerStreak } from '@/hooks/usePrayerStreak';
 import { getLocalSalatDaysInRange } from '@/lib/localSalatStorage';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 const prayerLabels: Record<string, { bn: string; en: string }> = {
@@ -53,6 +54,40 @@ const SalatHistory = ({ userId }: SalatHistoryProps) => {
   const [data, setData] = useState<DayData[]>([]);
   const [selectedDay, setSelectedDay] = useState<DayData | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const handleTogglePrayer = useCallback(async (prayer: typeof fiveWaqt[number]) => {
+    if (!selectedDay) return;
+    const updated = { ...selectedDay, [prayer]: !selectedDay[prayer] };
+    setSelectedDay(updated);
+
+    // Update localStorage
+    const { date, ...prayerData } = updated;
+    localStorage.setItem(`salat_${date}`, JSON.stringify(prayerData));
+
+    // Update in-memory data
+    setData(prev => {
+      const exists = prev.find(d => d.date === date);
+      if (exists) return prev.map(d => d.date === date ? updated : d);
+      return [...prev, updated].sort((a, b) => a.date.localeCompare(b.date));
+    });
+
+    // Sync to cloud if logged in
+    if (userId) {
+      await supabase
+        .from('salat_tracking')
+        .upsert({
+          user_id: userId,
+          date,
+          fajr: updated.fajr,
+          dhuhr: updated.dhuhr,
+          asr: updated.asr,
+          maghrib: updated.maghrib,
+          isha: updated.isha,
+          taraweeh: updated.taraweeh,
+          tahajjud: updated.tahajjud,
+        }, { onConflict: 'user_id,date' });
+    }
+  }, [selectedDay, userId]);
 
   const prevMonth = () => {
     if (month === 0) { setMonth(11); setYear(y => y - 1); }
@@ -201,9 +236,16 @@ const SalatHistory = ({ userId }: SalatHistoryProps) => {
               return (
                 <button
                   key={day}
-                  onClick={() => !isFuture && dayData && setSelectedDay(dayData)}
-                  disabled={isFuture || !dayData}
-                  className={`aspect-square rounded-md flex flex-col items-center justify-center text-xs transition-all ${bg} ${isSelected ? 'ring-2 ring-primary' : ''} ${!isFuture && dayData ? 'cursor-pointer hover:ring-1 hover:ring-primary/50' : ''}`}
+                  onClick={() => {
+                    if (isFuture) return;
+                    const existing = dataMap.get(dateStr);
+                    setSelectedDay(existing || {
+                      date: dateStr, fajr: false, dhuhr: false, asr: false,
+                      maghrib: false, isha: false, taraweeh: false, tahajjud: false,
+                    });
+                  }}
+                  disabled={isFuture}
+                  className={`aspect-square rounded-md flex flex-col items-center justify-center text-xs transition-all ${bg} ${isSelected ? 'ring-2 ring-primary' : ''} ${!isFuture ? 'cursor-pointer hover:ring-1 hover:ring-primary/50' : ''}`}
                 >
                   <span className="font-medium">{day}</span>
                   {!isFuture && dayData && (
@@ -227,25 +269,19 @@ const SalatHistory = ({ userId }: SalatHistoryProps) => {
             </h4>
             <div className="grid grid-cols-2 gap-2">
               {fiveWaqt.map(p => (
-                <div key={p} className="flex items-center gap-2 text-sm">
-                  <span className={selectedDay[p] ? 'text-green-600' : 'text-destructive'}>
-                    {selectedDay[p] ? '✓' : '✗'}
-                  </span>
+                <label
+                  key={p}
+                  className="flex items-center gap-2 text-sm cursor-pointer select-none rounded-md p-1.5 -m-1.5 hover:bg-accent/50 transition-colors"
+                  onClick={() => handleTogglePrayer(p)}
+                >
+                  <Checkbox
+                    checked={selectedDay[p]}
+                    onCheckedChange={() => handleTogglePrayer(p)}
+                    className="pointer-events-none"
+                  />
                   <span>{lang === 'bn' ? prayerLabels[p].bn : prayerLabels[p].en}</span>
-                </div>
+                </label>
               ))}
-              {selectedDay.taraweeh && (
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-green-600">✓</span>
-                  <span>{t('তারাবীহ', 'Taraweeh')}</span>
-                </div>
-              )}
-              {selectedDay.tahajjud && (
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-green-600">✓</span>
-                  <span>{t('তাহাজ্জুদ', 'Tahajjud')}</span>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
