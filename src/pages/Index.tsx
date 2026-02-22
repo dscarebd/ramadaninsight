@@ -76,7 +76,7 @@ const Index = () => {
   const isAfterIftar = currentHM >= iftarTime;
 
   return (
-    <div className={`min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
+    <div className={`min-h-screen md:min-h-0 pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
       {/* Location Picker */}
       <LocationPicker value={location} onChange={setLocation} />
       {isFetching && (
