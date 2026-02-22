@@ -64,14 +64,16 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg md:bg-background md:text-foreground md:shadow-sm md:border-b md:border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center gap-3 px-4 py-3">
-        <img src={logo} alt="Ramadan Insight" className="h-10 w-10 rounded-lg object-cover shadow-md" />
-        <div className="flex-1">
-        <h1 className="text-lg font-bold leading-tight md:text-primary">
-          {isHome ? t('রামাদান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রামাদান ইনসাইট', 'Ramadan Insight'))}
-          </h1>
-          <p className="text-xs opacity-80 md:hidden">
-            {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩
-          </p>
+        <div className="flex items-center gap-3 flex-1 md:cursor-pointer" onClick={() => navigate('/')}>
+          <img src={logo} alt="Ramadan Insight" className="h-10 w-10 rounded-lg object-cover shadow-md" />
+          <div>
+            <h1 className="text-lg font-bold leading-tight md:text-primary">
+              {isHome ? t('রামাদান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রামাদান ইনসাইট', 'Ramadan Insight'))}
+            </h1>
+            <p className="text-xs opacity-80 md:hidden">
+              {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩
+            </p>
+          </div>
         </div>
 
         {/* Desktop Nav Links */}
