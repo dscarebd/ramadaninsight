@@ -84,7 +84,7 @@ const Policies = () => {
               'If you need any for your project, directly contact here.'
             )}
           </p>
-          <Button asChild variant="outline" className="w-full gap-2">
+          <Button asChild className="w-full gap-2 bg-[#2AABEE] hover:bg-[#229ED9] text-white">
             <a href="https://t.me/nuralamin_official" target="_blank" rel="noopener noreferrer">
               <Send className="h-4 w-4" />
               @nuralamin_official
