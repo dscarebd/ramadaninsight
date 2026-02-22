@@ -72,38 +72,28 @@ const StreakBadge = ({ streakData }: StreakBadgeProps) => {
 
   return (
     <Card className={`bg-gradient-to-br ${gradientClass} border`}>
-      <CardContent className="p-4">
-        <div className="text-center space-y-1.5">
-          <p className="text-3xl">{achieved ? achieved.emoji : '🕌'}</p>
-          <p className="text-base font-bold text-primary font-bengali-num">
-            {currentStreak > 0
-              ? `${currentStreak} ${t('দিনের স্ট্রিক!', 'Day Streak!')}`
-              : t('আজকে শুরু করুন!', 'Start today!')}
-          </p>
-          {achieved && (
-            <p className="text-sm text-foreground/80">
-              {t(achieved.bn, achieved.en)}
+      <CardContent className="p-3">
+        <div className="flex items-center gap-3">
+          <p className="text-2xl">{achieved ? achieved.emoji : '🕌'}</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-primary font-bengali-num leading-tight">
+              {currentStreak > 0
+                ? `${currentStreak} ${t('দিনের স্ট্রিক!', 'Day Streak!')}`
+                : t('আজকে শুরু করুন!', 'Start today!')}
+              {achieved && <span className="font-normal text-foreground/80"> — {t(achieved.bn, achieved.en)}</span>}
             </p>
-          )}
-          {longestStreak > currentStreak && longestStreak > 0 && (
-            <p className="text-xs text-muted-foreground pt-1">
-              {t(
-                `🏅 সর্বোচ্চ স্ট্রিক: ${longestStreak} দিন`,
-                `🏅 Longest streak: ${longestStreak} days`
-              )}
+            <p className="text-xs text-muted-foreground mt-0.5 truncate">
+              {nextMilestone && daysToNext && daysToNext > 0
+                ? t(
+                    `পরবর্তী: ${nextMilestone.emoji} ${nextMilestone.days} দিন (আর ${daysToNext})`,
+                    `Next: ${nextMilestone.emoji} ${nextMilestone.days} days (${daysToNext} more)`
+                  )
+                : longestStreak > currentStreak && longestStreak > 0
+                  ? t(`🏅 সর্বোচ্চ: ${longestStreak} দিন`, `🏅 Best: ${longestStreak} days`)
+                  : `"${t(motivation.bn, motivation.en)}"`
+              }
             </p>
-          )}
-          {nextMilestone && daysToNext && daysToNext > 0 && (
-            <p className="text-xs text-muted-foreground pt-1">
-              {t(
-                `পরবর্তী ব্যাজ: ${nextMilestone.emoji} ${nextMilestone.days} দিন (আর ${daysToNext} দিন)`,
-                `Next badge: ${nextMilestone.emoji} ${nextMilestone.days} days (${daysToNext} more)`
-              )}
-            </p>
-          )}
-          <p className="text-xs italic text-foreground/60 pt-2 border-t border-border/50 mt-2">
-            "{t(motivation.bn, motivation.en)}"
-          </p>
+          </div>
         </div>
       </CardContent>
     </Card>
