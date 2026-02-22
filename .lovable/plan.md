@@ -1,53 +1,79 @@
 
-# Desktop Responsive Design
 
-Currently the app is locked to `max-w-md` (28rem / 448px) width for all screen sizes. This plan will make it adapt nicely to desktop while keeping the mobile experience unchanged.
+## User Profile Page
 
-## Changes Overview
+### Overview
+Create a dedicated profile page where logged-in users can view and update their name, email, and profile photo. The Account card on the Settings page will be redesigned to show user avatar (left) + name/email (right) as a clickable card that navigates to the profile page.
 
-### 1. App Layout (src/App.tsx)
-- Change `max-w-md` to `max-w-md md:max-w-2xl lg:max-w-4xl` so content expands on larger screens
-- On desktop (md+), hide the bottom nav and show a horizontal top navigation bar instead (or sidebar)
+### Database Changes
 
-### 2. Bottom Nav (src/components/BottomNav.tsx)
-- Hide on desktop: add `md:hidden` class
-- Create a desktop navigation that appears inside the Header on md+ screens
+The existing `profiles` table needs two new columns:
+- `display_name` (text, nullable) -- user's display name
+- `avatar_url` (text, nullable) -- URL to profile photo in storage
 
-### 3. Header (src/components/Header.tsx)
-- On desktop, expand the header to include navigation links (Home, Dua, Salat, Schedule, Settings) inline
-- Use `hidden md:flex` for desktop nav links
+A new storage bucket `avatars` will be created (public) with RLS policies so users can upload/update their own avatar.
 
-### 4. Index Page (src/pages/Index.tsx)
-- Use grid layouts for cards on desktop: Sehri/Iftar cards already use `grid-cols-2`, add wider grids for other sections
-- Roza count + countdown side by side on desktop: `md:grid md:grid-cols-2 md:gap-4`
-- Sehri Niyat + Iftar Dua side by side: `md:grid md:grid-cols-2 md:gap-4`
+### New Page: `/profile`
 
-### 5. Salat Tracker (src/pages/SalatTracker.tsx)
-- On desktop, display the "Today" tab content in a multi-column layout
-- Streak + Weekly Summary + Prayer checklist in a grid
+A new page `src/pages/Profile.tsx` will be created with:
+- Avatar upload (click to change photo, stored in the `avatars` bucket)
+- Display name input field
+- Email display (read-only, from auth)
+- Save button to update profile data
+- Back navigation
 
-### 6. Dua & Hadith (src/pages/DuaHadith.tsx)
-- Display dua cards in a 2-column grid on desktop: `md:grid md:grid-cols-2 md:gap-4`
+### Settings Page Update
 
-### 7. Schedule (src/pages/Schedule.tsx)
-- Table already works well, just ensure it uses available width
+The Account section in `src/pages/Settings.tsx` will be changed:
+- When logged in: show a clickable card with avatar image on the left, name + email on the right, navigates to `/profile`
+- Keep the logout button below
+- When not logged in: keep existing login prompt
 
-### 8. Settings (src/pages/Settings.tsx)
-- Display settings cards in a 2-column grid on desktop
+### Routing
 
-### 9. Policies (src/pages/Policies.tsx)
-- 2-column grid for policy cards on desktop
+Add `/profile` route in `App.tsx`.
 
-## Technical Details
+---
 
-**Files to modify:**
-- `src/App.tsx` -- widen container, adjust layout
-- `src/components/Header.tsx` -- add inline desktop nav links
-- `src/components/BottomNav.tsx` -- hide on `md:` screens
-- `src/pages/Index.tsx` -- responsive grids for card pairs
-- `src/pages/DuaHadith.tsx` -- 2-col grid for dua cards
-- `src/pages/SalatTracker.tsx` -- multi-column layout for desktop
-- `src/pages/Settings.tsx` -- 2-col grid for settings cards
-- `src/pages/Policies.tsx` -- 2-col grid for policy cards
+### Technical Details
 
-**Approach:** All changes use Tailwind responsive prefixes (`md:`, `lg:`) so mobile layout remains completely untouched. No new components or dependencies needed.
+**Migration SQL:**
+```sql
+ALTER TABLE public.profiles
+  ADD COLUMN display_name text,
+  ADD COLUMN avatar_url text;
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', true);
+
+CREATE POLICY "Users can upload their own avatar"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+CREATE POLICY "Users can update their own avatar"
+ON storage.objects FOR UPDATE TO authenticated
+USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+CREATE POLICY "Users can delete their own avatar"
+ON storage.objects FOR DELETE TO authenticated
+USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+CREATE POLICY "Anyone can view avatars"
+ON storage.objects FOR SELECT TO public
+USING (bucket_id = 'avatars');
+```
+
+**New file: `src/pages/Profile.tsx`**
+- Form with avatar upload, display name input, email (read-only)
+- Upload avatar to `avatars/{user_id}/avatar.png`
+- Update `profiles` table with `display_name` and `avatar_url`
+- Uses existing UI components (Card, Input, Button, Avatar)
+
+**Modified: `src/pages/Settings.tsx`**
+- Fetch profile data (display_name, avatar_url) for logged-in user
+- Render clickable card: Avatar on left, name + email on right
+- `onClick` navigates to `/profile`
+
+**Modified: `src/App.tsx`**
+- Add `<Route path="/profile" element={<Profile />} />`
+
