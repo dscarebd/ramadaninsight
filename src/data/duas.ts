@@ -78,6 +78,13 @@ export const ramadanDuas = [
     meaningBn: 'হে আমাদের রব! আমাদের থেকে কবুল করো, নিশ্চয়ই তুমি সর্বশ্রোতা ও সর্বজ্ঞানী।',
     meaningEn: 'Our Lord! Accept from us. Indeed, You are the All-Hearing, the All-Knowing.',
   },
+  {
+    titleBn: 'হেদায়েতের দোয়া',
+    titleEn: 'Dua for Guidance',
+    arabic: 'اِهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',
+    meaningBn: 'আমাদের সরল-সঠিক পথে পরিচালিত কর।',
+    meaningEn: 'Guide us to the straight path.',
+  },
 ];
 
 export const dailyHadiths = [
