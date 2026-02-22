@@ -137,10 +137,8 @@ const SalatTracker = () => {
         </TabsList>
 
         <TabsContent value="today" className="space-y-4 mt-4">
-          <div className="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
-            <StreakBadge userId={user} />
-            <WeeklySummary userId={user} />
-          </div>
+          <WeeklySummary userId={user} />
+          <StreakBadge userId={user} />
           <DailyPrayerReminder
             checked={checked}
             notificationsEnabled={notificationsEnabled}
