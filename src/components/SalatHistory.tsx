@@ -269,18 +269,17 @@ const SalatHistory = ({ userId }: SalatHistoryProps) => {
             </h4>
             <div className="grid grid-cols-2 gap-2">
               {fiveWaqt.map(p => (
-                <label
+                <div
                   key={p}
                   className="flex items-center gap-2 text-sm cursor-pointer select-none rounded-md p-1.5 -m-1.5 hover:bg-accent/50 transition-colors"
                   onClick={() => handleTogglePrayer(p)}
                 >
                   <Checkbox
                     checked={selectedDay[p]}
-                    onCheckedChange={() => handleTogglePrayer(p)}
                     className="pointer-events-none"
                   />
                   <span>{lang === 'bn' ? prayerLabels[p].bn : prayerLabels[p].en}</span>
-                </label>
+                </div>
               ))}
             </div>
           </CardContent>
