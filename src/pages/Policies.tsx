@@ -1,6 +1,8 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Policies = () => {
   const { t } = useLanguage();
@@ -69,6 +71,25 @@ const Policies = () => {
               'For questions or suggestions, contact us at: support@annurdigital.com'
             )}
           </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <h2 className="text-lg font-bold text-foreground">{t('প্রজেক্ট সার্ভিস', 'Project Service')}</h2>
+          <Separator />
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {t(
+              'আপনার প্রজেক্টের জন্য কিছু প্রয়োজন হলে সরাসরি যোগাযোগ করুন।',
+              'If you need any for your project, directly contact here.'
+            )}
+          </p>
+          <Button asChild variant="outline" className="w-full gap-2">
+            <a href="https://t.me/nuralamin_official" target="_blank" rel="noopener noreferrer">
+              <Send className="h-4 w-4" />
+              @nuralamin_official
+            </a>
+          </Button>
         </CardContent>
       </Card>
     </div>
