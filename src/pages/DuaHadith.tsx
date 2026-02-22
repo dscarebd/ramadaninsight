@@ -80,7 +80,7 @@ const DuaHadith = () => {
                 {copiedId === `dua-${i}` ? <Check className="h-4 w-4 text-primary" /> : <Share2 className="h-4 w-4" />}
               </Button>
             </div>
-            <p className="text-right text-2xl leading-loose font-arabic" dir="rtl">{dua.arabic}</p>
+            <p className="text-right text-3xl leading-loose font-arabic" dir="rtl">{dua.arabic}</p>
             <p className="text-sm">{lang === 'bn' ? dua.meaningBn : dua.meaningEn}</p>
           </CardContent>
         </Card>

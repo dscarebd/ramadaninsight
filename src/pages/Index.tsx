@@ -130,7 +130,7 @@ const Index = () => {
         <Card>
           <CardContent className="p-4 space-y-2">
             <h3 className="font-bold text-primary text-sm">{t('সেহরির নিয়ত', 'Sehri Intention (Niyat)')}</h3>
-            <p className="text-right text-2xl leading-loose font-arabic" dir="rtl">{sehriNiyat.arabic}</p>
+            <p className="text-right text-3xl leading-loose font-arabic" dir="rtl">{sehriNiyat.arabic}</p>
             <p className="text-sm text-muted-foreground italic">
               {lang === 'bn' ? sehriNiyat.transliterationBn : sehriNiyat.transliterationEn}
             </p>
@@ -141,7 +141,7 @@ const Index = () => {
         <Card>
           <CardContent className="p-4 space-y-2">
             <h3 className="font-bold text-primary text-sm">{t('ইফতারের দোয়া', 'Iftar Dua')}</h3>
-            <p className="text-right text-2xl leading-loose font-arabic" dir="rtl">{iftarDua.arabic}</p>
+            <p className="text-right text-3xl leading-loose font-arabic" dir="rtl">{iftarDua.arabic}</p>
             <p className="text-sm text-muted-foreground italic">
               {lang === 'bn' ? iftarDua.transliterationBn : iftarDua.transliterationEn}
             </p>
