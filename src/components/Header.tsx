@@ -62,7 +62,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg md:bg-background md:text-foreground md:shadow-sm md:border-b md:border-border">
+    <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg md:bg-background md:text-foreground md:shadow-sm md:border-b md:border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center gap-3 px-4 py-3">
         <img src={logo} alt="Ramadan Insight" className="h-10 w-10 rounded-lg object-cover shadow-md" />
         <div className="flex-1">
