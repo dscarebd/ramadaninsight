@@ -25,11 +25,14 @@ const calculateStreaks = (rows: DayRow[]) => {
   const startDate = new Date(sortedDates[0] + 'T00:00:00');
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
 
   let longest = 0;
   let streak = 0;
   const d = new Date(startDate);
-  while (d <= today) {
+  // Loop only up to yesterday so an incomplete today doesn't break the streak
+  while (d <= yesterday) {
     const dateStr = formatLocalDate(d);
     if (perfectDates.has(dateStr)) {
       streak++;
@@ -40,7 +43,12 @@ const calculateStreaks = (rows: DayRow[]) => {
     d.setDate(d.getDate() + 1);
   }
 
-  return { current: streak, longest };
+  // Check today separately: extend streak if perfect, but don't reset
+  const todayStr = formatLocalDate(today);
+  const current = perfectDates.has(todayStr) ? streak + 1 : streak;
+  longest = Math.max(longest, current);
+
+  return { current, longest };
 };
 
 export const usePrayerStreak = (userId: string | null) => {
