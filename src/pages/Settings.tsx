@@ -120,10 +120,6 @@ const Settings = () => {
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
               </div>
-              <Button variant="outline" className="w-full gap-2" onClick={handleLogout}>
-                <LogOut className="h-4 w-4" />
-                {t('লগআউট', 'Log Out')}
-              </Button>
             </div>
           ) : (
             <div className="space-y-2">
