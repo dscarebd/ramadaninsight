@@ -47,7 +47,7 @@ interface SalatHistoryProps {
 
 const SalatHistory = ({ userId }: SalatHistoryProps) => {
   const { lang, t } = useLanguage();
-  const { currentStreak, longestStreak } = usePrayerStreak(userId);
+  const { currentStreak, longestStreak, refresh: refreshStreak } = usePrayerStreak(userId);
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
@@ -87,7 +87,10 @@ const SalatHistory = ({ userId }: SalatHistoryProps) => {
           tahajjud: updated.tahajjud,
         }, { onConflict: 'user_id,date' });
     }
-  }, [selectedDay, userId]);
+
+    // Recalculate streak
+    refreshStreak();
+  }, [selectedDay, userId, refreshStreak]);
 
   const prevMonth = () => {
     if (month === 0) { setMonth(11); setYear(y => y - 1); }
