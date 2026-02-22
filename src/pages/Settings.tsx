@@ -116,7 +116,7 @@ const Settings = () => {
                   {profileData.display_name && (
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   )}
-                  <p className="text-xs text-muted-foreground">{t('প্রোফাইল দেখুন', 'View Profile')}</p>
+                  
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
               </div>
