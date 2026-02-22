@@ -67,7 +67,7 @@ const Header = () => {
         <img src={logo} alt="Ramadan Insight" className="h-10 w-10 rounded-lg object-cover shadow-md" />
         <div className="flex-1">
         <h1 className="text-lg font-bold leading-tight md:text-primary">
-          {isHome ? t('রমজান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রমজান ইনসাইট', 'Ramadan Insight'))}
+          {isHome ? t('রামাদান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রামাদান ইনসাইট', 'Ramadan Insight'))}
           </h1>
           <p className="text-xs opacity-80 md:hidden">
             {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩

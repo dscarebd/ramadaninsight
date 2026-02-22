@@ -64,7 +64,7 @@ const DuaHadith = () => {
       </Card>
 
       {/* Ramadan Duas */}
-      <h3 className="font-bold text-sm text-primary">{t('🤲 রমজানের দোয়াসমূহ', '🤲 Ramadan Duas')}</h3>
+      <h3 className="font-bold text-sm text-primary">{t('🤲 রামাদানের দোয়াসমূহ', '🤲 Ramadan Duas')}</h3>
       <div className="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
       {ramadanDuas.map((dua, i) => (
         <Card key={i}>
