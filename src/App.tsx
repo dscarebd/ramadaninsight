@@ -17,12 +17,14 @@ import Profile from "./pages/Profile";
 import Policies from "./pages/Policies";
 import NotFound from "./pages/NotFound";
 import { useContentProtection } from "@/hooks/useContentProtection";
+import { useBackButtonHandler } from "@/hooks/useBackButtonHandler";
 import Footer from "@/components/Footer";
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
   useContentProtection();
+  useBackButtonHandler();
   return null;
 };
 
@@ -33,8 +35,8 @@ const App = () => (
       <LanguageProvider>
         <Toaster />
         <Sonner />
-        <AppContent />
         <BrowserRouter>
+          <AppContent />
           <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto min-h-screen bg-background relative">
             <Header />
             <Routes>
