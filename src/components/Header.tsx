@@ -11,6 +11,7 @@ const pageTitles: Record<string, { bn: string; en: string }> = {
   '/salat': { bn: 'নামাজ ট্র্যাকার', en: 'Salat Tracker' },
   '/schedule': { bn: 'সময়সূচী', en: 'Schedule' },
   '/settings': { bn: 'সেটিংস', en: 'Settings' },
+  '/policies': { bn: 'নীতিমালা', en: 'Policies' },
 };
 
 const Header = () => {

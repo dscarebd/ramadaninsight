@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Globe, LogIn, LogOut, User, Moon, Sun, ExternalLink } from 'lucide-react';
+import { Globe, LogIn, LogOut, User, Moon, Sun, Shield } from 'lucide-react';
 import appQuran from '@/assets/app-quran.png';
 import appQuiz from '@/assets/app-quiz.png';
 import appExpense from '@/assets/app-expense.png';
@@ -192,6 +192,15 @@ const Settings = () => {
               <span className="text-xs text-muted-foreground text-center leading-tight font-medium">{t('শীঘ্রই আসছে', 'Upcoming')}</span>
             </div>
           </div>
+        </CardContent>
+      </Card>
+      {/* Policies */}
+      <Card>
+        <CardContent className="p-4">
+          <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/policies')}>
+            <Shield className="h-4 w-4" />
+            {t('গোপনীয়তা ও শর্তাবলী', 'Privacy & Terms')}
+          </Button>
         </CardContent>
       </Card>
     </div>
