@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import Policies from "./pages/Policies";
 import NotFound from "./pages/NotFound";
 import { useContentProtection } from "@/hooks/useContentProtection";
+import Footer from "@/components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
             <BottomNav />
+            <Footer />
           </div>
         </BrowserRouter>
       </LanguageProvider>
