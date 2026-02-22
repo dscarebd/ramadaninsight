@@ -1,40 +1,34 @@
 
 
-## Preload App Icons for Instant Settings Page Load
+## Fix: Streak Shows 0 Even After Completing Past Days
 
 ### Problem
-The "Our Other Apps" icons (`app-quran.png`, `app-quiz.png`, `app-expense.png`) only start loading when the Settings page mounts. This causes a visible flash/loading delay, breaking the native app feel.
+The streak calculation loops from the earliest perfect date through **today**. If today hasn't been fully marked yet (which is expected -- the day isn't over), the streak resets to 0 on today's iteration. So even 4 consecutive perfect past days show "0 days" streak.
 
 ### Solution
-Preload these images early in the app lifecycle using `<link rel="preload">` tags in `index.html`, so they are already cached in the browser by the time the user navigates to Settings.
-
-### Steps
-
-1. **Add preload links in `index.html`** for the three app icon images using `<link rel="preload" as="image">` tags pointing to the bundled asset paths.
-
-2. **Alternative approach (more reliable with Vite):** Create a small preload utility in `App.tsx` that imports the three images and triggers `new Image().src = ...` on app mount, ensuring the browser fetches and caches them immediately regardless of route.
+Modify the `calculateStreaks` function in `src/hooks/usePrayerStreak.ts` to stop counting at **yesterday** for the current streak, then optionally extend by 1 if today is also perfect. This way, an incomplete today doesn't break the streak.
 
 ### Technical Details
 
-Since Vite hashes asset filenames during build, the most reliable approach is to import the images in `App.tsx` (or a dedicated preloader component) and programmatically preload them:
+**File: `src/hooks/usePrayerStreak.ts`**
 
-```typescript
-// In App.tsx, add a useEffect that preloads the images
-import appQuran from '@/assets/app-quran.png';
-import appQuiz from '@/assets/app-quiz.png';
-import appExpense from '@/assets/app-expense.png';
+Update `calculateStreaks` logic:
+1. Calculate the streak ending at yesterday (don't let today reset it)
+2. If today is also a perfect day, add 1 to the current streak
+3. The longest streak calculation remains the same but also shouldn't penalize an incomplete today
 
-// Preload on mount
-useEffect(() => {
-  [appQuran, appQuiz, appExpense].forEach(src => {
-    const img = new Image();
-    img.src = src;
-  });
-}, []);
+```text
+Loop from startDate to yesterday:
+  if date is perfect -> streak++
+  else -> streak = 0
+  track longest
+
+Then check today separately:
+  if today is perfect -> current = streak + 1
+  else -> current = streak  (don't reset!)
+
+longest = max(longest, current)
 ```
 
-This runs once when the app starts, so by the time a user reaches Settings, all icons are already in the browser cache -- giving an instant, native-like experience.
-
-### Files to Modify
-- `src/App.tsx` -- add image preloading logic in the `AppContent` component
+This single change in the streak calculation function will fix the display across all components (Today tab, Monthly tab, Yearly tab) since they all use the same hook.
 
