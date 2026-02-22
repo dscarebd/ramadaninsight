@@ -18,6 +18,8 @@ import Policies from "./pages/Policies";
 import NotFound from "./pages/NotFound";
 import { useContentProtection } from "@/hooks/useContentProtection";
 import { useBackButtonHandler } from "@/hooks/useBackButtonHandler";
+import { useStatusBar } from "@/hooks/useStatusBar";
+import { useKeyboard } from "@/hooks/useKeyboard";
 import Footer from "@/components/Footer";
 
 const queryClient = new QueryClient();
@@ -25,6 +27,8 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   useContentProtection();
   useBackButtonHandler();
+  useStatusBar();
+  useKeyboard();
   return null;
 };
 

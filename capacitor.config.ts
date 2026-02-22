@@ -4,6 +4,9 @@ const config: CapacitorConfig = {
   appId: 'app.lovable.c4a8ab98fae34086bee4e8041003033d',
   appName: 'ramadaninsight',
   webDir: 'dist',
+  ios: {
+    scheme: 'capacitor',
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
@@ -12,6 +15,14 @@ const config: CapacitorConfig = {
       backgroundColor: '#f5faf8',
       showSpinner: false,
       launchFadeOutDuration: 300,
+    },
+    Keyboard: {
+      resize: 'body',
+      resizeOnFullScreen: true,
+    },
+    StatusBar: {
+      style: 'LIGHT',
+      backgroundColor: '#166534',
     },
   },
 };

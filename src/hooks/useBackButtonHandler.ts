@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
 import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 
 export const useBackButtonHandler = () => {
   const navigate = useNavigate();
@@ -11,6 +12,9 @@ export const useBackButtonHandler = () => {
   const lastBackPress = useRef<number>(0);
 
   useEffect(() => {
+    // Back button is Android-only; iOS uses swipe gestures natively
+    if (Capacitor.getPlatform() !== 'android') return;
+
     const handler = (ev?: { canGoBack: boolean }) => {
       if (location.pathname !== '/') {
         navigate(-1);
