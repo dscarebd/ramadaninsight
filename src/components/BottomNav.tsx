@@ -26,8 +26,10 @@ const BottomNav = () => {
               key={tab.path}
               onClick={() => navigate(tab.path)}
               className={cn(
-                'flex flex-1 flex-col items-center gap-0.5 py-2 transition-all duration-200',
-                isActive ? 'text-primary scale-105' : 'text-muted-foreground scale-100'
+                'flex flex-1 flex-col items-center gap-0.5 py-2 px-1 rounded-lg transition-all duration-200',
+                isActive
+                  ? 'text-primary scale-105 bg-primary/10'
+                  : 'text-muted-foreground scale-100 hover:text-primary/70 hover:bg-primary/5'
               )}
             >
               <tab.icon className={cn('h-5 w-5 transition-all duration-200', isActive && 'fill-primary/20')} />
