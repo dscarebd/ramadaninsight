@@ -3,7 +3,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Globe, LogIn, LogOut, User, Moon, Sun, Shield } from 'lucide-react';
+import { Globe, LogIn, LogOut, User, Moon, Sun, Shield, ChevronRight } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import appQuran from '@/assets/app-quran.png';
 import appQuiz from '@/assets/app-quiz.png';
 import appExpense from '@/assets/app-expense.png';
@@ -29,6 +30,7 @@ const Settings = () => {
   const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<{ email: string | null; id: string } | null>(null);
   const [location, setLocation] = useState(loadLocation);
+  const [profileData, setProfileData] = useState<{ display_name: string | null; avatar_url: string | null }>({ display_name: null, avatar_url: null });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -46,22 +48,23 @@ const Settings = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Load location from DB for logged-in users
+  // Load profile + location from DB for logged-in users
   useEffect(() => {
     if (!user) return;
     supabase
       .from('profiles')
-      .select('district_preference')
+      .select('district_preference, display_name, avatar_url')
       .eq('user_id', user.id)
       .maybeSingle()
       .then(({ data }) => {
-        if (data?.district_preference) {
-          try {
-            const parsed = JSON.parse(data.district_preference);
-            setLocation(parsed);
-            localStorage.setItem('location', JSON.stringify(parsed));
-          } catch {
-            // Legacy string format, ignore
+        if (data) {
+          setProfileData({ display_name: (data as any).display_name ?? null, avatar_url: (data as any).avatar_url ?? null });
+          if (data.district_preference) {
+            try {
+              const parsed = JSON.parse(data.district_preference);
+              setLocation(parsed);
+              localStorage.setItem('location', JSON.stringify(parsed));
+            } catch {}
           }
         }
       });
@@ -94,14 +97,28 @@ const Settings = () => {
           <Separator />
           {user ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-5 w-5 text-primary" />
-                </div>
+              <div
+                className="flex items-center gap-3 p-2 -m-2 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                onClick={() => navigate('/profile')}
+              >
+                <Avatar className="h-12 w-12">
+                  {profileData.avatar_url ? (
+                    <AvatarImage src={profileData.avatar_url} alt="Avatar" />
+                  ) : null}
+                  <AvatarFallback className="bg-primary/10">
+                    <User className="h-6 w-6 text-primary" />
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{user.email}</p>
-                  <p className="text-xs text-muted-foreground">{t('লগইন আছে', 'Logged in')}</p>
+                  <p className="text-sm font-medium truncate">
+                    {profileData.display_name || user.email}
+                  </p>
+                  {profileData.display_name && (
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">{t('প্রোফাইল দেখুন', 'View Profile')}</p>
                 </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
               </div>
               <Button variant="outline" className="w-full gap-2" onClick={handleLogout}>
                 <LogOut className="h-4 w-4" />

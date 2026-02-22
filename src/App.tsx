@@ -13,6 +13,7 @@ import SalatTracker from "./pages/SalatTracker";
 import Schedule from "./pages/Schedule";
 import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 import Policies from "./pages/Policies";
 import NotFound from "./pages/NotFound";
 import { useContentProtection } from "@/hooks/useContentProtection";
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/schedule" element={<Schedule />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/policies" element={<Policies />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
