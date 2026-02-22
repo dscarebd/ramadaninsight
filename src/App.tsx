@@ -21,6 +21,10 @@ import { useBackButtonHandler } from "@/hooks/useBackButtonHandler";
 import { useStatusBar } from "@/hooks/useStatusBar";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import Footer from "@/components/Footer";
+import appQuran from '@/assets/app-quran.png';
+import appQuiz from '@/assets/app-quiz.png';
+import appExpense from '@/assets/app-expense.png';
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +33,12 @@ const AppContent = () => {
   useBackButtonHandler();
   useStatusBar();
   useKeyboard();
+  useEffect(() => {
+    [appQuran, appQuiz, appExpense].forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
   return null;
 };
 
