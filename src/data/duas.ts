@@ -2,7 +2,7 @@ export const sehriNiyat = {
   arabic: 'نَوَيْتُ اَنْ اُصُوْمَ غَدًا مِنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْم',
   transliterationBn: 'নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্কাব্বাল মিন্নী ইন্নাকা আংতাস সামীউল আলীম।',
   transliterationEn: 'Nawaitu an asuma ghadan min shahri ramadanal mubaraki fardallaka ya allahu fataqabbal minni innaka antas samiul aleem.',
-  meaningBn: 'হে আল্লাহ! আমি আগামীকাল পবিত্র রমজান মাসে তোমার পক্ষ থেকে ফরজ রোজা রাখার ইচ্ছা পোষণ (নিয়ত) করলাম। অতএব তুমি আমার পক্ষ থেকে (আমার এ রোজা/নিয়ত) কবুল কর, নিশ্চয়ই তুমি সর্বশ্রোতা ও সর্বজ্ঞানী।',
+  meaningBn: 'হে আল্লাহ! আমি আগামীকাল পবিত্র রামাদান মাসে তোমার পক্ষ থেকে ফরজ রোজা রাখার ইচ্ছা পোষণ (নিয়ত) করলাম। অতএব তুমি আমার পক্ষ থেকে (আমার এ রোজা/নিয়ত) কবুল কর, নিশ্চয়ই তুমি সর্বশ্রোতা ও সর্বজ্ঞানী।',
   meaningEn: 'O Allah! I intend to fast tomorrow in the holy month of Ramadan as an obligation from You. So accept it from me. Surely, You are the All-Hearing, the All-Knowing.',
 };
 
@@ -89,7 +89,7 @@ export const ramadanDuas = [
 
 export const dailyHadiths = [
   {
-    arabicBn: 'যে ব্যক্তি ঈমানের সাথে ও সওয়াবের আশায় রমজানের রোজা রাখে, তার পূর্বের সমস্ত গুনাহ মাফ করে দেওয়া হয়।',
+    arabicBn: 'যে ব্যক্তি ঈমানের সাথে ও সওয়াবের আশায় রামাদানের রোজা রাখে, তার পূর্বের সমস্ত গুনাহ মাফ করে দেওয়া হয়।',
     arabicEn: 'Whoever fasts during Ramadan out of faith and hoping for reward, all his previous sins will be forgiven.',
     sourceBn: '— বুখারী ও মুসলিম',
     sourceEn: '— Bukhari & Muslim',
@@ -101,7 +101,7 @@ export const dailyHadiths = [
     sourceEn: '— Bukhari',
   },
   {
-    arabicBn: 'যখন রমজান মাস আসে, জান্নাতের দরজাসমূহ খুলে দেওয়া হয়, জাহান্নামের দরজাসমূহ বন্ধ করে দেওয়া হয় এবং শয়তানদের শৃঙ্খলিত করা হয়।',
+    arabicBn: 'যখন রামাদান মাস আসে, জান্নাতের দরজাসমূহ খুলে দেওয়া হয়, জাহান্নামের দরজাসমূহ বন্ধ করে দেওয়া হয় এবং শয়তানদের শৃঙ্খলিত করা হয়।',
     arabicEn: 'When the month of Ramadan starts, the gates of heaven are opened, the gates of hell are closed, and the devils are chained.',
     sourceBn: '— বুখারী ও মুসলিম',
     sourceEn: '— Bukhari & Muslim',
@@ -119,7 +119,7 @@ export const dailyHadiths = [
     sourceEn: '— Tirmidhi',
   },
   {
-    arabicBn: 'যে ব্যক্তি রমজানে কিয়ামুল লাইল (তারাবীহ) করে ঈমানের সাথে ও সওয়াবের আশায়, তার পূর্বের গুনাহ মাফ করে দেওয়া হয়।',
+    arabicBn: 'যে ব্যক্তি রামাদানে কিয়ামুল লাইল (তারাবীহ) করে ঈমানের সাথে ও সওয়াবের আশায়, তার পূর্বের গুনাহ মাফ করে দেওয়া হয়।',
     arabicEn: 'Whoever prays during the nights of Ramadan out of faith and hoping for reward, his previous sins will be forgiven.',
     sourceBn: '— বুখারী ও মুসলিম',
     sourceEn: '— Bukhari & Muslim',
@@ -173,13 +173,13 @@ export const dailyHadiths = [
     sourceEn: '— Bukhari & Muslim',
   },
   {
-    arabicBn: 'রমজানে একটি উমরাহ হজ্জের সমতুল্য।',
+    arabicBn: 'রামাদানে একটি উমরাহ হজ্জের সমতুল্য।',
     arabicEn: 'Umrah in Ramadan is equal to Hajj.',
     sourceBn: '— বুখারী ও মুসলিম',
     sourceEn: '— Bukhari & Muslim',
   },
   {
-    arabicBn: 'যে ব্যক্তি রমজানে একটি নফল ইবাদত করে, সে যেন অন্য সময়ে একটি ফরজ আদায় করল। আর যে রমজানে একটি ফরজ আদায় করে, সে যেন অন্য সময়ে সত্তরটি ফরজ আদায় করল।',
+    arabicBn: 'যে ব্যক্তি রামাদানে একটি নফল ইবাদত করে, সে যেন অন্য সময়ে একটি ফরজ আদায় করল। আর যে রামাদানে একটি ফরজ আদায় করে, সে যেন অন্য সময়ে সত্তরটি ফরজ আদায় করল।',
     arabicEn: 'Whoever performs a voluntary deed in Ramadan, it is as if he performed an obligation at other times. And whoever performs an obligation in it, it is as if he performed seventy obligations at other times.',
     sourceBn: '— ইবনে খুযাইমা',
     sourceEn: '— Ibn Khuzaymah',
