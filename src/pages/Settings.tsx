@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Globe, LogIn, LogOut, User, Moon, Sun, Shield, ChevronRight } from 'lucide-react';
+import { BDFlag, GBFlag } from '@/components/FlagIcons';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import appQuran from '@/assets/app-quran.png';
 import appQuiz from '@/assets/app-quiz.png';
@@ -152,7 +153,7 @@ const Settings = () => {
               <span className="text-sm">{t('বর্তমান ভাষা', 'Current Language')}</span>
             </div>
             <Button variant="outline" size="sm" onClick={toggleLang} className="gap-1.5">
-              {lang === 'bn' ? '🇧🇩 বাংলা → EN' : '🇬🇧 English → বাং'}
+              {lang === 'bn' ? <><BDFlag className="h-3.5 w-5 inline-block mr-1" /> বাংলা → EN</> : <><GBFlag className="h-3.5 w-5 inline-block mr-1" /> English → বাং</>}
             </Button>
           </div>
         </CardContent>
