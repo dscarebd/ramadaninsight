@@ -8,6 +8,7 @@ import { getCoordinates } from '@/data/locations';
 import CountdownTimer from '@/components/CountdownTimer';
 import { sehriNiyat, iftarDua } from '@/data/duas';
 import DailyQuote from '@/components/DailyQuote';
+import PageMeta from '@/components/PageMeta';
 import UpcomingFastingDays from '@/components/UpcomingFastingDays';
 import { Card, CardContent } from '@/components/ui/card';
 import { Moon, Sun, Loader2 } from 'lucide-react';
@@ -79,6 +80,11 @@ const Index = () => {
 
   return (
     <div className={`min-h-screen md:min-h-0 pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
+      <PageMeta
+        title="Ramadan Insight"
+        description="সেহরি, ইফতার ও নামাজের সময়সূচী। Sehri, Iftar & prayer times for Ramadan."
+        keywords="ramadan, sehri, iftar, prayer times, রমজান, সেহরি, ইফতার, নামাজের সময়"
+      />
       {/* Location Picker */}
       <LocationPicker value={location} onChange={setLocation} />
       {isFetching && (

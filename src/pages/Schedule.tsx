@@ -5,6 +5,7 @@ import { getCoordinates } from '@/data/locations';
 import LocationPicker from '@/components/DistrictSelector';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Loader2 } from 'lucide-react';
+import PageMeta from '@/components/PageMeta';
 
 const toBengaliNum = (n: number | string): string => {
   const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
@@ -60,6 +61,11 @@ const Schedule = () => {
 
   return (
     <div className={`min-h-screen pb-20 md:pb-8 px-2 pt-4 space-y-3 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
+      <PageMeta
+        title="সময়সূচী - Schedule"
+        description="রমজানের পূর্ণ সময়সূচী। Full Ramadan schedule with sehri and iftar times."
+        keywords="ramadan schedule, সময়সূচী, sehri time, iftar time, prayer schedule"
+      />
       
       <div className="px-2">
         <LocationPicker value={location} onChange={setLocation} />

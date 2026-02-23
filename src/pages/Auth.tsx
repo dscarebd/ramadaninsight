@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import PageMeta from '@/components/PageMeta';
 
 const Auth = () => {
   const { t } = useLanguage();
@@ -47,6 +48,11 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 pb-20">
+      <PageMeta
+        title="লগইন - Login"
+        description="রমজান ইনসাইটে লগইন করুন। Sign in to Ramadan Insight."
+        keywords="login, sign up, লগইন, registration"
+      />
       <Card className="w-full max-w-sm">
         <CardContent className="p-6 space-y-4">
           <h2 className="text-xl font-bold text-primary text-center">
