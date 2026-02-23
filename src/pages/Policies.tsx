@@ -2,6 +2,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Send } from 'lucide-react';
+import PageMeta from '@/components/PageMeta';
 import { Button } from '@/components/ui/button';
 
 const Policies = () => {
@@ -9,6 +10,11 @@ const Policies = () => {
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+      <PageMeta
+        title="নীতিমালা - Policies"
+        description="গোপনীয়তা নীতি ও শর্তাবলী। Privacy policy and terms of service."
+        keywords="privacy policy, terms, নীতিমালা, গোপনীয়তা"
+      />
       <Card>
         <CardContent className="p-4 space-y-3">
           <h2 className="text-lg font-bold text-foreground">{t('গোপনীয়তা নীতি', 'Privacy Policy')}</h2>

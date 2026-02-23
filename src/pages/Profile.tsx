@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowLeft, Camera, Loader2, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import PageMeta from '@/components/PageMeta';
 import { toast } from '@/hooks/use-toast';
 
 const Profile = () => {
@@ -105,6 +106,11 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+      <PageMeta
+        title="প্রোফাইল - Profile"
+        description="আপনার প্রোফাইল। Manage your profile."
+        keywords="profile, প্রোফাইল, account, user"
+      />
       <div className="flex items-center gap-2 mb-2">
         <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
           <ArrowLeft className="h-5 w-5" />

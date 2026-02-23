@@ -16,6 +16,7 @@ import DailyPrayerReminder from '@/components/DailyPrayerReminder';
 import { usePrayerReminder } from '@/hooks/usePrayerReminder';
 import { useSalatSync } from '@/hooks/useSalatSync';
 import { usePrayerStreak } from '@/hooks/usePrayerStreak';
+import PageMeta from '@/components/PageMeta';
 
 const fiveWaqt = [
   { key: 'fajr', bn: 'ফজর', en: 'Fajr' },
@@ -134,6 +135,11 @@ const SalatTracker = () => {
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+      <PageMeta
+        title="নামাজ ট্র্যাকার - Salat Tracker"
+        description="দৈনিক নামাজ ট্র্যাক করুন। Track your daily prayers and streaks."
+        keywords="salat tracker, নামাজ ট্র্যাকার, prayer tracking, daily prayers, streak"
+      />
       <Tabs defaultValue="today" className="w-full">
         <TabsList className="w-full">
           <TabsTrigger value="today" className="flex-1">{t('আজকে', 'Today')}</TabsTrigger>

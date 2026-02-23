@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Share2, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import PageMeta from '@/components/PageMeta';
 
 const DuaHadith = () => {
   const { lang, t } = useLanguage();
@@ -38,6 +39,11 @@ const DuaHadith = () => {
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+      <PageMeta
+        title="দোয়া ও হাদিস - Dua & Hadith"
+        description="রমজানের দোয়া ও হাদিস সংকলন। Collection of Ramadan duas and hadiths."
+        keywords="dua, hadith, দোয়া, হাদিস, ramadan dua, islamic prayers"
+      />
       
 
       {/* Daily Hadith */}

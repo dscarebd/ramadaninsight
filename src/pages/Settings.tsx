@@ -8,6 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import appQuran from '@/assets/app-quran.png';
 import appQuiz from '@/assets/app-quiz.png';
 import appExpense from '@/assets/app-expense.png';
+import PageMeta from '@/components/PageMeta';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -88,6 +89,11 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+      <PageMeta
+        title="সেটিংস - Settings"
+        description="অ্যাপ সেটিংস। App settings and preferences."
+        keywords="settings, সেটিংস, preferences, language, theme"
+      />
       
 
       {/* Account Section */}
