@@ -150,6 +150,8 @@ const Index = () => {
           <CardContent className="p-4">
             {isFasting ? (
               <CountdownTimer targetTime={iftarTime} label={t('ইফতার পর্যন্ত বাকি', 'Time until Iftar')} />
+            ) : isAfterIftar ? (
+              <CountdownTimer targetTime={sehriTime} label={t('পরবর্তী সেহরি পর্যন্ত বাকি', 'Time until next Sehri')} nextDay />
             ) : (
               <CountdownTimer targetTime={sehriTime} label={t('সেহরি পর্যন্ত বাকি', 'Time until Sehri')} />
             )}

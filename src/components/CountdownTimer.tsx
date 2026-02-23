@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface Props {
   targetTime: string; // "HH:MM" format
   label: string;
+  nextDay?: boolean; // target is tomorrow
 }
 
 const toBengaliNum = (n: number): string => {
@@ -11,10 +12,9 @@ const toBengaliNum = (n: number): string => {
   return String(n).split('').map(d => bengaliDigits[parseInt(d)] || d).join('');
 };
 
-const CountdownTimer = ({ targetTime, label }: Props) => {
+const CountdownTimer = ({ targetTime, label, nextDay = false }: Props) => {
   const { lang } = useLanguage();
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const [isPast, setIsPast] = useState(false);
 
   useEffect(() => {
     const update = () => {
@@ -23,13 +23,13 @@ const CountdownTimer = ({ targetTime, label }: Props) => {
       const target = new Date(now);
       target.setHours(h, m, 0, 0);
 
-      const diff = target.getTime() - now.getTime();
-      if (diff <= 0) {
-        setIsPast(true);
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        return;
+      if (nextDay) {
+        target.setDate(target.getDate() + 1);
       }
-      setIsPast(false);
+
+      let diff = target.getTime() - now.getTime();
+      if (diff <= 0) diff = 0;
+
       setTimeLeft({
         hours: Math.floor(diff / 3600000),
         minutes: Math.floor((diff % 3600000) / 60000),
@@ -40,12 +40,9 @@ const CountdownTimer = ({ targetTime, label }: Props) => {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [targetTime]);
+  }, [targetTime, nextDay]);
 
-  const formatNum = (n: number) => lang === 'bn' ? toBengaliNum(n) : String(n);
   const pad = (n: number) => String(n).padStart(2, '0');
-
-  if (isPast) return null;
 
   return (
     <div className="text-center">
