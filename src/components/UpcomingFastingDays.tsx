@@ -62,6 +62,7 @@ const UpcomingFastingDays = ({ todayData }: Props) => {
     // Ayyam al-Beed (13, 14, 15 of Hijri month) - check from todayData
     if (todayData) {
       const hijriDay = parseInt(todayData.hijriDay);
+      const hijriMonthName = todayData.hijriMonth.split(' (')[0].toLowerCase();
       const ayyamDays = [13, 14, 15];
       for (const ad of ayyamDays) {
         if (ad >= hijriDay) {
@@ -77,6 +78,47 @@ const UpcomingFastingDays = ({ todayData }: Props) => {
               typeEn: 'Ayyam al-Beed',
               highlight: true,
             });
+          }
+        }
+      }
+
+      // Day of Arafah (9 Dhul Hijjah) - special
+      if (hijriMonthName.includes('hijjah') || hijriMonthName.includes('ḥijjah') || hijriMonthName.includes('hijah')) {
+        const arafah = 9;
+        if (arafah >= hijriDay) {
+          const daysUntil = arafah - hijriDay;
+          if (daysUntil > 0 && daysUntil <= 30) {
+            const d = new Date(now);
+            d.setDate(d.getDate() + daysUntil);
+            fasts.push({
+              date: d,
+              labelBn: `${toBengaliNum(arafah)} জিলহজ্জ (${dayNamesBn[d.getDay()]})`,
+              labelEn: `${arafah} Dhul Hijjah (${dayNamesEn[d.getDay()]})`,
+              typeBn: '⭐ আরাফার দিন',
+              typeEn: '⭐ Day of Arafah',
+              highlight: true,
+            });
+          }
+        }
+      }
+
+      // Ashura (9-10 Muharram) - special
+      if (hijriMonthName.includes('muharram') || hijriMonthName.includes('muḥarram')) {
+        for (const ashuraDay of [9, 10]) {
+          if (ashuraDay >= hijriDay) {
+            const daysUntil = ashuraDay - hijriDay;
+            if (daysUntil > 0 && daysUntil <= 30) {
+              const d = new Date(now);
+              d.setDate(d.getDate() + daysUntil);
+              fasts.push({
+                date: d,
+                labelBn: `${toBengaliNum(ashuraDay)} মুহাররম (${dayNamesBn[d.getDay()]})`,
+                labelEn: `${ashuraDay} Muharram (${dayNamesEn[d.getDay()]})`,
+                typeBn: ashuraDay === 10 ? '⭐ আশুরা' : '⭐ তাসুআ',
+                typeEn: ashuraDay === 10 ? '⭐ Ashura' : '⭐ Tasua',
+                highlight: true,
+              });
+            }
           }
         }
       }
@@ -124,8 +166,8 @@ const UpcomingFastingDays = ({ todayData }: Props) => {
         </div>
         <p className="text-[10px] text-muted-foreground">
           {t(
-            '💡 সোমবার ও বৃহস্পতিবার রোজা রাখা সুন্নত। আইয়ামে বীজ হলো প্রতি হিজরি মাসের ১৩, ১৪ ও ১৫ তারিখ।',
-            '💡 Fasting on Monday & Thursday is Sunnah. Ayyam al-Beed are the 13th, 14th & 15th of each Hijri month.'
+            '💡 সোমবার ও বৃহস্পতিবার রোজা রাখা সুন্নত। আইয়ামে বীজ — হিজরি মাসের ১৩-১৫ তারিখ। আরাফার দিন (৯ জিলহজ্জ) ও আশুরা (৯-১০ মুহাররম) বিশেষ ফজিলতপূর্ণ।',
+            '💡 Monday & Thursday are Sunnah fasts. Ayyam al-Beed = 13th-15th Hijri. Day of Arafah (9 Dhul Hijjah) & Ashura (9-10 Muharram) carry special virtue.'
           )}
         </p>
       </CardContent>
