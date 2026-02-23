@@ -1,66 +1,29 @@
 
 
-## Year-Round Sehri and Iftar Times
+## Show Next Sehri/Iftar Countdown Continuously
+
+### Problem
+Currently, the countdown timer disappears after the target time passes (returns `null` when `isPast` is true). After Iftar, there's no countdown to next Sehri. The user always wants to see what's coming next.
 
 ### What Changes
-The app currently only fetches prayer times for Ramadan months (Feb-Mar 2026). After Ramadan ends, it falls back to stale data. This update will make the app fetch today's Sehri and Iftar times for any day of the year, so users can use it all 12 months.
 
-### How It Will Work
-
-**During Ramadan:** Everything stays the same -- Roza counter, countdown, duas, status banner.
-
-**Outside Ramadan:** The home page will show:
-- Today's Sehri and Iftar times (fetched for the current date)
-- Today's date (Gregorian and Hijri)
-- A note like "Ramadan is not active -- showing daily Sehri/Iftar times"
-- The countdown timer still works (showing time until next Sehri or Iftar)
-- Daily Quote remains visible
-- Sehri Niyat and Iftar Dua cards remain visible (useful for voluntary fasting)
-- The Roza counter card is replaced with a simple date/time display card
+The countdown card in Index.tsx will cycle through three states:
+1. **Before Sehri ends** -- show "Sehri ends in..." countdown
+2. **After Sehri, before Iftar** (fasting period) -- show "Iftar in..." countdown
+3. **After Iftar** -- show "Next Sehri ends in..." countdown (to tomorrow's Sehri time)
 
 ### Technical Details
 
-**1. New hook: `src/hooks/useTodayPrayerTimes.ts`**
-- Fetches prayer times for the current month only using the same Aladhan API
-- Returns just today's Sehri (Fajr - 3 min) and Iftar (Maghrib) times
-- Uses the same `fetchMonthTimes` logic extracted from `usePrayerTimes`
-- Cached with React Query (1 hour stale time)
+**1. `src/components/CountdownTimer.tsx`**
+- Remove the `if (isPast) return null` -- instead, when the target time has passed and a `nextTargetTime` + `nextLabel` prop is provided, automatically switch to counting down to the next target
+- Add a `nextDay` boolean prop: when true, the countdown targets the next calendar day (for "after Iftar, count to tomorrow's Sehri")
 
-**2. Refactor: `src/hooks/usePrayerTimes.ts`**
-- Extract `fetchMonthTimes` as a shared/exported utility function
-- Add an `isRamadan` flag to the return value (true if today falls within ramadanDays)
-- Add `isRamadanOver` flag (today is after last Ramadan day)
+**2. `src/pages/Index.tsx`**
+- Change the countdown logic to always show something:
+  - During fasting (`isFasting`): countdown to Iftar
+  - After Iftar (`isAfterIftar`): countdown to next day's Sehri (calculated as tomorrow's Sehri time)
+  - Before Sehri (early morning): countdown to Sehri end time
+- The simplest approach: pass a `nextDay` flag to CountdownTimer when counting down to tomorrow's Sehri, so it adds 24 hours to the target
 
-**3. Update: `src/pages/Index.tsx`**
-- Import and use `useTodayPrayerTimes` as a fallback when outside Ramadan
-- When `isRamadan` is false:
-  - Hide the Roza counter card, replace with a simple "Today's Times" card showing Sehri and Iftar in large text
-  - Change status banner to "Showing daily Sehri/Iftar times" instead of fasting status
-  - Keep countdown timer, duas, and daily quote as-is
-- When `isRamadan` is true: no changes, existing behavior
+This ensures users always see the next important time, whether it's Iftar or next morning's Sehri.
 
-**4. Update: `src/pages/Schedule.tsx`**
-- Outside Ramadan, show a banner saying the Ramadan schedule is from the last/upcoming Ramadan for reference
-- The table remains accessible for reference
-
-### UI Outside Ramadan
-
-```text
-+----------------------------------+
-| Location Picker                  |
-+----------------------------------+
-| "Showing daily Sehri/Iftar times"|
-+----------------------------------+
-| Today's Date     | Countdown     |
-| 23 Feb 2026      | to Iftar/     |
-| Hijri date       | Sehri         |
-| Sehri: 5:12 AM   |               |
-| Iftar: 6:05 PM   |               |
-+----------------------------------+
-| Daily Quote                      |
-+----------------------------------+
-| Sehri Niyat      | Iftar Dua     |
-+----------------------------------+
-```
-
-This keeps the app useful year-round for anyone doing voluntary (nafl) fasting like Monday/Thursday fasts, Ayyam al-Beed, Shawwal fasts, etc.
