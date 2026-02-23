@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { findNearestLocation, findUpazila, findZilla, findDivision } from '@/data/locations';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
+import { BDFlag } from '@/components/FlagIcons';
 
 const pageTitles: Record<string, { bn: string; en: string }> = {
   '/dua': { bn: 'দোয়া ও হাদিস', en: 'Dua & Hadith' },
@@ -71,7 +72,7 @@ const Header = () => {
               {isHome ? t('রামাদান ইনসাইট', 'Ramadan Insight') : (pageTitle ? t(pageTitle.bn, pageTitle.en) : t('রামাদান ইনসাইট', 'Ramadan Insight'))}
             </h1>
             <p className="text-xs opacity-80 md:hidden">
-              {t('বাংলাদেশ', 'Bangladesh')} 🇧🇩
+              {t('বাংলাদেশ', 'Bangladesh')} <BDFlag className="ml-0.5" />
             </p>
           </div>
         </div>
