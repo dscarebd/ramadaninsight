@@ -1,26 +1,66 @@
 
 
-## Replace Emoji Flags with Inline SVG Icons
+## Year-Round Sehri and Iftar Times
 
-### Problem
-Flag emojis (🇧🇩 🇬🇧) don't render properly on some devices (especially older Android), showing as two-letter country codes instead.
+### What Changes
+The app currently only fetches prayer times for Ramadan months (Feb-Mar 2026). After Ramadan ends, it falls back to stale data. This update will make the app fetch today's Sehri and Iftar times for any day of the year, so users can use it all 12 months.
 
-### Solution
-Create small inline SVG components for the Bangladesh and UK flags, and replace emoji usage in two files.
+### How It Will Work
 
-### Changes
+**During Ramadan:** Everything stays the same -- Roza counter, countdown, duas, status banner.
 
-**1. Create `src/components/FlagIcons.tsx`**
-- Export two small React components: `BDFlag` and `GBFlag`
-- Each renders a simple inline SVG of the respective flag
-- Accept `className` prop for sizing (default ~16x12px)
+**Outside Ramadan:** The home page will show:
+- Today's Sehri and Iftar times (fetched for the current date)
+- Today's date (Gregorian and Hijri)
+- A note like "Ramadan is not active -- showing daily Sehri/Iftar times"
+- The countdown timer still works (showing time until next Sehri or Iftar)
+- Daily Quote remains visible
+- Sehri Niyat and Iftar Dua cards remain visible (useful for voluntary fasting)
+- The Roza counter card is replaced with a simple date/time display card
 
-**2. Update `src/pages/Settings.tsx` (line 155)**
-- Replace `'🇧🇩 বাংলা → EN'` / `'🇬🇧 English → বাং'` with `<BDFlag />` / `<GBFlag />` + text
-- Import `BDFlag` and `GBFlag` from the new component
+### Technical Details
 
-**3. Update `src/components/Header.tsx` (line 74)**
-- Replace `🇧🇩` emoji with `<BDFlag />` inline SVG
-- Import `BDFlag` from the new component
+**1. New hook: `src/hooks/useTodayPrayerTimes.ts`**
+- Fetches prayer times for the current month only using the same Aladhan API
+- Returns just today's Sehri (Fajr - 3 min) and Iftar (Maghrib) times
+- Uses the same `fetchMonthTimes` logic extracted from `usePrayerTimes`
+- Cached with React Query (1 hour stale time)
 
-This ensures consistent flag rendering across all platforms and devices.
+**2. Refactor: `src/hooks/usePrayerTimes.ts`**
+- Extract `fetchMonthTimes` as a shared/exported utility function
+- Add an `isRamadan` flag to the return value (true if today falls within ramadanDays)
+- Add `isRamadanOver` flag (today is after last Ramadan day)
+
+**3. Update: `src/pages/Index.tsx`**
+- Import and use `useTodayPrayerTimes` as a fallback when outside Ramadan
+- When `isRamadan` is false:
+  - Hide the Roza counter card, replace with a simple "Today's Times" card showing Sehri and Iftar in large text
+  - Change status banner to "Showing daily Sehri/Iftar times" instead of fasting status
+  - Keep countdown timer, duas, and daily quote as-is
+- When `isRamadan` is true: no changes, existing behavior
+
+**4. Update: `src/pages/Schedule.tsx`**
+- Outside Ramadan, show a banner saying the Ramadan schedule is from the last/upcoming Ramadan for reference
+- The table remains accessible for reference
+
+### UI Outside Ramadan
+
+```text
++----------------------------------+
+| Location Picker                  |
++----------------------------------+
+| "Showing daily Sehri/Iftar times"|
++----------------------------------+
+| Today's Date     | Countdown     |
+| 23 Feb 2026      | to Iftar/     |
+| Hijri date       | Sehri         |
+| Sehri: 5:12 AM   |               |
+| Iftar: 6:05 PM   |               |
++----------------------------------+
+| Daily Quote                      |
++----------------------------------+
+| Sehri Niyat      | Iftar Dua     |
++----------------------------------+
+```
+
+This keeps the app useful year-round for anyone doing voluntary (nafl) fasting like Monday/Thursday fasts, Ayyam al-Beed, Shawwal fasts, etc.
