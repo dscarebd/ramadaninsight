@@ -1,34 +1,66 @@
 
 
-## Fix: Streak Shows 0 Even After Completing Past Days
+## Year-Round Sehri and Iftar Times
 
-### Problem
-The streak calculation loops from the earliest perfect date through **today**. If today hasn't been fully marked yet (which is expected -- the day isn't over), the streak resets to 0 on today's iteration. So even 4 consecutive perfect past days show "0 days" streak.
+### What Changes
+The app currently only fetches prayer times for Ramadan months (Feb-Mar 2026). After Ramadan ends, it falls back to stale data. This update will make the app fetch today's Sehri and Iftar times for any day of the year, so users can use it all 12 months.
 
-### Solution
-Modify the `calculateStreaks` function in `src/hooks/usePrayerStreak.ts` to stop counting at **yesterday** for the current streak, then optionally extend by 1 if today is also perfect. This way, an incomplete today doesn't break the streak.
+### How It Will Work
+
+**During Ramadan:** Everything stays the same -- Roza counter, countdown, duas, status banner.
+
+**Outside Ramadan:** The home page will show:
+- Today's Sehri and Iftar times (fetched for the current date)
+- Today's date (Gregorian and Hijri)
+- A note like "Ramadan is not active -- showing daily Sehri/Iftar times"
+- The countdown timer still works (showing time until next Sehri or Iftar)
+- Daily Quote remains visible
+- Sehri Niyat and Iftar Dua cards remain visible (useful for voluntary fasting)
+- The Roza counter card is replaced with a simple date/time display card
 
 ### Technical Details
 
-**File: `src/hooks/usePrayerStreak.ts`**
+**1. New hook: `src/hooks/useTodayPrayerTimes.ts`**
+- Fetches prayer times for the current month only using the same Aladhan API
+- Returns just today's Sehri (Fajr - 3 min) and Iftar (Maghrib) times
+- Uses the same `fetchMonthTimes` logic extracted from `usePrayerTimes`
+- Cached with React Query (1 hour stale time)
 
-Update `calculateStreaks` logic:
-1. Calculate the streak ending at yesterday (don't let today reset it)
-2. If today is also a perfect day, add 1 to the current streak
-3. The longest streak calculation remains the same but also shouldn't penalize an incomplete today
+**2. Refactor: `src/hooks/usePrayerTimes.ts`**
+- Extract `fetchMonthTimes` as a shared/exported utility function
+- Add an `isRamadan` flag to the return value (true if today falls within ramadanDays)
+- Add `isRamadanOver` flag (today is after last Ramadan day)
+
+**3. Update: `src/pages/Index.tsx`**
+- Import and use `useTodayPrayerTimes` as a fallback when outside Ramadan
+- When `isRamadan` is false:
+  - Hide the Roza counter card, replace with a simple "Today's Times" card showing Sehri and Iftar in large text
+  - Change status banner to "Showing daily Sehri/Iftar times" instead of fasting status
+  - Keep countdown timer, duas, and daily quote as-is
+- When `isRamadan` is true: no changes, existing behavior
+
+**4. Update: `src/pages/Schedule.tsx`**
+- Outside Ramadan, show a banner saying the Ramadan schedule is from the last/upcoming Ramadan for reference
+- The table remains accessible for reference
+
+### UI Outside Ramadan
 
 ```text
-Loop from startDate to yesterday:
-  if date is perfect -> streak++
-  else -> streak = 0
-  track longest
-
-Then check today separately:
-  if today is perfect -> current = streak + 1
-  else -> current = streak  (don't reset!)
-
-longest = max(longest, current)
++----------------------------------+
+| Location Picker                  |
++----------------------------------+
+| "Showing daily Sehri/Iftar times"|
++----------------------------------+
+| Today's Date     | Countdown     |
+| 23 Feb 2026      | to Iftar/     |
+| Hijri date       | Sehri         |
+| Sehri: 5:12 AM   |               |
+| Iftar: 6:05 PM   |               |
++----------------------------------+
+| Daily Quote                      |
++----------------------------------+
+| Sehri Niyat      | Iftar Dua     |
++----------------------------------+
 ```
 
-This single change in the streak calculation function will fix the display across all components (Today tab, Monthly tab, Yearly tab) since they all use the same hook.
-
+This keeps the app useful year-round for anyone doing voluntary (nafl) fasting like Monday/Thursday fasts, Ayyam al-Beed, Shawwal fasts, etc.
