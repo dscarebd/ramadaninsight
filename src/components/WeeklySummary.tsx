@@ -4,8 +4,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { CalendarDays, X, Check } from 'lucide-react';
+import { CalendarDays, X, Check, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getLocalSalatDaysInRange } from '@/lib/localSalatStorage';
@@ -183,6 +184,7 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   if (dismissed || loading) return null;
 
   return (
+    <>
     <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start justify-between">
@@ -217,6 +219,100 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
         
       </CardContent>
     </Card>
+
+    {missedByPrayer.length > 0 && (
+      <Collapsible>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" size="sm" className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground h-7">
+            {t('কাযা ট্র্যাকিং', 'Qaza Tracking')}
+            {totalQazaCompleted > 0 && ` (${totalQazaCompleted}/${totalMissedDates})`}
+            <ChevronDown className="h-3 w-3 transition-transform [[data-state=open]_&]:rotate-180" />
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <Card className="border-primary/20">
+            <CardContent className="p-3 space-y-2">
+              <p className="text-xs text-muted-foreground">
+                {t('ট্যাপ করে কাযা আপডেট করুন:', 'Tap to mark qaza:')}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {missedByPrayer.sort((a, b) => b.total - a.total).map(p => {
+                  const doneCount = p.missedDates.filter(d => qazaDone[`${p.key}_${d}`]).length;
+                  const allDone = doneCount === p.total;
+                  const partial = doneCount > 0 && !allDone;
+
+                  return (
+                    <Popover key={p.key}>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={`text-xs px-2.5 py-1 rounded-full transition-all duration-300 flex items-center gap-1 active:scale-95 ${
+                            allDone
+                              ? 'bg-primary/15 text-primary border border-primary/30'
+                              : partial
+                                ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30'
+                                : 'bg-destructive/10 text-destructive border border-destructive/20'
+                          }`}
+                        >
+                          {allDone && <Check className="h-3 w-3" />}
+                          {t(prayerNamesBn[p.key], p.key.charAt(0).toUpperCase() + p.key.slice(1))}
+                          {' '}({doneCount}/{p.total})
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 p-3 z-50 bg-popover" align="start">
+                        <p className="text-xs font-semibold mb-2">
+                          {t(
+                            `${prayerNamesBn[p.key]} কাযা`,
+                            `${p.key.charAt(0).toUpperCase() + p.key.slice(1)} Qaza`
+                          )}
+                        </p>
+                        <div className="space-y-2">
+                          {p.missedDates.map(date => {
+                            const qKey = `${p.key}_${date}`;
+                            const done = !!qazaDone[qKey];
+                            return (
+                              <label key={date} className="flex items-center gap-2 cursor-pointer">
+                                <Checkbox
+                                  checked={done}
+                                  onCheckedChange={() => toggleQazaDate(p.key, date)}
+                                  className="h-4 w-4"
+                                />
+                                <span className={`text-xs ${done ? 'text-primary line-through' : 'text-foreground'}`}>
+                                  {formatDateShort(date, lang)}
+                                </span>
+                                {done && <Check className="h-3 w-3 text-primary" />}
+                              </label>
+                            );
+                          })}
+                        </div>
+                        {doneCount < p.total && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full mt-2 text-xs h-7"
+                            onClick={() => markAllDone(p.key, p.missedDates)}
+                          >
+                            {t('সব কাযা আদায়', 'Mark all as done')}
+                          </Button>
+                        )}
+                      </PopoverContent>
+                    </Popover>
+                  );
+                })}
+              </div>
+              {totalQazaCompleted > 0 && (
+                <p className="text-xs text-primary font-medium">
+                  {t(
+                    `✅ ${totalQazaCompleted}/${totalMissedDates} কাযা আদায় সম্পন্ন`,
+                    `✅ ${totalQazaCompleted}/${totalMissedDates} qaza completed`
+                  )}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </CollapsibleContent>
+      </Collapsible>
+    )}
+  </>
   );
 };
 
