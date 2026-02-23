@@ -46,7 +46,7 @@ const Schedule = () => {
   const lat = coords?.lat || 23.8103;
   const lng = coords?.lng || 90.4125;
 
-  const { ramadanDays, todayIndex, isLoading, isFetching } = usePrayerTimes(lat, lng);
+  const { ramadanDays, todayIndex, isLoading, isFetching, isRamadan } = usePrayerTimes(lat, lng);
 
   if (isLoading && ramadanDays.length === 0) {
     return (
@@ -64,6 +64,12 @@ const Schedule = () => {
       <div className="px-2">
         <LocationPicker value={location} onChange={setLocation} />
       </div>
+
+      {!isRamadan && (
+        <div className="rounded-lg p-2 text-center text-xs font-medium bg-muted text-muted-foreground">
+          {t('⚠️ রমজান চলছে না — এই সময়সূচী রেফারেন্সের জন্য', '⚠️ Ramadan is not active — this schedule is for reference')}
+        </div>
+      )}
 
       <div className="overflow-auto rounded-lg border border-border">
         <Table>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
+import { useTodayPrayerTimes } from '@/hooks/useTodayPrayerTimes';
 import { useLocalNotifications } from '@/hooks/useLocalNotifications';
 import LocationPicker from '@/components/DistrictSelector';
 import { getCoordinates } from '@/data/locations';
@@ -40,7 +41,6 @@ const Index = () => {
     localStorage.setItem('location', JSON.stringify(location));
   }, [location]);
 
-  // Listen for GPS location updates
   useEffect(() => {
     const handler = () => setLocation(loadLocation());
     window.addEventListener('gps-location-updated', handler);
@@ -51,13 +51,17 @@ const Index = () => {
   const lat = coords?.lat || 23.8103;
   const lng = coords?.lng || 90.4125;
 
-  const { ramadanDays, todayData, todayIndex, isLoading, isFetching } = usePrayerTimes(lat, lng);
+  const { ramadanDays, todayData: ramadanTodayData, todayIndex, isLoading, isFetching, isRamadan } = usePrayerTimes(lat, lng);
+  const { todayData: yearRoundData, isLoading: yearRoundLoading } = useTodayPrayerTimes(lat, lng);
 
   // Schedule Capacitor local notifications for Sehri & Iftar
   useLocalNotifications(ramadanDays, true, lang);
 
-  // Only show full-page spinner on very first load (no data yet)
-  if (isLoading && !todayData) {
+  // Use Ramadan data during Ramadan, year-round data otherwise
+  const todayData = isRamadan ? ramadanTodayData : yearRoundData;
+  const loading = isRamadan ? isLoading : yearRoundLoading;
+
+  if (loading && !todayData) {
     return (
       <div className="flex min-h-screen items-center justify-center pb-16">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -65,14 +69,11 @@ const Index = () => {
     );
   }
 
-  const rozaCount = todayIndex + 1;
-  const totalRoza = 30;
   const now = new Date();
   const currentHM = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   const sehriTime = todayData?.sehriEnd || '04:45';
   const iftarTime = todayData?.iftarStart || '18:10';
   const isFasting = currentHM >= sehriTime && currentHM < iftarTime;
-  const isBeforeSehri = currentHM < sehriTime;
   const isAfterIftar = currentHM >= iftarTime;
 
   return (
@@ -87,29 +88,62 @@ const Index = () => {
       )}
 
       {/* Status Banner */}
-      <div className={`rounded-xl p-3 text-center font-semibold text-sm ${isFasting ? 'bg-primary/10 text-primary' : 'bg-accent/20 text-accent-foreground'}`}>
-        {isFasting
-          ? t('🌙 রোজা চলছে', '🌙 Fasting in Progress')
-          : isAfterIftar
-            ? t('🕌 আজকের রোজা শেষ হয়েছে', '🕌 Today\'s fast has ended')
-            : t('☀️ রোজা এখনো শুরু হয়নি', '☀️ Fasting has not started yet')}
-      </div>
+      {isRamadan ? (
+        <div className={`rounded-xl p-3 text-center font-semibold text-sm ${isFasting ? 'bg-primary/10 text-primary' : 'bg-accent/20 text-accent-foreground'}`}>
+          {isFasting
+            ? t('🌙 রোজা চলছে', '🌙 Fasting in Progress')
+            : isAfterIftar
+              ? t('🕌 আজকের রোজা শেষ হয়েছে', '🕌 Today\'s fast has ended')
+              : t('☀️ রোজা এখনো শুরু হয়নি', '☀️ Fasting has not started yet')}
+        </div>
+      ) : (
+        <div className="rounded-xl p-3 text-center font-semibold text-sm bg-muted text-muted-foreground">
+          {t('☀️ দৈনিক সেহরি ও ইফতারের সময় দেখানো হচ্ছে', '☀️ Showing daily Sehri & Iftar times')}
+        </div>
+      )}
 
-      {/* Roza Count & Countdown - side by side on desktop */}
+      {/* Top Cards - side by side on desktop */}
       <div className="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
-        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-          <CardContent className="p-4 text-center space-y-1">
-            <p className="text-3xl font-bold text-primary font-bengali-num">
-              {t(`রোজা ${toBengaliNum(rozaCount)}/${toBengaliNum(totalRoza)}`, `Roza ${rozaCount}/${totalRoza}`)}
-            </p>
-            {todayData && (
-              <>
-                <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(rozaCount) : rozaCount}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
-                <p className="text-xs text-muted-foreground">{todayData.gregorianDate}</p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+        {isRamadan ? (
+          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+            <CardContent className="p-4 text-center space-y-1">
+              <p className="text-3xl font-bold text-primary font-bengali-num">
+                {t(`রোজা ${toBengaliNum(todayIndex + 1)}/${toBengaliNum(30)}`, `Roza ${todayIndex + 1}/30`)}
+              </p>
+              {todayData && (
+                <>
+                  <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(todayIndex + 1) : todayIndex + 1}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
+                  <p className="text-xs text-muted-foreground">{todayData.gregorianDate}</p>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+            <CardContent className="p-4 text-center space-y-2">
+              {todayData && (
+                <>
+                  <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(todayData.hijriDay) : todayData.hijriDay}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
+                  <p className="text-xs text-muted-foreground">{todayData.gregorianDate}</p>
+                </>
+              )}
+              <div className="flex justify-center gap-6 pt-1">
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground">{t('সেহরি', 'Sehri')}</p>
+                  <p className="text-xl font-bold text-primary font-bengali-num">
+                    {lang === 'bn' ? toBengaliNum(to12Hour(sehriTime)) : to12Hour(sehriTime)}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground">{t('ইফতার', 'Iftar')}</p>
+                  <p className="text-xl font-bold text-primary font-bengali-num">
+                    {lang === 'bn' ? toBengaliNum(to12Hour(iftarTime)) : to12Hour(iftarTime)}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardContent className="p-4">

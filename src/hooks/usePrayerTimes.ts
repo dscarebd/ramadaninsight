@@ -46,17 +46,17 @@ export interface PrayerDay {
   isha: string;
 }
 
-const cleanTime = (time: string) => time.replace(/\s*\(.*\)/, '');
+export const cleanTime = (time: string) => time.replace(/\s*\(.*\)/, '');
 
 // Subtract minutes from a HH:MM time string
-const subtractMinutes = (time: string, mins: number): string => {
+export const subtractMinutes = (time: string, mins: number): string => {
   const [h, m] = time.split(':').map(Number);
   const total = h * 60 + m - mins;
   const adjTotal = ((total % 1440) + 1440) % 1440;
   return `${String(Math.floor(adjTotal / 60)).padStart(2, '0')}:${String(adjTotal % 60).padStart(2, '0')}`;
 };
 
-const fetchMonthTimes = async (lat: number, lng: number, year: number, month: number): Promise<PrayerDay[]> => {
+export const fetchMonthTimes = async (lat: number, lng: number, year: number, month: number): Promise<PrayerDay[]> => {
   const res = await fetch(
     // tune offsets (Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight) to align with Bangladesh Islamic Foundation
     `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=1&school=1&tune=0,0,0,2,1,3,3,1,0`
@@ -124,6 +124,9 @@ export const usePrayerTimes = (lat: number, lng: number) => {
   const todayData = ramadanDays.find(d => d.date === todayStr) || ramadanDays[0];
   const todayIndex = ramadanDays.findIndex(d => d.date === todayStr);
 
+  // Determine if today is within Ramadan
+  const isRamadan = todayIndex >= 0;
+
   return {
     ramadanDays,
     todayData,
@@ -131,5 +134,6 @@ export const usePrayerTimes = (lat: number, lng: number) => {
     isLoading,
     isFetching,
     error,
+    isRamadan,
   };
 };
