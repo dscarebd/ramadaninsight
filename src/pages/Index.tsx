@@ -8,6 +8,7 @@ import { getCoordinates } from '@/data/locations';
 import CountdownTimer from '@/components/CountdownTimer';
 import { sehriNiyat, iftarDua } from '@/data/duas';
 import DailyQuote from '@/components/DailyQuote';
+import UpcomingFastingDays from '@/components/UpcomingFastingDays';
 import { Card, CardContent } from '@/components/ui/card';
 import { Moon, Sun, Loader2 } from 'lucide-react';
 
@@ -158,6 +159,9 @@ const Index = () => {
 
       {/* Daily Quote */}
       <DailyQuote />
+
+      {/* Upcoming Fasting Days - shown outside Ramadan */}
+      {!isRamadan && <UpcomingFastingDays todayData={todayData || null} />}
 
       {/* Sehri Niyat + Iftar Dua - side by side on desktop */}
       <div className="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
