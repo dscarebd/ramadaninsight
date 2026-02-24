@@ -53,7 +53,7 @@ const DuaHadith = () => {
     <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="দোয়া ও হাদিস - Dua & Hadith"
-        description="রমজানের দোয়া ও হাদিস সংকলন। Collection of Ramadan duas and hadiths."
+        description="Collection of Ramadan duas and hadiths for daily practice."
         keywords="dua, hadith, দোয়া, হাদিস, ramadan dua, islamic prayers"
       />
       

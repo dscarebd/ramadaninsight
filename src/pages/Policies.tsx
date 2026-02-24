@@ -12,7 +12,7 @@ const Policies = () => {
     <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
       <PageMeta
         title="নীতিমালা - Policies"
-        description="গোপনীয়তা নীতি ও শর্তাবলী। Privacy policy and terms of service."
+        description="Privacy policy and terms of service for Ramadan Insight."
         keywords="privacy policy, terms, নীতিমালা, গোপনীয়তা"
       />
       <Card>
