@@ -153,7 +153,7 @@ const SalatTracker = () => {
     <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="নামাজ ট্র্যাকার - Salat Tracker"
-        description="দৈনিক নামাজ ট্র্যাক করুন। Track your daily prayers and streaks."
+        description="Track your daily prayers and streaks during Ramadan."
         keywords="salat tracker, নামাজ ট্র্যাকার, prayer tracking, daily prayers, streak"
       />
       <Tabs defaultValue="today" className="w-full">

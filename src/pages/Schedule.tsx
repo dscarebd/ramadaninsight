@@ -63,7 +63,7 @@ const Schedule = () => {
     <div className={`min-h-screen pb-28 md:pb-2 px-2 pt-4 space-y-3 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
       <PageMeta
         title="সময়সূচী - Schedule"
-        description="রমজানের পূর্ণ সময়সূচী। Full Ramadan schedule with sehri and iftar times."
+        description="Full Ramadan schedule with sehri and iftar times for Bangladesh."
         keywords="ramadan schedule, সময়সূচী, sehri time, iftar time, prayer schedule"
       />
       

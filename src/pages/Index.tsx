@@ -82,7 +82,7 @@ const Index = () => {
     <div className={`min-h-screen md:min-h-0 pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
       <PageMeta
         title="Ramadan Insight"
-        description="সেহরি, ইফতার ও নামাজের সময়সূচী। Sehri, Iftar & prayer times for Ramadan."
+        description="Sehri, Iftar & prayer times for Ramadan in Bangladesh."
         keywords="ramadan, sehri, iftar, prayer times, রমজান, সেহরি, ইফতার, নামাজের সময়"
       />
       {/* Location Picker */}

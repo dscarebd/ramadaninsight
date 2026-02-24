@@ -108,7 +108,7 @@ const Profile = () => {
     <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="প্রোফাইল - Profile"
-        description="আপনার প্রোফাইল। Manage your profile."
+        description="Manage your profile and account settings."
         keywords="profile, প্রোফাইল, account, user"
       />
       <div className="flex items-center gap-2 mb-2">

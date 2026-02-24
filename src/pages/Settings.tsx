@@ -92,7 +92,7 @@ const Settings = () => {
     <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="সেটিংস - Settings"
-        description="অ্যাপ সেটিংস। App settings and preferences."
+        description="App settings and preferences for Ramadan Insight."
         keywords="settings, সেটিংস, preferences, language, theme"
       />
       
