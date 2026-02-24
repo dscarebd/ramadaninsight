@@ -1,49 +1,44 @@
 
 
-## Offline Support Improvements
+## Update App Icon and Color Theme to Purple
 
-This plan enhances the app so it works reliably without an internet connection and gracefully handles connectivity changes.
+The new logo has a purple/violet color palette. This plan replaces the current green theme with a matching purple theme and uses the new logo across all icon locations.
 
-### What You'll Get
+### What Changes
 
-1. **Offline Status Banner** - A small notification bar appears when you lose internet, so you always know your connection status.
+1. **New Logo** - Replace the current logo in the header with the uploaded image
+2. **Favicon** - Update to use the new logo
+3. **Color Theme** - Change from green/teal (hue 170-174) to purple/violet throughout the entire app
+4. **Status Bar and PWA** - Update theme colors to match purple
 
-2. **Cached Prayer Times** - Prayer times (Sehri, Iftar, all 5 waqt) are saved locally after first load. If you open the app offline, you still see accurate times instead of a loading spinner.
+### Visual Change
 
-3. **Offline Queue for Prayer Tracking** - When logged in but offline, prayer check/uncheck actions are queued and automatically synced to the cloud when you reconnect.
-
-4. **Dua & Hadith Always Available** - Already works offline since data is bundled in the app. No changes needed here.
-
----
+- Current: Green/teal primary color (`#166534`, hue 170-174)
+- New: Deep purple primary color (approximately hue 270-280, matching the logo gradient)
 
 ### Technical Details
 
-**New file: `src/hooks/useNetworkStatus.ts`**
-- Custom hook using `navigator.onLine` and `online`/`offline` events
-- Returns `{ isOnline: boolean }`
+**Files to modify:**
 
-**New file: `src/components/OfflineBanner.tsx`**
-- Small, non-intrusive banner shown at the top when offline
-- Displays "You're offline - data may not be up to date" in Bengali/English
-- Auto-dismisses when back online
+1. **Copy uploaded logo** to `src/assets/logo.png` (replacing old) and `public/favicon.png`
 
-**Modified: `src/App.tsx`**
-- Add `OfflineBanner` component inside the main layout
+2. **`src/index.css`** - Update all CSS custom properties:
+   - Light mode: Change hue from 170/174 to ~270/275 (purple)
+   - Dark mode: Same hue shift
+   - All background, card, muted, border, sidebar variables updated
 
-**Modified: `src/hooks/usePrayerTimes.ts` and `src/hooks/useTodayPrayerTimes.ts`**
-- After successful API fetch, cache the response in `localStorage` (keyed by lat/lng/year/month)
-- On query error or offline, fall back to cached data
-- Uses React Query's `initialData` from cache
+3. **`index.html`**:
+   - Update `meta theme-color` from `#166534` to a deep purple (e.g. `#5B21B6`)
+   - Update favicon link to new logo
 
-**Modified: `src/pages/Index.tsx` and `src/pages/Schedule.tsx`**
-- Show cached data with a subtle "cached" indicator instead of a spinner when offline
-- Remove the hard block on loading (no more infinite spinner when offline)
+4. **`vite.config.ts`**:
+   - Update PWA manifest `theme_color` and `background_color` to purple tones
 
-**Modified: `src/pages/SalatTracker.tsx`**
-- When offline and logged in, skip the cloud upsert and store a pending sync flag in localStorage
-- On reconnect, trigger the sync automatically
+5. **`capacitor.config.ts`**:
+   - Update `StatusBar.backgroundColor` and `SplashScreen.backgroundColor` to purple
 
-**Modified: `src/hooks/useSalatSync.ts`**
-- Add listener for `online` event to trigger sync when connectivity returns
-- Process any queued offline changes on reconnect
+6. **`src/index.css`** utility class:
+   - Update `.text-gradient-islamic` gradient to use purple tones instead of green
+
+No component code changes needed since all components use CSS variables (`text-primary`, `bg-primary`, etc.) which will automatically pick up the new purple values.
 
