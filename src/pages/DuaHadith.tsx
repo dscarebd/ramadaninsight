@@ -38,7 +38,7 @@ const DuaHadith = () => {
     `${lang === 'bn' ? dua.titleBn : dua.titleEn}\n\n${dua.arabic}\n\n${lang === 'bn' ? dua.meaningBn : dua.meaningEn}`;
 
   return (
-    <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-28 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="দোয়া ও হাদিস - Dua & Hadith"
         description="রমজানের দোয়া ও হাদিস সংকলন। Collection of Ramadan duas and hadiths."
