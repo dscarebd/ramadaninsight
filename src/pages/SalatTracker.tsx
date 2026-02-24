@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { formatLocalDate } from '@/lib/utils';
+import { hapticImpact, hapticNotification } from '@/hooks/useHaptics';
+import { ImpactStyle } from '@capacitor/haptics';
+import { NotificationType } from '@capacitor/haptics';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -101,10 +104,14 @@ const SalatTracker = () => {
   const updatePrayer = async (key: PrayerKey, val: boolean) => {
     const updated = { ...checked, [key]: val };
     setChecked(updated);
+    hapticImpact(ImpactStyle.Light);
 
     const allFive = fiveWaqt.every(p => updated[p.key]);
     const extraDone = ramadan ? (updated.taraweeh && updated.tahajjud) : updated.tahajjud;
-    if (allFive && extraDone) setShowCelebration(true);
+    if (allFive && extraDone) {
+      setShowCelebration(true);
+      hapticNotification(NotificationType.Success);
+    }
 
     if (user) {
       await supabase
@@ -122,6 +129,7 @@ const SalatTracker = () => {
     };
     setChecked(reset);
     setShowCelebration(false);
+    hapticImpact(ImpactStyle.Medium);
     if (user) {
       await supabase
         .from('salat_tracking')
