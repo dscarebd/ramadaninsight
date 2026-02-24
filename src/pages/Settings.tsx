@@ -175,7 +175,11 @@ const Settings = () => {
             </div>
             <Switch
               checked={theme === 'dark'}
-              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+              onCheckedChange={(checked) => {
+                document.documentElement.classList.add('theme-transition');
+                setTheme(checked ? 'dark' : 'light');
+                setTimeout(() => document.documentElement.classList.remove('theme-transition'), 500);
+              }}
             />
           </div>
         </CardContent>
