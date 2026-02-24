@@ -105,7 +105,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-28 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="প্রোফাইল - Profile"
         description="আপনার প্রোফাইল। Manage your profile."
