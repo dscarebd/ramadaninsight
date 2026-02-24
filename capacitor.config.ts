@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
       launchShowDuration: 2000,
       launchAutoHide: true,
       androidSplashResourceName: 'splash',
-      backgroundColor: '#f5faf8',
+      backgroundColor: '#f5f0ff',
       showSpinner: false,
       launchFadeOutDuration: 300,
     },
@@ -22,7 +22,7 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: 'LIGHT',
-      backgroundColor: '#166534',
+      backgroundColor: '#5B21B6',
     },
   },
 };

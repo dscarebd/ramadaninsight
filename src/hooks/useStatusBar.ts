@@ -10,7 +10,7 @@ export const useStatusBar = () => {
       try {
         await StatusBar.setStyle({ style: Style.Light });
         if (Capacitor.getPlatform() === 'android') {
-          await StatusBar.setBackgroundColor({ color: '#166534' });
+          await StatusBar.setBackgroundColor({ color: '#5B21B6' });
         }
       } catch {}
     };
