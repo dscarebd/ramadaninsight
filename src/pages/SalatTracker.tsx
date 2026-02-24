@@ -17,7 +17,8 @@ import WeeklySummary from '@/components/WeeklySummary';
 import StreakBadge from '@/components/StreakBadge';
 import DailyPrayerReminder from '@/components/DailyPrayerReminder';
 import { usePrayerReminder } from '@/hooks/usePrayerReminder';
-import { useSalatSync } from '@/hooks/useSalatSync';
+import { useSalatSync, markPendingSync } from '@/hooks/useSalatSync';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { usePrayerStreak } from '@/hooks/usePrayerStreak';
 import PageMeta from '@/components/PageMeta';
 
@@ -42,6 +43,7 @@ const isRamadan = () => {
 const SalatTracker = () => {
   const { lang, t } = useLanguage();
   const { toast } = useToast();
+  const { isOnline } = useNetworkStatus();
   const ramadan = isRamadan();
 
   const [checked, setChecked] = useState<Record<PrayerKey, boolean>>({
@@ -113,13 +115,16 @@ const SalatTracker = () => {
       hapticNotification(NotificationType.Success);
     }
 
-    if (user) {
+    // Always save to localStorage
+    localStorage.setItem(`salat_${todayStr}`, JSON.stringify(updated));
+
+    if (user && isOnline) {
       await supabase
         .from('salat_tracking')
         .upsert({ user_id: user, date: todayStr, ...updated }, { onConflict: 'user_id,date' });
+    } else if (user && !isOnline) {
+      markPendingSync();
     }
-    // Always save to localStorage
-    localStorage.setItem(`salat_${todayStr}`, JSON.stringify(updated));
     streakData.refresh();
   };
 
@@ -130,12 +135,15 @@ const SalatTracker = () => {
     setChecked(reset);
     setShowCelebration(false);
     hapticImpact(ImpactStyle.Medium);
-    if (user) {
+    localStorage.setItem(`salat_${todayStr}`, JSON.stringify(reset));
+
+    if (user && isOnline) {
       await supabase
         .from('salat_tracking')
         .upsert({ user_id: user, date: todayStr, ...reset }, { onConflict: 'user_id,date' });
+    } else if (user && !isOnline) {
+      markPendingSync();
     }
-    localStorage.removeItem(`salat_${todayStr}`);
     streakData.refresh();
   };
 
