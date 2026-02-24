@@ -159,6 +159,13 @@
   body {
     @apply bg-background text-foreground font-bengali;
   }
+
+  [data-sonner-toaster],
+  [role="dialog"],
+  [role="alertdialog"],
+  [data-radix-popper-content-wrapper] {
+    font-family: 'Anek Bangla', sans-serif !important;
+  }
 }
 
 @layer utilities {
