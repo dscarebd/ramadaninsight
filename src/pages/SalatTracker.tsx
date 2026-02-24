@@ -150,7 +150,7 @@ const SalatTracker = () => {
   const fiveCount = fiveWaqt.filter(p => checked[p.key]).length;
 
   return (
-    <div className="min-h-screen pb-28 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="নামাজ ট্র্যাকার - Salat Tracker"
         description="দৈনিক নামাজ ট্র্যাক করুন। Track your daily prayers and streaks."

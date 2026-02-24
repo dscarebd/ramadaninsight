@@ -89,7 +89,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen pb-28 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="সেটিংস - Settings"
         description="অ্যাপ সেটিংস। App settings and preferences."
