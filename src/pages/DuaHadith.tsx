@@ -6,6 +6,8 @@ import { Share2, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PageMeta from '@/components/PageMeta';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 const DuaHadith = () => {
   const { lang, t } = useLanguage();
@@ -16,16 +18,26 @@ const DuaHadith = () => {
   const hadith = dailyHadiths[hadithIndex];
 
   const handleShare = async (id: string, text: string) => {
+    // Use native share on Capacitor
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await Share.share({ text });
+        return;
+      } catch {
+        // User cancelled
+        return;
+      }
+    }
+    // Web fallback
     if (navigator.share) {
       try {
         await navigator.share({ text });
         return;
       } catch (e) {
-        // User cancelled or share failed, fall through to copy
         if ((e as DOMException).name === 'AbortError') return;
       }
     }
-    // Fallback: copy to clipboard
+    // Final fallback: copy to clipboard
     await navigator.clipboard.writeText(text);
     setCopiedId(id);
     toast({ title: t('কপি হয়েছে!', 'Copied to clipboard!'), duration: 1500 });
