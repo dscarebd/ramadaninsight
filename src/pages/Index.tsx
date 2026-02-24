@@ -114,13 +114,13 @@ const Index = () => {
         {isRamadan ? (
           <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
             <CardContent className="p-4 text-center space-y-1">
-              <p className="text-3xl font-bold text-primary font-bengali-num">
+              <p className="text-3xl font-bold text-primary dark:text-white font-bengali-num">
                 {t(`রোজা ${toBengaliNum(todayIndex + 1)}/${toBengaliNum(30)}`, `Roza ${todayIndex + 1}/30`)}
               </p>
               {todayData && (
                 <>
-                  <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(todayIndex + 1) : todayIndex + 1}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
-                  <p className="text-xs text-muted-foreground">{todayData.gregorianDate}</p>
+                   <p className="text-sm text-muted-foreground dark:text-white/80">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(todayIndex + 1) : todayIndex + 1}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
+                   <p className="text-xs text-muted-foreground dark:text-white/70">{todayData.gregorianDate}</p>
                 </>
               )}
             </CardContent>
