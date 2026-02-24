@@ -1,24 +1,49 @@
 
 
-## Fix Bottom Content Cut-off on Native APK
+## Offline Support Improvements
 
-### Problem
-On the native APK, the bottom warning/disclaimer text on the Home page (and potentially other pages) is hidden behind the bottom navigation bar. The current `pb-20` (80px) padding is not enough when the native safe area inset is added to the bottom nav height.
+This plan enhances the app so it works reliably without an internet connection and gracefully handles connectivity changes.
 
-### Solution
-Increase the mobile bottom padding from `pb-20` (80px) to `pb-28` (112px) across all pages to ensure content clears the bottom nav bar plus safe area inset on native devices.
+### What You'll Get
 
-### Files to Change
+1. **Offline Status Banner** - A small notification bar appears when you lose internet, so you always know your connection status.
 
-**All page files** -- update `pb-20` to `pb-28` on the main container div:
+2. **Cached Prayer Times** - Prayer times (Sehri, Iftar, all 5 waqt) are saved locally after first load. If you open the app offline, you still see accurate times instead of a loading spinner.
 
-1. `src/pages/Index.tsx` (line 82) -- `pb-20` to `pb-28`
-2. `src/pages/DuaHadith.tsx` (line 41) -- `pb-20` to `pb-28`
-3. `src/pages/SalatTracker.tsx` (line 137) -- `pb-20` to `pb-28`
-4. `src/pages/Schedule.tsx` (line 63) -- `pb-20` to `pb-28`
-5. `src/pages/Settings.tsx` (line 92) -- `pb-20` to `pb-28`
-6. `src/pages/Profile.tsx` (line 108) -- `pb-20` to `pb-28`
-7. `src/pages/Policies.tsx` (line 12) -- `pb-20` to `pb-28`
-8. `src/pages/Auth.tsx` (line 50) -- `pb-20` to `pb-28`
+3. **Offline Queue for Prayer Tracking** - When logged in but offline, prayer check/uncheck actions are queued and automatically synced to the cloud when you reconnect.
 
-This adds 32px more space at the bottom on mobile, which will comfortably clear the bottom nav bar even with the safe area inset on native devices. Desktop padding (`md:pb-8`) stays unchanged.
+4. **Dua & Hadith Always Available** - Already works offline since data is bundled in the app. No changes needed here.
+
+---
+
+### Technical Details
+
+**New file: `src/hooks/useNetworkStatus.ts`**
+- Custom hook using `navigator.onLine` and `online`/`offline` events
+- Returns `{ isOnline: boolean }`
+
+**New file: `src/components/OfflineBanner.tsx`**
+- Small, non-intrusive banner shown at the top when offline
+- Displays "You're offline - data may not be up to date" in Bengali/English
+- Auto-dismisses when back online
+
+**Modified: `src/App.tsx`**
+- Add `OfflineBanner` component inside the main layout
+
+**Modified: `src/hooks/usePrayerTimes.ts` and `src/hooks/useTodayPrayerTimes.ts`**
+- After successful API fetch, cache the response in `localStorage` (keyed by lat/lng/year/month)
+- On query error or offline, fall back to cached data
+- Uses React Query's `initialData` from cache
+
+**Modified: `src/pages/Index.tsx` and `src/pages/Schedule.tsx`**
+- Show cached data with a subtle "cached" indicator instead of a spinner when offline
+- Remove the hard block on loading (no more infinite spinner when offline)
+
+**Modified: `src/pages/SalatTracker.tsx`**
+- When offline and logged in, skip the cloud upsert and store a pending sync flag in localStorage
+- On reconnect, trigger the sync automatically
+
+**Modified: `src/hooks/useSalatSync.ts`**
+- Add listener for `online` event to trigger sync when connectivity returns
+- Process any queued offline changes on reconnect
+
