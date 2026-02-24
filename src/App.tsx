@@ -2,7 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import PageTransition from "@/components/PageTransition";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/Header";
@@ -43,6 +45,25 @@ const AppContent = () => {
   return null;
 };
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+        <Route path="/dua" element={<PageTransition><DuaHadith /></PageTransition>} />
+        <Route path="/salat" element={<PageTransition><SalatTracker /></PageTransition>} />
+        <Route path="/schedule" element={<PageTransition><Schedule /></PageTransition>} />
+        <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
+        <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+        <Route path="/policies" element={<PageTransition><Policies /></PageTransition>} />
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
@@ -55,17 +76,7 @@ const App = () => (
           <AppContent />
           <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto min-h-screen bg-background relative">
             <Header />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dua" element={<DuaHadith />} />
-              <Route path="/salat" element={<SalatTracker />} />
-              <Route path="/schedule" element={<Schedule />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/policies" element={<Policies />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AnimatedRoutes />
             <BottomNav />
             <Footer />
           </div>
