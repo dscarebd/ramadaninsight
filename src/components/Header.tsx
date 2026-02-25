@@ -7,6 +7,8 @@ import { findNearestLocation, findUpazila, findZilla, findDivision } from '@/dat
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
 import { BDFlag } from '@/components/FlagIcons';
+import { Capacitor } from '@capacitor/core';
+import { Geolocation } from '@capacitor/geolocation';
 
 const pageTitles: Record<string, { bn: string; en: string }> = {
   '/dua': { bn: 'দোয়া ও হাদিস', en: 'Dua & Hadith' },
@@ -32,13 +34,66 @@ const Header = () => {
   const pageTitle = pageTitles[pathname];
   const [locating, setLocating] = useState(false);
 
-  const handleGPS = () => {
+  const processPosition = (latitude: number, longitude: number) => {
+    const nearest = findNearestLocation(latitude, longitude);
+    localStorage.setItem('location', JSON.stringify(nearest));
+    localStorage.setItem('gps_location', JSON.stringify({ latitude, longitude }));
+
+    const upazila = findUpazila(nearest.division, nearest.zilla, nearest.upazila);
+    const zilla = findZilla(nearest.division, nearest.zilla);
+    const upazilaName = upazila ? (lang === 'bn' ? upazila.nameBn : upazila.nameEn) : '';
+    const zillaName = zilla ? (lang === 'bn' ? zilla.nameBn : zilla.nameEn) : '';
+    toast.success(`${t('অবস্থান পাওয়া গেছে', 'Location found')}: ${upazilaName}, ${zillaName}`);
+
+    setLocating(false);
+    window.dispatchEvent(new Event('gps-location-updated'));
+  };
+
+  const handleGPS = async () => {
+    setLocating(true);
+
+    if (Capacitor.isNativePlatform()) {
+      // Native: use @capacitor/geolocation
+      try {
+        const permResult = await Geolocation.requestPermissions();
+        if (permResult.location === 'denied') {
+          setLocating(false);
+          toast.error(t(
+            'লোকেশন অনুমতি দেওয়া হয়নি। অ্যাপ সেটিংস থেকে অনুমতি দিন অথবা ম্যানুয়ালি লোকেশন সিলেক্ট করুন।',
+            'Location permission denied. Please allow location access in app settings or select location manually.'
+          ), { duration: 6000 });
+          return;
+        }
+
+        const position = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        });
+        processPosition(position.coords.latitude, position.coords.longitude);
+      } catch (err: any) {
+        setLocating(false);
+        if (err?.message?.includes('denied') || err?.code === 1) {
+          toast.error(t(
+            'লোকেশন অনুমতি দেওয়া হয়নি। অ্যাপ সেটিংস থেকে অনুমতি দিন।',
+            'Location permission denied. Please allow in app settings.'
+          ), { duration: 6000 });
+        } else {
+          toast.error(t(
+            'GPS সিগন্যাল পাওয়া যাচ্ছে না। ম্যানুয়ালি লোকেশন সিলেক্ট করুন।',
+            'GPS signal unavailable. Please select location manually.'
+          ), { duration: 5000 });
+        }
+      }
+      return;
+    }
+
+    // Web: use navigator.geolocation with existing fallback logic
     if (!navigator.geolocation) {
+      setLocating(false);
       toast.error(t('আপনার ব্রাউজার GPS সাপোর্ট করে না', 'Your browser does not support GPS'));
       return;
     }
 
-    // Iframe detection warning
     const isIframe = window.self !== window.top;
     if (isIframe) {
       toast.info(t(
@@ -47,26 +102,11 @@ const Header = () => {
       ), { duration: 5000 });
     }
 
-    setLocating(true);
-
     const onSuccess = (pos: GeolocationPosition) => {
-      const { latitude, longitude } = pos.coords;
-      const nearest = findNearestLocation(latitude, longitude);
-      localStorage.setItem('location', JSON.stringify(nearest));
-      localStorage.setItem('gps_location', JSON.stringify({ latitude, longitude }));
-
-      const upazila = findUpazila(nearest.division, nearest.zilla, nearest.upazila);
-      const zilla = findZilla(nearest.division, nearest.zilla);
-      const upazilaName = upazila ? (lang === 'bn' ? upazila.nameBn : upazila.nameEn) : '';
-      const zillaName = zilla ? (lang === 'bn' ? zilla.nameBn : zilla.nameEn) : '';
-      toast.success(`${t('অবস্থান পাওয়া গেছে', 'Location found')}: ${upazilaName}, ${zillaName}`);
-
-      setLocating(false);
-      window.dispatchEvent(new Event('gps-location-updated'));
+      processPosition(pos.coords.latitude, pos.coords.longitude);
     };
 
     const onError = (error: GeolocationPositionError, wasHighAccuracy: boolean) => {
-      // Retry with low accuracy if high accuracy failed
       if (wasHighAccuracy && (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE)) {
         toast.info(t('উচ্চ নির্ভুলতায় ব্যর্থ, পুনরায় চেষ্টা করা হচ্ছে...', 'High accuracy failed, retrying...'));
         tryGPS(false);
