@@ -1,44 +1,35 @@
 
+# Fix Missing and Incorrect Upazilas in Location Data
 
-## Update App Icon and Color Theme to Purple
+## Summary
+Update `src/data/locations.ts` to correct 8 issues in the Bangladesh location database.
 
-The new logo has a purple/violet color palette. This plan replaces the current green theme with a matching purple theme and uses the new logo across all icon locations.
+## Changes (all in `src/data/locations.ts`)
 
-### What Changes
+### 1. Add Karnaphuli upazila to Chattogram zilla
+- Add `{ id: 'karnaphuli', nameBn: 'কর্ণফুলী', nameEn: 'Karnaphuli', lat: 22.3200, lng: 91.8000 }` after Hathazari (line 306 area)
 
-1. **New Logo** - Replace the current logo in the header with the uploaded image
-2. **Favicon** - Update to use the new logo
-3. **Color Theme** - Change from green/teal (hue 170-174) to purple/violet throughout the entire app
-4. **Status Bar and PWA** - Update theme colors to match purple
+### 2. Replace Langalkot with Lalmai in Comilla zilla
+- Line 335: Change `langalkot` / `লাঙ্গলকোট` / `Langalkot` to `lalmai` / `লালমাই` / `Lalmai` with coordinates `lat: 23.3500, lng: 91.1300`
 
-### Visual Change
+### 3. Add Eidgaon upazila to Cox's Bazar zilla
+- Add `{ id: 'eidgaon', nameBn: 'ঈদগাঁও', nameEn: 'Eidgaon', lat: 21.4700, lng: 92.0200 }` in the upazilas list (after Coxs Bazar Sadar, line 351 area)
 
-- Current: Green/teal primary color (`#166534`, hue 170-174)
-- New: Deep purple primary color (approximately hue 270-280, matching the logo gradient)
+### 4. Add Naldanga upazila to Natore zilla
+- Add `{ id: 'naldanga', nameBn: 'নলডাঙ্গা', nameEn: 'Naldanga', lat: 24.3400, lng: 89.0500 }` after Lalpur (line 530 area)
 
-### Technical Details
+### 5. Add Dasar upazila to Madaripur zilla
+- Add `{ id: 'dasar', nameBn: 'ডাসার', nameEn: 'Dasar', lat: 23.1200, lng: 90.1400 }` in Madaripur's upazilas (after Kalkini, line 120 area)
 
-**Files to modify:**
+### 6. Add Madhyanagar upazila to Sunamganj zilla
+- Add `{ id: 'madhyanagar', nameBn: 'মধ্যনগর', nameEn: 'Madhyanagar', lat: 25.0100, lng: 91.2800 }` in Sunamganj's upazilas (line 810 area)
 
-1. **Copy uploaded logo** to `src/assets/logo.png` (replacing old) and `public/favicon.png`
+### 7. Rename South Sunamganj to Shantiganj
+- Line 813: Change id from `south-sunamganj` to `shantiganj`, nameBn from `দক্ষিণ সুনামগঞ্জ` to `শান্তিগঞ্জ`, nameEn from `South Sunamganj` to `Shantiganj`
 
-2. **`src/index.css`** - Update all CSS custom properties:
-   - Light mode: Change hue from 170/174 to ~270/275 (purple)
-   - Dark mode: Same hue shift
-   - All background, card, muted, border, sidebar variables updated
+### 8. Remove duplicate Nawabganj zilla from Rajshahi division
+- Delete lines 535-544 (the duplicate `nawabganj` zilla entry with only 1 upazila), since `chapainawabganj` already covers this district correctly
 
-3. **`index.html`**:
-   - Update `meta theme-color` from `#166534` to a deep purple (e.g. `#5B21B6`)
-   - Update favicon link to new logo
-
-4. **`vite.config.ts`**:
-   - Update PWA manifest `theme_color` and `background_color` to purple tones
-
-5. **`capacitor.config.ts`**:
-   - Update `StatusBar.backgroundColor` and `SplashScreen.backgroundColor` to purple
-
-6. **`src/index.css`** utility class:
-   - Update `.text-gradient-islamic` gradient to use purple tones instead of green
-
-No component code changes needed since all components use CSS variables (`text-primary`, `bg-primary`, etc.) which will automatically pick up the new purple values.
-
+## Technical Notes
+- No other files need changes; all fixes are in `src/data/locations.ts`
+- The `districts.ts` file also has a Nawabganj entry but it's a separate legacy dataset not used by the dropdown
