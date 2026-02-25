@@ -403,6 +403,9 @@ export const divisions: Division[] = [
           { id: 'muradnagar', nameBn: 'মুরাদনগর', nameEn: 'Muradnagar', lat: 23.6620, lng: 90.9256 },
           { id: 'nangalkot', nameBn: 'নাঙ্গলকোট', nameEn: 'Nangalkot', lat: 23.3120, lng: 91.2100 },
           { id: 'titas', nameBn: 'তিতাস', nameEn: 'Titas', lat: 23.5690, lng: 90.9290 },
+          { id: 'kotwali-comilla', nameBn: 'কোতোয়ালি', nameEn: 'Kotwali (Comilla)', lat: 23.4600, lng: 91.1800 },
+          { id: 'adarsha-sadar', nameBn: 'আদর্শ সদর', nameEn: 'Adarsha Sadar', lat: 23.4500, lng: 91.2000 },
+          { id: 'sadar-dakshin-thana', nameBn: 'সদর দক্ষিণ', nameEn: 'Sadar Dakshin (Thana)', lat: 23.4200, lng: 91.1700 },
         ],
       },
       {
@@ -946,6 +949,9 @@ export const divisions: Division[] = [
           { id: 'mehendiganj', nameBn: 'মেহেন্দিগঞ্জ', nameEn: 'Mehendiganj', lat: 22.6720, lng: 90.5310 },
           { id: 'muladi', nameBn: 'মুলাদী', nameEn: 'Muladi', lat: 22.7990, lng: 90.4160 },
           { id: 'wazirpur', nameBn: 'উজিরপুর', nameEn: 'Wazirpur', lat: 22.7950, lng: 90.2780 },
+          { id: 'kotwali-barishal', nameBn: 'কোতোয়ালি', nameEn: 'Kotwali (Barishal)', lat: 22.7010, lng: 90.3535 },
+          { id: 'airport-barishal', nameBn: 'এয়ারপোর্ট', nameEn: 'Airport', lat: 22.7150, lng: 90.3720 },
+          { id: 'bandar-barishal', nameBn: 'বন্দর', nameEn: 'Bandar (Barishal)', lat: 22.6900, lng: 90.3650 },
         ],
       },
       {
@@ -1131,6 +1137,9 @@ export const divisions: Division[] = [
           { id: 'pirganj-rangpur', nameBn: 'পীরগঞ্জ', nameEn: 'Pirganj', lat: 25.5060, lng: 89.3500 },
           { id: 'rangpur-sadar', nameBn: 'রংপুর সদর', nameEn: 'Rangpur Sadar', lat: 25.7439, lng: 89.2752 },
           { id: 'taraganj', nameBn: 'তারাগঞ্জ', nameEn: 'Taraganj', lat: 25.8510, lng: 89.1160 },
+          { id: 'kotwali-rangpur', nameBn: 'কোতোয়ালি', nameEn: 'Kotwali (Rangpur)', lat: 25.7500, lng: 89.2600 },
+          { id: 'mahiganj', nameBn: 'মাহিগঞ্জ', nameEn: 'Mahiganj', lat: 25.7650, lng: 89.2900 },
+          { id: 'tajhat', nameBn: 'তাজহাট', nameEn: 'Tajhat', lat: 25.7550, lng: 89.2500 },
         ],
       },
       {
@@ -1190,6 +1199,7 @@ export const divisions: Division[] = [
           { id: 'phulpur', nameBn: 'ফুলপুর', nameEn: 'Phulpur', lat: 24.9550, lng: 90.3920 },
           { id: 'tarakanda', nameBn: 'তারাকান্দা', nameEn: 'Tarakanda', lat: 24.8280, lng: 90.3310 },
           { id: 'trishal', nameBn: 'ত্রিশাল', nameEn: 'Trishal', lat: 24.5830, lng: 90.3910 },
+          { id: 'kotwali-mymensingh', nameBn: 'কোতোয়ালি', nameEn: 'Kotwali (Mymensingh)', lat: 24.7540, lng: 90.4070 },
         ],
       },
       {
