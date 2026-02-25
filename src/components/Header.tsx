@@ -37,29 +37,76 @@ const Header = () => {
       toast.error(t('আপনার ব্রাউজার GPS সাপোর্ট করে না', 'Your browser does not support GPS'));
       return;
     }
+
+    // Iframe detection warning
+    const isIframe = window.self !== window.top;
+    if (isIframe) {
+      toast.info(t(
+        'প্রিভিউ মোডে GPS কাজ নাও করতে পারে। পাবলিশড URL ব্যবহার করুন অথবা ম্যানুয়ালি লোকেশন সিলেক্ট করুন।',
+        'GPS may not work in preview mode. Use the published URL or select location manually.'
+      ), { duration: 5000 });
+    }
+
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        const nearest = findNearestLocation(latitude, longitude);
-        localStorage.setItem('location', JSON.stringify(nearest));
-        localStorage.setItem('gps_location', JSON.stringify({ latitude, longitude }));
 
-        const upazila = findUpazila(nearest.division, nearest.zilla, nearest.upazila);
-        const zilla = findZilla(nearest.division, nearest.zilla);
-        const upazilaName = upazila ? (lang === 'bn' ? upazila.nameBn : upazila.nameEn) : '';
-        const zillaName = zilla ? (lang === 'bn' ? zilla.nameBn : zilla.nameEn) : '';
-        toast.success(`${t('অবস্থান পাওয়া গেছে', 'Location found')}: ${upazilaName}, ${zillaName}`);
+    const onSuccess = (pos: GeolocationPosition) => {
+      const { latitude, longitude } = pos.coords;
+      const nearest = findNearestLocation(latitude, longitude);
+      localStorage.setItem('location', JSON.stringify(nearest));
+      localStorage.setItem('gps_location', JSON.stringify({ latitude, longitude }));
 
-        setLocating(false);
-        window.dispatchEvent(new Event('gps-location-updated'));
-      },
-      () => {
-        toast.error(t('অবস্থান পাওয়া যায়নি', 'Could not get location'));
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+      const upazila = findUpazila(nearest.division, nearest.zilla, nearest.upazila);
+      const zilla = findZilla(nearest.division, nearest.zilla);
+      const upazilaName = upazila ? (lang === 'bn' ? upazila.nameBn : upazila.nameEn) : '';
+      const zillaName = zilla ? (lang === 'bn' ? zilla.nameBn : zilla.nameEn) : '';
+      toast.success(`${t('অবস্থান পাওয়া গেছে', 'Location found')}: ${upazilaName}, ${zillaName}`);
+
+      setLocating(false);
+      window.dispatchEvent(new Event('gps-location-updated'));
+    };
+
+    const onError = (error: GeolocationPositionError, wasHighAccuracy: boolean) => {
+      // Retry with low accuracy if high accuracy failed
+      if (wasHighAccuracy && (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE)) {
+        toast.info(t('উচ্চ নির্ভুলতায় ব্যর্থ, পুনরায় চেষ্টা করা হচ্ছে...', 'High accuracy failed, retrying...'));
+        tryGPS(false);
+        return;
+      }
+
+      setLocating(false);
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          toast.error(t(
+            'লোকেশন অনুমতি দেওয়া হয়নি। ব্রাউজার সেটিংস থেকে অনুমতি দিন অথবা ম্যানুয়ালি লোকেশন সিলেক্ট করুন।',
+            'Location permission denied. Please allow location access in browser settings or select location manually.'
+          ), { duration: 6000 });
+          break;
+        case error.POSITION_UNAVAILABLE:
+          toast.error(t(
+            'GPS সিগন্যাল পাওয়া যাচ্ছে না। ম্যানুয়ালি লোকেশন সিলেক্ট করুন।',
+            'GPS signal unavailable. Please select location manually.'
+          ), { duration: 5000 });
+          break;
+        case error.TIMEOUT:
+          toast.error(t(
+            'GPS সময়সীমা শেষ হয়ে গেছে। ম্যানুয়ালি লোকেশন সিলেক্ট করুন।',
+            'GPS timed out. Please select location manually.'
+          ), { duration: 5000 });
+          break;
+        default:
+          toast.error(t('অবস্থান পাওয়া যায়নি', 'Could not get location'));
+      }
+    };
+
+    const tryGPS = (highAccuracy: boolean) => {
+      navigator.geolocation.getCurrentPosition(
+        onSuccess,
+        (err) => onError(err, highAccuracy),
+        { enableHighAccuracy: highAccuracy, timeout: 15000, maximumAge: 60000 }
+      );
+    };
+
+    tryGPS(true);
   };
 
   return (
