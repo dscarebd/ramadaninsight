@@ -22,8 +22,40 @@ interface SearchableSelectProps {
   onSelect: (val: string) => void;
   placeholder: string;
   searchPlaceholder: string;
-  items: { id: string; label: string }[];
+  items: { id: string; labelBn: string; labelEn: string; label: string }[];
 }
+
+const bilingualFilter = (value: string, search: string): number => {
+  if (!search || search.length === 0) return 1;
+  const s = search.toLowerCase();
+  const v = value.toLowerCase();
+
+  // Exact substring match in either language
+  if (v.includes(s)) return 1;
+
+  // Fuzzy: check if search matches with 1 char tolerance
+  const words = v.split(/\s+/);
+  for (const word of words) {
+    if (word.length < 2) continue;
+    // Check if most of the search chars appear consecutively in word
+    const minLen = Math.max(2, s.length - 1);
+    for (let i = 0; i <= s.length - minLen; i++) {
+      const sub = s.slice(i, i + minLen);
+      if (word.includes(sub)) return 0.5;
+    }
+  }
+
+  // Also check search words against value
+  const searchWords = s.split(/\s+/).filter(w => w.length >= 2);
+  for (const sw of searchWords) {
+    if (v.includes(sw)) return 0.5;
+    const subLen = Math.max(2, sw.length - 1);
+    const sub = sw.slice(0, subLen);
+    if (v.includes(sub)) return 0.3;
+  }
+
+  return 0;
+};
 
 const SearchableSelect = ({ value, onSelect, placeholder, searchPlaceholder, items }: SearchableSelectProps) => {
   const [open, setOpen] = useState(false);
@@ -42,16 +74,16 @@ const SearchableSelect = ({ value, onSelect, placeholder, searchPlaceholder, ite
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-popover" align="start">
-        <Command>
+        <Command filter={bilingualFilter}>
           <CommandInput placeholder={searchPlaceholder} className="h-9" />
           <CommandList className="max-h-52">
             <CommandEmpty className="py-4 text-center text-sm text-muted-foreground">
-              Not found
+              পাওয়া যায়নি / Not found
             </CommandEmpty>
             {items.map(item => (
               <CommandItem
                 key={item.id}
-                value={item.label}
+                value={`${item.labelBn} ${item.labelEn}`}
                 onSelect={() => {
                   onSelect(item.id);
                   setOpen(false);
@@ -105,9 +137,9 @@ const LocationPicker = ({ value, onChange }: Props) => {
     if (newVal.upazila) setExpanded(false);
   };
 
-  const divisionItems = divisions.map(d => ({ id: d.id, label: lang === 'bn' ? d.nameBn : d.nameEn }));
-  const zillaItems = selectedDivision?.zillas.map(z => ({ id: z.id, label: lang === 'bn' ? z.nameBn : z.nameEn })) || [];
-  const upazilaItems = selectedZilla?.upazilas.map(u => ({ id: u.id, label: lang === 'bn' ? u.nameBn : u.nameEn })) || [];
+  const divisionItems = divisions.map(d => ({ id: d.id, labelBn: d.nameBn, labelEn: d.nameEn, label: lang === 'bn' ? d.nameBn : d.nameEn }));
+  const zillaItems = selectedDivision?.zillas.map(z => ({ id: z.id, labelBn: z.nameBn, labelEn: z.nameEn, label: lang === 'bn' ? z.nameBn : z.nameEn })) || [];
+  const upazilaItems = selectedZilla?.upazilas.map(u => ({ id: u.id, labelBn: u.nameBn, labelEn: u.nameEn, label: lang === 'bn' ? u.nameBn : u.nameEn })) || [];
 
   return (
     <div className="space-y-2">
