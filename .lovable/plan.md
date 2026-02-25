@@ -1,62 +1,77 @@
 
 
-# Add Dhaka City Thanas to Location Dropdown
+# Add City Thanas for Other Major Cities
 
 ## Summary
-Add major Dhaka city thanas/areas as selectable locations under the existing Dhaka zilla, so city residents can pick their neighborhood for more accurate prayer times.
+After a full audit, all official upazilas across all 64 districts are present. The enhancement is to add city-level thanas for other major city corporations, just like was done for Dhaka, so urban residents in these cities can pick their neighborhood for more precise prayer times.
 
-## What Changes
+## Cities to Add Thanas For
 
-### File: `src/data/locations.ts`
-
-Add the following Dhaka city thanas to the Dhaka zilla's `upazilas` array (after the existing 5 upazilas). These are the major thana/areas within Dhaka city:
+### 1. Chattogram City (under Chattogram zilla)
+Add thanas after existing upazilas:
 
 | Thana | Bengali | Coordinates |
 |-------|---------|-------------|
-| Adabor | আদাবর | 23.7590, 90.3500 |
-| Badda | বাড্ডা | 23.7800, 90.4260 |
-| Bangshal | বংশাল | 23.7190, 90.4030 |
-| Cantonment | ক্যান্টনমেন্ট | 23.8170, 90.4010 |
-| Chackbazar | চকবাজার | 23.7210, 90.4000 |
-| Darus Salam | দারুস সালাম | 23.7480, 90.3630 |
-| Demra | ডেমরা | 23.7080, 90.4850 |
-| Dhanmondi | ধানমন্ডি | 23.7461, 90.3742 |
-| Gandaria | গেন্ডারিয়া | 23.7050, 90.4250 |
-| Gulshan | গুলশান | 23.7925, 90.4078 |
-| Hazaribagh | হাজারীবাগ | 23.7310, 90.3680 |
-| Jatrabari | যাত্রাবাড়ী | 23.7100, 90.4350 |
-| Kadamtali | কদমতলী | 23.6980, 90.4460 |
-| Kafrul | কাফরুল | 23.7950, 90.3880 |
-| Kalabagan | কলাবাগান | 23.7430, 90.3760 |
-| Kamrangirchar | কামরাঙ্গীরচর | 23.7220, 90.3810 |
-| Khilgaon | খিলগাঁও | 23.7530, 90.4350 |
-| Khilkhet | খিলক্ষেত | 23.8290, 90.4230 |
-| Kotwali | কোতোয়ালি | 23.7160, 90.4080 |
-| Lalbagh | লালবাগ | 23.7180, 90.3880 |
-| Mirpur | মিরপুর | 23.8042, 90.3687 |
-| Mohammadpur | মোহাম্মদপুর | 23.7662, 90.3586 |
-| Motijheel | মতিঝিল | 23.7330, 90.4170 |
-| New Market | নিউমার্কেট | 23.7340, 90.3850 |
-| Pallabi | পল্লবী | 23.8200, 90.3650 |
-| Paltan | পল্টন | 23.7360, 90.4130 |
-| Ramna | রমনা | 23.7400, 90.4060 |
-| Rampura | রামপুরা | 23.7620, 90.4340 |
-| Sabujbagh | সবুজবাগ | 23.7430, 90.4310 |
-| Shah Ali | শাহ আলী | 23.7970, 90.3580 |
-| Shahbagh | শাহবাগ | 23.7390, 90.3960 |
-| Sher-e-Bangla Nagar | শেরেবাংলা নগর | 23.7630, 90.3750 |
-| Shyampur | শ্যামপুর | 23.6920, 90.4360 |
-| Sutrapur | সূত্রাপুর | 23.7120, 90.4130 |
-| Tejgaon | তেজগাঁও | 23.7600, 90.3920 |
-| Tejgaon Industrial | তেজগাঁও শিল্পাঞ্চল | 23.7680, 90.4000 |
-| Turag | তুরাগ | 23.8750, 90.3900 |
-| Uttara | উত্তরা | 23.8759, 90.3795 |
-| Uttarkhan | উত্তরখান | 23.8700, 90.4100 |
-| Vatara | ভাটারা | 23.8100, 90.4300 |
-| Wari | ওয়ারী | 23.7170, 90.4130 |
+| Akbar Shah | আকবর শাহ | 22.3330, 91.8180 |
+| Bakalia | বাকলিয়া | 22.3370, 91.8350 |
+| Bayazid | বায়েজিদ | 22.3570, 91.8100 |
+| Chandgaon | চান্দগাঁও | 22.3690, 91.8280 |
+| Chawkbazar (Ctg) | চকবাজার | 22.3520, 91.8330 |
+| Double Mooring | ডবলমুরিং | 22.3210, 91.8170 |
+| EPZ | ইপিজেড | 22.3370, 91.7640 |
+| Halishahar | হালিশহর | 22.3440, 91.7780 |
+| Khulshi | খুলশী | 22.3540, 91.7990 |
+| Kotwali (Ctg) | কোতোয়ালি | 22.3430, 91.8410 |
+| Pahartali | পাহাড়তলী | 22.3590, 91.7620 |
+| Panchlaish | পাঁচলাইশ | 22.3650, 91.8160 |
+| Patenga | পতেঙ্গা | 22.2770, 91.7950 |
+| Sadarghat (Ctg) | সদরঘাট | 22.3250, 91.8400 |
+
+### 2. Gazipur City (under Gazipur zilla)
+| Thana | Bengali | Coordinates |
+|-------|---------|-------------|
+| Basan | বাসন | 23.9900, 90.4050 |
+| Chandona | চান্দনা | 24.0350, 90.3600 |
+| Gacha | গাছা | 24.0120, 90.3850 |
+| Konabari | কোনাবাড়ী | 23.9750, 90.3500 |
+| Tongi East | তুরাগ পূর্ব | 23.9100, 90.4100 |
+| Tongi West | তুরাগ পশ্চিম | 23.9050, 90.3850 |
+
+### 3. Narayanganj City (under Narayanganj zilla)
+| Thana | Bengali | Coordinates |
+|-------|---------|-------------|
+| Fatullah | ফতুল্লা | 23.6380, 90.4550 |
+| Siddhirganj | সিদ্ধিরগঞ্জ | 23.6900, 90.5100 |
+
+### 4. Rajshahi City (under Rajshahi zilla)
+| Thana | Bengali | Coordinates |
+|-------|---------|-------------|
+| Boalia | বোয়ালিয়া | 24.3740, 88.5900 |
+| Matihar | মতিহার | 24.3660, 88.6250 |
+| Rajpara | রাজপাড়া | 24.3620, 88.6050 |
+| Shah Makhdum | শাহ মখদুম | 24.3800, 88.5700 |
+
+### 5. Khulna City (under Khulna zilla)
+| Thana | Bengali | Coordinates |
+|-------|---------|-------------|
+| Daulatpur (Khulna) | দৌলতপুর | 22.8640, 89.5000 |
+| Khalishpur | খালিশপুর | 22.8350, 89.5150 |
+| Khan Jahan Ali | খান জাহান আলী | 22.8200, 89.5500 |
+| Kotwali (Khulna) | কোতোয়ালি | 22.8190, 89.5540 |
+| Sonadanga | সোনাডাঙ্গা | 22.8250, 89.5350 |
+
+### 6. Sylhet City (under Sylhet zilla)
+| Thana | Bengali | Coordinates |
+|-------|---------|-------------|
+| Dakshin Surma | দক্ষিণ সুরমা | 24.8700, 91.8750 |
+| Hazrat Shahjalal | হযরত শাহজালাল | 24.9050, 91.8600 |
+| Hazrat Shahparan | হযরত শাহপরান | 24.8900, 91.8900 |
+| Jalalabad | জালালাবাদ | 24.8850, 91.8500 |
+| Kotwali (Sylhet) | কোতোয়ালি | 24.8970, 91.8700 |
+| Moglabazar | মোগলাবাজার | 24.8800, 91.8800 |
 
 ## Technical Notes
 - Only `src/data/locations.ts` needs to be modified
-- These entries are added as items in the existing `upazilas` array for the Dhaka zilla, alongside the 5 existing upazilas (Dhamrai, Dohar, Keraniganj, Nawabganj, Savar)
-- Each entry follows the same format: `{ id, nameBn, nameEn, lat, lng }`
-- Coordinates are approximate center points of each thana for prayer time accuracy
+- Each city's thanas are appended to the existing `upazilas` array of their respective zilla
+- Same format as Dhaka thanas: `{ id, nameBn, nameEn, lat, lng }`
+- Total additions: ~32 new entries across 6 cities
