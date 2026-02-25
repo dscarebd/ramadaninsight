@@ -1,47 +1,51 @@
 
 
-# Fix GPS Location Finder
+# Use Native GPS for Capacitor APK
 
 ## Problem
-The GPS button uses `navigator.geolocation.getCurrentPosition()` which can fail silently in certain environments (preview iframes, browsers that block geolocation permissions). The current error handling is minimal -- the error callback just shows a generic toast without details, and there's no fallback.
+The current GPS uses `navigator.geolocation` (browser API). While this technically works inside Capacitor's WebView, it has issues on native:
+- No native Android/iOS permission dialogs (uses browser-style prompts instead)
+- Less reliable location accuracy
+- Iframe detection code runs unnecessarily on native
+- Error messages reference "browser settings" which don't apply on native
 
 ## Solution
 
-### File: `src/components/Header.tsx`
+### 1. Install `@capacitor/geolocation` plugin
+Add the native geolocation dependency for proper Android/iOS GPS access.
 
-**1. Add better error handling with specific error codes:**
-- `GeolocationPositionError.PERMISSION_DENIED` (code 1) -- Show message asking user to allow location permission
-- `GeolocationPositionError.POSITION_UNAVAILABLE` (code 2) -- Show message that GPS signal is unavailable
-- `GeolocationPositionError.TIMEOUT` (code 3) -- Show timeout message and suggest manual selection
+### 2. Update `src/components/Header.tsx`
+Modify the `handleGPS` function to:
+- Detect if running on a native platform using `Capacitor.isNativePlatform()`
+- On native: use `@capacitor/geolocation` (native permission dialogs, better accuracy)
+- On web: keep current `navigator.geolocation` logic as fallback
+- Update error messages: show "app settings" instead of "browser settings" on native
 
-**2. Increase timeout and add fallback:**
-- Increase timeout from 10s to 15s for slower devices
-- Add `maximumAge: 60000` to allow cached position (1 minute old) for faster response
-- If high accuracy fails, retry with `enableHighAccuracy: false` as fallback
-
-**3. Add iframe geolocation permission check:**
-- Check if running inside an iframe and warn user that GPS may not work in preview mode
-- Suggest using the published URL or manual location selection instead
-
-### Changes Summary
+### Technical Details
 
 ```text
-Header.tsx GPS error handler:
-  Before: Generic "Could not get location" toast
-  After:  Specific error messages per error code
-          + Automatic retry with low accuracy
-          + Preview/iframe detection warning
+GPS Flow:
+  Is Native? (Capacitor.isNativePlatform())
+    YES --> Use @capacitor/geolocation
+            - Geolocation.requestPermissions()
+            - Geolocation.getCurrentPosition()
+            - Native Android permission dialog
+    NO  --> Use navigator.geolocation (existing code)
+            - Iframe detection
+            - Browser permission prompt
 ```
 
-### Detailed Code Changes
+**Key code change in Header.tsx:**
+- Import `Capacitor` from `@capacitor/core` and `Geolocation` from `@capacitor/geolocation`
+- In `handleGPS`, check `Capacitor.isNativePlatform()`
+- If native: call `Geolocation.requestPermissions()` then `Geolocation.getCurrentPosition()`
+- The success handler (finding nearest location, saving to localStorage) stays the same
+- Error messages adapt based on platform ("app settings" vs "browser settings")
 
-In the error callback (line 57-59), replace with:
-- Check `error.code` for specific messages
-- If code is TIMEOUT or POSITION_UNAVAILABLE and `enableHighAccuracy` was true, retry with `enableHighAccuracy: false`
-- Add a helper function `tryGPS(highAccuracy)` to avoid code duplication
+### 3. Android permissions
+Add location permissions to `AndroidManifest.xml` note for the user (Capacitor plugin handles this automatically via `npx cap sync`).
 
-Add iframe detection before calling geolocation:
-- Check `window.self !== window.top` to detect iframe
-- If in iframe, check if `navigator.permissions` API is available to query geolocation permission status
-- Show appropriate warning toast if permission is denied in iframe context
+### Files to modify
+- **package.json** -- add `@capacitor/geolocation` dependency
+- **src/components/Header.tsx** -- platform-aware GPS logic
 
