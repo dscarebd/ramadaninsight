@@ -135,7 +135,13 @@ export const usePrayerTimes = (lat: number, lng: number) => {
     const hijriMonth = day.hijriMonth.toLowerCase();
     return hijriMonth.includes('ramadan') || hijriMonth.includes('ramaḍān') || hijriMonth.includes('ramad');
   });
-  const ramadanDays = apiRamadanDays.slice(1);
+  // Deduplicate by hijri day to avoid duplicates from overlapping month fetches
+  const seen = new Set<string>();
+  const ramadanDays = apiRamadanDays.filter(d => {
+    if (seen.has(d.hijriDay)) return false;
+    seen.add(d.hijriDay);
+    return true;
+  });
 
   const today = new Date();
   const todayStr = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
