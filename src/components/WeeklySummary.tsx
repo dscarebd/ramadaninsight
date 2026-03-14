@@ -4,13 +4,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { CalendarDays, X, Check, ChevronDown } from 'lucide-react';
+import { CalendarDays, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Checkbox } from '@/components/ui/checkbox';
 import { getLocalSalatDaysInRange } from '@/lib/localSalatStorage';
-import { useToast } from '@/hooks/use-toast';
 
 const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
