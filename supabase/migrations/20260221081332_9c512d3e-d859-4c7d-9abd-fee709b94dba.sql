@@ -1,0 +1,1 @@
+ALTER TABLE public.salat_tracking ADD COLUMN tahajjud boolean NOT NULL DEFAULT false;

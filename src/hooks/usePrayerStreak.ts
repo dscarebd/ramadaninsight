@@ -1,0 +1,87 @@
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { formatLocalDate } from '@/lib/utils';
+import { getAllLocalSalatDays } from '@/lib/localSalatStorage';
+
+const fiveWaqt = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+
+type DayRow = {
+  date: string;
+  fajr: boolean;
+  dhuhr: boolean;
+  asr: boolean;
+  maghrib: boolean;
+  isha: boolean;
+};
+
+const calculateStreaks = (rows: DayRow[]) => {
+  const perfectDates = new Set(
+    rows.filter(d => fiveWaqt.every(p => d[p])).map(d => d.date)
+  );
+
+  if (perfectDates.size === 0) return { current: 0, longest: 0 };
+
+  const sortedDates = Array.from(perfectDates).sort();
+  const startDate = new Date(sortedDates[0] + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  let longest = 0;
+  let streak = 0;
+  const d = new Date(startDate);
+  // Loop only up to yesterday so an incomplete today doesn't break the streak
+  while (d <= yesterday) {
+    const dateStr = formatLocalDate(d);
+    if (perfectDates.has(dateStr)) {
+      streak++;
+      if (streak > longest) longest = streak;
+    } else {
+      streak = 0;
+    }
+    d.setDate(d.getDate() + 1);
+  }
+
+  // Check today separately: extend streak if perfect, but don't reset
+  const todayStr = formatLocalDate(today);
+  const current = perfectDates.has(todayStr) ? streak + 1 : streak;
+  longest = Math.max(longest, current);
+
+  return { current, longest };
+};
+
+export const usePrayerStreak = (userId: string | null) => {
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
+
+  useEffect(() => {
+    setLoading(true);
+
+    if (userId) {
+      supabase
+        .from('salat_tracking')
+        .select('date,fajr,dhuhr,asr,maghrib,isha')
+        .eq('user_id', userId)
+        .order('date', { ascending: true })
+        .then(({ data: rows }) => {
+          const { current, longest } = calculateStreaks((rows as DayRow[]) || []);
+          setCurrentStreak(current);
+          setLongestStreak(longest);
+          setLoading(false);
+        });
+    } else {
+      const localDays = getAllLocalSalatDays();
+      const { current, longest } = calculateStreaks(localDays);
+      setCurrentStreak(current);
+      setLongestStreak(longest);
+      setLoading(false);
+    }
+  }, [userId, refreshKey]);
+
+  return { currentStreak, longestStreak, loading, refresh };
+};

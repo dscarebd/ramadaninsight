@@ -1,0 +1,161 @@
+/* Anek Bangla and Hind Siliguri fonts below, KFGQPC Uthmanic Script HAFS for Arabic */
+
+/* KFGQPC Uthmanic Script HAFS - Arabic Quranic font */
+@font-face {
+  font-family: 'KFGQPC Uthmanic Script HAFS';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/KFGQPCUthmanicHAFS.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+10E60-10E7F, U+1EE00-1EEFF;
+}
+
+/* Anek Bangla - Bengali + Latin */
+@font-face {
+  font-family: 'Anek Bangla';
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/AnekBangla-bengali.woff2') format('woff2');
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA, U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
+}
+@font-face {
+  font-family: 'Anek Bangla';
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/AnekBangla-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Hind Siliguri - Bengali + Latin */
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/HindSiliguri-700-bengali.woff2') format('woff2');
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA, U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/HindSiliguri-700-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 170 30% 97%;
+    --foreground: 170 40% 10%;
+
+    --card: 170 25% 95%;
+    --card-foreground: 170 40% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 170 40% 10%;
+
+    --primary: 174 60% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 170 30% 90%;
+    --secondary-foreground: 170 40% 15%;
+
+    --muted: 170 20% 92%;
+    --muted-foreground: 170 15% 45%;
+
+    --accent: 45 90% 55%;
+    --accent-foreground: 45 90% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 170 20% 88%;
+    --input: 170 20% 88%;
+    --ring: 174 60% 32%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 170 25% 95%;
+    --sidebar-foreground: 170 40% 10%;
+    --sidebar-primary: 174 60% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 170 30% 90%;
+    --sidebar-accent-foreground: 170 40% 15%;
+    --sidebar-border: 170 20% 88%;
+    --sidebar-ring: 174 60% 32%;
+  }
+
+  .dark {
+    --background: 170 30% 5%;
+    --foreground: 170 20% 95%;
+
+    --card: 170 25% 8%;
+    --card-foreground: 170 20% 95%;
+
+    --popover: 170 25% 8%;
+    --popover-foreground: 170 20% 95%;
+
+    --primary: 174 55% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 170 25% 15%;
+    --secondary-foreground: 170 20% 90%;
+
+    --muted: 170 20% 15%;
+    --muted-foreground: 170 15% 60%;
+
+    --accent: 45 85% 50%;
+    --accent-foreground: 45 90% 95%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 170 20% 18%;
+    --input: 170 20% 18%;
+    --ring: 174 55% 40%;
+
+    --sidebar-background: 170 25% 8%;
+    --sidebar-foreground: 170 20% 95%;
+    --sidebar-primary: 174 55% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 170 25% 15%;
+    --sidebar-accent-foreground: 170 20% 90%;
+    --sidebar-border: 170 20% 18%;
+    --sidebar-ring: 174 55% 40%;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    --sat: env(safe-area-inset-top);
+    --sar: env(safe-area-inset-right);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-bengali;
+  }
+}
+
+@layer utilities {
+  .text-gradient-islamic {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+}
