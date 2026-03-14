@@ -65,10 +65,21 @@ const Header = () => {
           return;
         }
 
-        const position = await Geolocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 15000,
-        });
+        let position;
+        try {
+          // Attempt 1: High accuracy (GPS)
+          position = await Geolocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 20000,
+          });
+        } catch {
+          // Attempt 2: Fallback to low accuracy (network/cell tower)
+          toast.info(t('উচ্চ নির্ভুলতায় ব্যর্থ, পুনরায় চেষ্টা করা হচ্ছে...', 'High accuracy failed, retrying...'));
+          position = await Geolocation.getCurrentPosition({
+            enableHighAccuracy: false,
+            timeout: 15000,
+          });
+        }
         processPosition(position.coords.latitude, position.coords.longitude);
       } catch (err: any) {
         setLocating(false);
