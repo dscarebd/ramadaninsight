@@ -13,7 +13,7 @@ import { RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import SalatHistory from '@/components/SalatHistory';
 import YearlyOverview from '@/components/YearlyOverview';
-import WeeklySummary from '@/components/WeeklySummary';
+
 import StreakBadge from '@/components/StreakBadge';
 import DailyPrayerReminder from '@/components/DailyPrayerReminder';
 import { usePrayerReminder } from '@/hooks/usePrayerReminder';
