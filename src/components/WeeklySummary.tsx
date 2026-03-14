@@ -23,39 +23,14 @@ interface WeeklySummaryProps {
   userId: string | null;
 }
 
-const QAZA_KEY_PREFIX = 'qaza_weekly_';
-
-const prayerNamesBn: Record<string, string> = {
-  fajr: 'ফজর', dhuhr: 'যোহর', asr: 'আসর', maghrib: 'মাগরিব', isha: 'ইশা',
-};
-
-const formatDateShort = (dateStr: string, lang: string) => {
-  const d = new Date(dateStr + 'T00:00:00');
-  const day = d.getDate();
-  const monthEn = d.toLocaleString('en', { month: 'short' });
-  const monthBn = d.toLocaleString('bn', { month: 'short' });
-  return lang === 'bn' ? `${day} ${monthBn}` : `${day} ${monthEn}`;
-};
-
 const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   const { lang, t } = useLanguage();
-  const { toast } = useToast();
   const [data, setData] = useState<DayRow[]>([]);
   const [dismissed, setDismissed] = useState(false);
   const [loading, setLoading] = useState(true);
-  // Keys are "prayer_date" e.g. "fajr_2026-02-17"
-  const [qazaDone, setQazaDone] = useState<Record<string, boolean>>({});
 
   const today = new Date();
   const dismissKey = `weekly_summary_dismissed_${formatLocalDate(today)}`;
-  const qazaStorageKey = `${QAZA_KEY_PREFIX}${formatLocalDate(today)}`;
-
-  useEffect(() => {
-    const saved = localStorage.getItem(qazaStorageKey);
-    if (saved) {
-      try { setQazaDone(JSON.parse(saved)); } catch {}
-    }
-  }, [qazaStorageKey]);
 
   useEffect(() => {
     if (localStorage.getItem(dismissKey)) {
@@ -96,86 +71,14 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
     setDismissed(true);
   };
 
-  const markAllDone = (prayer: string, dates: string[]) => {
-    const updated = { ...qazaDone };
-    dates.forEach(d => { updated[`${prayer}_${d}`] = true; });
-    setQazaDone(updated);
-    localStorage.setItem(qazaStorageKey, JSON.stringify(updated));
-    toast({
-      title: t('সব কাযা আদায় করেছেন!', 'All qaza completed!'),
-      description: t(prayerNamesBn[prayer], prayer.charAt(0).toUpperCase() + prayer.slice(1)),
-    });
-  };
-
-  const toggleQazaDate = (prayer: string, date: string) => {
-    const key = `${prayer}_${date}`;
-    const wasDone = qazaDone[key];
-    const updated = { ...qazaDone, [key]: !wasDone };
-    setQazaDone(updated);
-    localStorage.setItem(qazaStorageKey, JSON.stringify(updated));
-
-    if (!wasDone) {
-      toast({
-        title: t('কাযা আদায় করেছেন!', 'Qaza completed!'),
-        description: t(
-          `${prayerNamesBn[prayer]} - ${formatDateShort(date, 'bn')}`,
-          `${prayer.charAt(0).toUpperCase() + prayer.slice(1)} - ${formatDateShort(date, 'en')}`
-        ),
-      });
-    } else {
-      toast({
-        title: t('কাযা বাতিল করা হয়েছে', 'Qaza undone'),
-        description: t(
-          `${prayerNamesBn[prayer]} - ${formatDateShort(date, 'bn')}`,
-          `${prayer.charAt(0).toUpperCase() + prayer.slice(1)} - ${formatDateShort(date, 'en')}`
-        ),
-        variant: 'destructive',
-      });
-    }
-  };
-  // Compute stats (must be before hooks that depend on them)
+  // Compute stats
   const totalPrayedOnTime = data.reduce((sum, d) => sum + fiveWaqt.filter(p => d[p]).length, 0);
   const maxPrayers = 7 * 5;
   const perfectDays = data.filter(d => fiveWaqt.every(p => d[p])).length;
 
-  const allDates: string[] = [];
-  {
-    const end = new Date(today);
-    end.setDate(end.getDate() - 1);
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(end);
-      d.setDate(d.getDate() - i);
-      allDates.push(formatLocalDate(d));
-    }
-  }
-  const dataByDate = Object.fromEntries(data.map(d => [d.date, d]));
-
-  const missedByPrayer = fiveWaqt.map(p => {
-    const missedDates = allDates.filter(date => {
-      const row = dataByDate[date];
-      return !row || !row[p];
-    });
-    return { key: p, missedDates, total: missedDates.length };
-  }).filter(p => p.total > 0);
-
-  const totalQazaCount = missedByPrayer.reduce((s, p) =>
-    s + p.missedDates.filter(d => qazaDone[`${p.key}_${d}`]).length, 0);
-  const totalCompleted = totalPrayedOnTime + totalQazaCount;
+  const totalCompleted = totalPrayedOnTime;
   const pct = Math.round((totalCompleted / maxPrayers) * 100);
   const missedPrayers = maxPrayers - totalCompleted;
-  const allQazaDone = pct === 100 && totalPrayedOnTime < maxPrayers;
-  const totalMissedDates = missedByPrayer.reduce((s, p) => s + p.total, 0);
-  const totalQazaCompleted = totalQazaCount;
-
-  // Auto-dismiss 3s after all qaza completed
-  useEffect(() => {
-    if (allQazaDone && !dismissed) {
-      const timer = setTimeout(() => {
-        handleDismiss();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [allQazaDone, dismissed]);
 
   if (dismissed || loading) return null;
 
