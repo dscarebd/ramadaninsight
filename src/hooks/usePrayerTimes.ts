@@ -56,45 +56,66 @@ export const subtractMinutes = (time: string, mins: number): string => {
   return `${String(Math.floor(adjTotal / 60)).padStart(2, '0')}:${String(adjTotal % 60).padStart(2, '0')}`;
 };
 
+const cacheKey = (lat: number, lng: number, year: number, month: number) =>
+  `prayer_cache_${lat.toFixed(2)}_${lng.toFixed(2)}_${year}_${month}`;
+
+const getCached = (lat: number, lng: number, year: number, month: number): PrayerDay[] | undefined => {
+  try {
+    const raw = localStorage.getItem(cacheKey(lat, lng, year, month));
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return undefined;
+};
+
+const setCache = (lat: number, lng: number, year: number, month: number, data: PrayerDay[]) => {
+  try {
+    localStorage.setItem(cacheKey(lat, lng, year, month), JSON.stringify(data));
+  } catch {}
+};
+
 export const fetchMonthTimes = async (lat: number, lng: number, year: number, month: number): Promise<PrayerDay[]> => {
   const res = await fetch(
-    // tune offsets (Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight) to align with Bangladesh Islamic Foundation
     `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=1&school=1&tune=0,0,0,2,1,3,3,1,0`
   );
   if (!res.ok) throw new Error('Failed to fetch prayer times');
   const json = await res.json();
 
-  return json.data.map((day: DayData) => {
+  const days: PrayerDay[] = json.data.map((day: DayData) => {
     const fajr = cleanTime(day.timings.Fajr);
-    // BIF convention: Sehri ends 3 minutes before Fajr
     const sehriEnd = subtractMinutes(fajr, 3);
     return {
-    date: day.date.gregorian.date,
-    hijriDate: day.date.hijri.date,
-    hijriDay: day.date.hijri.day,
-    hijriMonth: `${day.date.hijri.month.en} (${day.date.hijri.month.ar})`,
-    hijriYear: day.date.hijri.year,
-    gregorianDate: day.date.readable,
-    sehriEnd,
-    iftarStart: cleanTime(day.timings.Maghrib),
-    fajr,
-    sunrise: cleanTime(day.timings.Sunrise),
-    dhuhr: cleanTime(day.timings.Dhuhr),
-    asr: cleanTime(day.timings.Asr),
-    maghrib: cleanTime(day.timings.Maghrib),
-    isha: cleanTime(day.timings.Isha),
+      date: day.date.gregorian.date,
+      hijriDate: day.date.hijri.date,
+      hijriDay: day.date.hijri.day,
+      hijriMonth: `${day.date.hijri.month.en} (${day.date.hijri.month.ar})`,
+      hijriYear: day.date.hijri.year,
+      gregorianDate: day.date.readable,
+      sehriEnd,
+      iftarStart: cleanTime(day.timings.Maghrib),
+      fajr,
+      sunrise: cleanTime(day.timings.Sunrise),
+      dhuhr: cleanTime(day.timings.Dhuhr),
+      asr: cleanTime(day.timings.Asr),
+      maghrib: cleanTime(day.timings.Maghrib),
+      isha: cleanTime(day.timings.Isha),
     };
   });
+
+  // Cache after successful fetch
+  setCache(lat, lng, year, month, days);
+  return days;
 };
 
 export const usePrayerTimes = (lat: number, lng: number) => {
-  // Ramadan 2026 spans roughly Feb 18 - Mar 19, 2026
+  const febCached = getCached(lat, lng, 2026, 2);
+  const marCached = getCached(lat, lng, 2026, 3);
+
   const febQuery = useQuery({
     queryKey: ['prayer-times', lat, lng, 2026, 2],
     queryFn: () => fetchMonthTimes(lat, lng, 2026, 2),
     staleTime: 1000 * 60 * 60,
     enabled: lat !== 0 && lng !== 0,
-    placeholderData: (prev) => prev,
+    placeholderData: (prev) => prev ?? febCached,
   });
 
   const marQuery = useQuery({
@@ -102,29 +123,24 @@ export const usePrayerTimes = (lat: number, lng: number) => {
     queryFn: () => fetchMonthTimes(lat, lng, 2026, 3),
     staleTime: 1000 * 60 * 60,
     enabled: lat !== 0 && lng !== 0,
-    placeholderData: (prev) => prev,
+    placeholderData: (prev) => prev ?? marCached,
   });
 
   const isLoading = febQuery.isLoading || marQuery.isLoading;
   const isFetching = febQuery.isFetching || marQuery.isFetching;
   const error = febQuery.error || marQuery.error;
 
-  // Filter to Ramadan days and skip first day to align with Bangladesh moon sighting
-  const allDays = [...(febQuery.data || []), ...(marQuery.data || [])];
+  const allDays = [...(febQuery.data || febCached || []), ...(marQuery.data || marCached || [])];
   const apiRamadanDays = allDays.filter(day => {
     const hijriMonth = day.hijriMonth.toLowerCase();
     return hijriMonth.includes('ramadan') || hijriMonth.includes('ramaḍān') || hijriMonth.includes('ramad');
   });
-  // Bangladesh starts Ramadan 1 day after the API's calculation
   const ramadanDays = apiRamadanDays.slice(1);
 
-  // Get today's data
   const today = new Date();
   const todayStr = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
   const todayData = ramadanDays.find(d => d.date === todayStr) || ramadanDays[0];
   const todayIndex = ramadanDays.findIndex(d => d.date === todayStr);
-
-  // Determine if today is within Ramadan
   const isRamadan = todayIndex >= 0;
 
   return {

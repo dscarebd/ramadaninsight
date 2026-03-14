@@ -89,10 +89,10 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="সেটিংস - Settings"
-        description="অ্যাপ সেটিংস। App settings and preferences."
+        description="App settings and preferences for Ramadan Insight."
         keywords="settings, সেটিংস, preferences, language, theme"
       />
       
@@ -175,7 +175,11 @@ const Settings = () => {
             </div>
             <Switch
               checked={theme === 'dark'}
-              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+              onCheckedChange={(checked) => {
+                document.documentElement.classList.add('theme-transition');
+                setTheme(checked ? 'dark' : 'light');
+                setTimeout(() => document.documentElement.classList.remove('theme-transition'), 500);
+              }}
             />
           </div>
         </CardContent>

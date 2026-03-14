@@ -79,10 +79,10 @@ const Index = () => {
   const isAfterIftar = currentHM >= iftarTime;
 
   return (
-    <div className={`min-h-screen md:min-h-0 pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
+    <div className={`min-h-screen md:min-h-0 pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in transition-opacity duration-300 ${isFetching ? 'opacity-70' : 'opacity-100'}`}>
       <PageMeta
         title="Ramadan Insight"
-        description="সেহরি, ইফতার ও নামাজের সময়সূচী। Sehri, Iftar & prayer times for Ramadan."
+        description="Sehri, Iftar & prayer times for Ramadan in Bangladesh."
         keywords="ramadan, sehri, iftar, prayer times, রমজান, সেহরি, ইফতার, নামাজের সময়"
       />
       {/* Location Picker */}
@@ -114,13 +114,13 @@ const Index = () => {
         {isRamadan ? (
           <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
             <CardContent className="p-4 text-center space-y-1">
-              <p className="text-3xl font-bold text-primary font-bengali-num">
+              <p className="text-3xl font-bold text-primary dark:text-white font-bengali-num">
                 {t(`রোজা ${toBengaliNum(todayIndex + 1)}/${toBengaliNum(30)}`, `Roza ${todayIndex + 1}/30`)}
               </p>
               {todayData && (
                 <>
-                  <p className="text-sm text-muted-foreground">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(todayIndex + 1) : todayIndex + 1}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
-                  <p className="text-xs text-muted-foreground">{todayData.gregorianDate}</p>
+                   <p className="text-sm text-muted-foreground dark:text-white/80">{todayData.hijriMonth} {lang === 'bn' ? toBengaliNum(todayIndex + 1) : todayIndex + 1}, {lang === 'bn' ? toBengaliNum(todayData.hijriYear) : todayData.hijriYear}</p>
+                   <p className="text-xs text-muted-foreground dark:text-white/70">{todayData.gregorianDate}</p>
                 </>
               )}
             </CardContent>

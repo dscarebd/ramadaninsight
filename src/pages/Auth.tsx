@@ -47,10 +47,10 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 pb-20">
+    <div className="min-h-screen flex items-center justify-center px-4 pb-28">
       <PageMeta
         title="লগইন - Login"
-        description="রমজান ইনসাইটে লগইন করুন। Sign in to Ramadan Insight."
+        description="Sign in or create an account on Ramadan Insight."
         keywords="login, sign up, লগইন, registration"
       />
       <Card className="w-full max-w-sm">

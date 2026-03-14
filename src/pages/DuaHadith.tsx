@@ -6,6 +6,8 @@ import { Share2, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PageMeta from '@/components/PageMeta';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 const DuaHadith = () => {
   const { lang, t } = useLanguage();
@@ -16,16 +18,26 @@ const DuaHadith = () => {
   const hadith = dailyHadiths[hadithIndex];
 
   const handleShare = async (id: string, text: string) => {
+    // Use native share on Capacitor
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await Share.share({ text });
+        return;
+      } catch {
+        // User cancelled
+        return;
+      }
+    }
+    // Web fallback
     if (navigator.share) {
       try {
         await navigator.share({ text });
         return;
       } catch (e) {
-        // User cancelled or share failed, fall through to copy
         if ((e as DOMException).name === 'AbortError') return;
       }
     }
-    // Fallback: copy to clipboard
+    // Final fallback: copy to clipboard
     await navigator.clipboard.writeText(text);
     setCopiedId(id);
     toast({ title: t('কপি হয়েছে!', 'Copied to clipboard!'), duration: 1500 });
@@ -38,10 +50,10 @@ const DuaHadith = () => {
     `${lang === 'bn' ? dua.titleBn : dua.titleEn}\n\n${dua.arabic}\n\n${lang === 'bn' ? dua.meaningBn : dua.meaningEn}`;
 
   return (
-    <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="দোয়া ও হাদিস - Dua & Hadith"
-        description="রমজানের দোয়া ও হাদিস সংকলন। Collection of Ramadan duas and hadiths."
+        description="Collection of Ramadan duas and hadiths for daily practice."
         keywords="dua, hadith, দোয়া, হাদিস, ramadan dua, islamic prayers"
       />
       

@@ -1,66 +1,51 @@
 
 
-## Year-Round Sehri and Iftar Times
+# Use Native GPS for Capacitor APK
 
-### What Changes
-The app currently only fetches prayer times for Ramadan months (Feb-Mar 2026). After Ramadan ends, it falls back to stale data. This update will make the app fetch today's Sehri and Iftar times for any day of the year, so users can use it all 12 months.
+## Problem
+The current GPS uses `navigator.geolocation` (browser API). While this technically works inside Capacitor's WebView, it has issues on native:
+- No native Android/iOS permission dialogs (uses browser-style prompts instead)
+- Less reliable location accuracy
+- Iframe detection code runs unnecessarily on native
+- Error messages reference "browser settings" which don't apply on native
 
-### How It Will Work
+## Solution
 
-**During Ramadan:** Everything stays the same -- Roza counter, countdown, duas, status banner.
+### 1. Install `@capacitor/geolocation` plugin
+Add the native geolocation dependency for proper Android/iOS GPS access.
 
-**Outside Ramadan:** The home page will show:
-- Today's Sehri and Iftar times (fetched for the current date)
-- Today's date (Gregorian and Hijri)
-- A note like "Ramadan is not active -- showing daily Sehri/Iftar times"
-- The countdown timer still works (showing time until next Sehri or Iftar)
-- Daily Quote remains visible
-- Sehri Niyat and Iftar Dua cards remain visible (useful for voluntary fasting)
-- The Roza counter card is replaced with a simple date/time display card
+### 2. Update `src/components/Header.tsx`
+Modify the `handleGPS` function to:
+- Detect if running on a native platform using `Capacitor.isNativePlatform()`
+- On native: use `@capacitor/geolocation` (native permission dialogs, better accuracy)
+- On web: keep current `navigator.geolocation` logic as fallback
+- Update error messages: show "app settings" instead of "browser settings" on native
 
 ### Technical Details
 
-**1. New hook: `src/hooks/useTodayPrayerTimes.ts`**
-- Fetches prayer times for the current month only using the same Aladhan API
-- Returns just today's Sehri (Fajr - 3 min) and Iftar (Maghrib) times
-- Uses the same `fetchMonthTimes` logic extracted from `usePrayerTimes`
-- Cached with React Query (1 hour stale time)
-
-**2. Refactor: `src/hooks/usePrayerTimes.ts`**
-- Extract `fetchMonthTimes` as a shared/exported utility function
-- Add an `isRamadan` flag to the return value (true if today falls within ramadanDays)
-- Add `isRamadanOver` flag (today is after last Ramadan day)
-
-**3. Update: `src/pages/Index.tsx`**
-- Import and use `useTodayPrayerTimes` as a fallback when outside Ramadan
-- When `isRamadan` is false:
-  - Hide the Roza counter card, replace with a simple "Today's Times" card showing Sehri and Iftar in large text
-  - Change status banner to "Showing daily Sehri/Iftar times" instead of fasting status
-  - Keep countdown timer, duas, and daily quote as-is
-- When `isRamadan` is true: no changes, existing behavior
-
-**4. Update: `src/pages/Schedule.tsx`**
-- Outside Ramadan, show a banner saying the Ramadan schedule is from the last/upcoming Ramadan for reference
-- The table remains accessible for reference
-
-### UI Outside Ramadan
-
 ```text
-+----------------------------------+
-| Location Picker                  |
-+----------------------------------+
-| "Showing daily Sehri/Iftar times"|
-+----------------------------------+
-| Today's Date     | Countdown     |
-| 23 Feb 2026      | to Iftar/     |
-| Hijri date       | Sehri         |
-| Sehri: 5:12 AM   |               |
-| Iftar: 6:05 PM   |               |
-+----------------------------------+
-| Daily Quote                      |
-+----------------------------------+
-| Sehri Niyat      | Iftar Dua     |
-+----------------------------------+
+GPS Flow:
+  Is Native? (Capacitor.isNativePlatform())
+    YES --> Use @capacitor/geolocation
+            - Geolocation.requestPermissions()
+            - Geolocation.getCurrentPosition()
+            - Native Android permission dialog
+    NO  --> Use navigator.geolocation (existing code)
+            - Iframe detection
+            - Browser permission prompt
 ```
 
-This keeps the app useful year-round for anyone doing voluntary (nafl) fasting like Monday/Thursday fasts, Ayyam al-Beed, Shawwal fasts, etc.
+**Key code change in Header.tsx:**
+- Import `Capacitor` from `@capacitor/core` and `Geolocation` from `@capacitor/geolocation`
+- In `handleGPS`, check `Capacitor.isNativePlatform()`
+- If native: call `Geolocation.requestPermissions()` then `Geolocation.getCurrentPosition()`
+- The success handler (finding nearest location, saving to localStorage) stays the same
+- Error messages adapt based on platform ("app settings" vs "browser settings")
+
+### 3. Android permissions
+Add location permissions to `AndroidManifest.xml` note for the user (Capacitor plugin handles this automatically via `npx cap sync`).
+
+### Files to modify
+- **package.json** -- add `@capacitor/geolocation` dependency
+- **src/components/Header.tsx** -- platform-aware GPS logic
+

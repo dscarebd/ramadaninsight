@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { formatLocalDate } from '@/lib/utils';
+import { hapticImpact, hapticNotification } from '@/hooks/useHaptics';
+import { ImpactStyle } from '@capacitor/haptics';
+import { NotificationType } from '@capacitor/haptics';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -10,11 +13,12 @@ import { RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import SalatHistory from '@/components/SalatHistory';
 import YearlyOverview from '@/components/YearlyOverview';
-import WeeklySummary from '@/components/WeeklySummary';
+
 import StreakBadge from '@/components/StreakBadge';
 import DailyPrayerReminder from '@/components/DailyPrayerReminder';
 import { usePrayerReminder } from '@/hooks/usePrayerReminder';
-import { useSalatSync } from '@/hooks/useSalatSync';
+import { useSalatSync, markPendingSync } from '@/hooks/useSalatSync';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { usePrayerStreak } from '@/hooks/usePrayerStreak';
 import PageMeta from '@/components/PageMeta';
 
@@ -39,6 +43,7 @@ const isRamadan = () => {
 const SalatTracker = () => {
   const { lang, t } = useLanguage();
   const { toast } = useToast();
+  const { isOnline } = useNetworkStatus();
   const ramadan = isRamadan();
 
   const [checked, setChecked] = useState<Record<PrayerKey, boolean>>({
@@ -101,18 +106,25 @@ const SalatTracker = () => {
   const updatePrayer = async (key: PrayerKey, val: boolean) => {
     const updated = { ...checked, [key]: val };
     setChecked(updated);
+    hapticImpact(ImpactStyle.Light);
 
     const allFive = fiveWaqt.every(p => updated[p.key]);
     const extraDone = ramadan ? (updated.taraweeh && updated.tahajjud) : updated.tahajjud;
-    if (allFive && extraDone) setShowCelebration(true);
+    if (allFive && extraDone) {
+      setShowCelebration(true);
+      hapticNotification(NotificationType.Success);
+    }
 
-    if (user) {
+    // Always save to localStorage
+    localStorage.setItem(`salat_${todayStr}`, JSON.stringify(updated));
+
+    if (user && isOnline) {
       await supabase
         .from('salat_tracking')
         .upsert({ user_id: user, date: todayStr, ...updated }, { onConflict: 'user_id,date' });
+    } else if (user && !isOnline) {
+      markPendingSync();
     }
-    // Always save to localStorage
-    localStorage.setItem(`salat_${todayStr}`, JSON.stringify(updated));
     streakData.refresh();
   };
 
@@ -122,22 +134,26 @@ const SalatTracker = () => {
     };
     setChecked(reset);
     setShowCelebration(false);
-    if (user) {
+    hapticImpact(ImpactStyle.Medium);
+    localStorage.setItem(`salat_${todayStr}`, JSON.stringify(reset));
+
+    if (user && isOnline) {
       await supabase
         .from('salat_tracking')
         .upsert({ user_id: user, date: todayStr, ...reset }, { onConflict: 'user_id,date' });
+    } else if (user && !isOnline) {
+      markPendingSync();
     }
-    localStorage.removeItem(`salat_${todayStr}`);
     streakData.refresh();
   };
 
   const fiveCount = fiveWaqt.filter(p => checked[p.key]).length;
 
   return (
-    <div className="min-h-screen pb-20 md:pb-8 px-4 pt-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen pb-28 md:pb-2 px-4 pt-4 space-y-4 animate-fade-in">
       <PageMeta
         title="নামাজ ট্র্যাকার - Salat Tracker"
-        description="দৈনিক নামাজ ট্র্যাক করুন। Track your daily prayers and streaks."
+        description="Track your daily prayers and streaks during Ramadan."
         keywords="salat tracker, নামাজ ট্র্যাকার, prayer tracking, daily prayers, streak"
       />
       <Tabs defaultValue="today" className="w-full">
@@ -148,7 +164,6 @@ const SalatTracker = () => {
         </TabsList>
 
         <TabsContent value="today" className="space-y-4 mt-4">
-          <WeeklySummary userId={user} />
           <StreakBadge streakData={streakData} />
           <DailyPrayerReminder
             checked={checked}
@@ -247,7 +262,7 @@ const SalatTracker = () => {
         </TabsContent>
 
         <TabsContent value="history" className="mt-4 space-y-4">
-          <WeeklySummary userId={user} />
+          
           <SalatHistory userId={user} streakData={streakData} />
         </TabsContent>
 
