@@ -184,7 +184,6 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
   if (dismissed || loading) return null;
 
   return (
-    <>
     <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start justify-between">
@@ -215,8 +214,6 @@ const WeeklySummary = ({ userId }: WeeklySummaryProps) => {
             {t(`মিস: ${missedPrayers} নামাজ`, `Missed: ${missedPrayers} prayers`)}
           </span>
         </div>
-
-        
       </CardContent>
     </Card>
   );
