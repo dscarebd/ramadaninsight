@@ -262,7 +262,7 @@ const SalatTracker = () => {
         </TabsContent>
 
         <TabsContent value="history" className="mt-4 space-y-4">
-          <WeeklySummary userId={user} />
+          
           <SalatHistory userId={user} streakData={streakData} />
         </TabsContent>
 
